@@ -1,0 +1,13 @@
+prefix=E:/Github/AudioCodecs/build/out
+exec_prefix=${prefix}
+libdir=E:/Github/AudioCodecs/build/out/lib
+includedir=E:/Github/AudioCodecs/build/out/include
+
+Name: libxmp
+Description: Xmp module player library
+Version: 4.6.0
+
+Requires:
+Libs: -L${libdir} -lxmp
+Cflags: -I${includedir}
+Libs.private: 

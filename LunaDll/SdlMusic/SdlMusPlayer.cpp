@@ -112,8 +112,8 @@ std::string PGE_MusPlayer::currentTrack="";
 int PGE_MusPlayer::sRate=44100;
 bool PGE_MusPlayer::showMsg=true;
 std::string PGE_MusPlayer::showMsg_for="";
-std::atomic<unsigned __int64> PGE_MusPlayer::sCount(0);
-std::atomic<unsigned __int64> PGE_MusPlayer::musSCount(0);
+std::atomic<unsigned __int64> PGE_MusPlayer::sCount = 0;
+std::atomic<unsigned __int64> PGE_MusPlayer::musSCount = 0;
 
 Mix_Music *PGE_MusPlayer::currentMusic()
 {
@@ -146,6 +146,39 @@ void PGE_MusPlayer::MUS_playMusic()
     {
         //MessageBoxA(0, std::string(std::string("Play nothing:")+std::string(Mix_GetError())).c_str(), "Error", 0);
     }
+}
+
+void PGE_MusPlayer::MUS_playMusicStream()
+{
+    if(!PGE_SDL_Manager::isInit) return;
+    if(play_mus)
+    {
+        if (deferringMusic)
+        {
+            musicGotDeferred = true;
+            musicDeferredFadeIn = -1;
+        }
+        else if (Mix_PlayingMusic() == 0)
+        {
+            // Reset music sample count
+            musSCount.store(0);
+
+            Mix_PlayMusicStream(play_mus, -1);
+        }
+        else if (Mix_PausedMusic()==1)
+        {
+            Mix_ResumeMusic();
+        }
+    }
+    else
+    {
+        //MessageBoxA(0, std::string(std::string("Play nothing:")+std::string(Mix_GetError())).c_str(), "Error", 0);
+    }
+}
+
+void PGE_MusPlayer::MUS_rewindMusic()
+{
+    return Mix_RewindMusic();
 }
 
 void  PGE_MusPlayer::MUS_playMusicFadeIn(int ms)
@@ -186,6 +219,31 @@ void PGE_MusPlayer::MUS_pauseMusic()
 {
     if(!PGE_SDL_Manager::isInit) return;
     Mix_PauseMusic();
+    musicGotDeferred = false;
+}
+
+void PGE_MusPlayer::MUS_pauseMusicChannel(int channel)
+{
+    if(!PGE_SDL_Manager::isInit) return;
+    Mix_Pause(channel);
+}
+
+void PGE_MusPlayer::MUS_resumeMusicChannel(int channel)
+{
+    if(!PGE_SDL_Manager::isInit) return;
+    Mix_Resume(channel);
+}
+
+void PGE_MusPlayer::MUS_isChannelPaused(int channel)
+{
+    if(!PGE_SDL_Manager::isInit) return;
+    Mix_Paused(channel);
+}
+
+void PGE_MusPlayer::MUS_pauseMusicStream()
+{
+    if(!PGE_SDL_Manager::isInit) return;
+    Mix_PauseMusicStream(PGE_MusPlayer::currentMusic());
     musicGotDeferred = false;
 }
 
@@ -255,6 +313,11 @@ std::string PGE_MusPlayer::MUS_MusicCopyrightTag()
 void PGE_MusPlayer::MUS_changeVolume(int vlm)
 {
     Mix_VolumeMusic(vlm);
+}
+
+void PGE_MusPlayer::MUS_changeVolumeStream(int vlm)
+{
+    Mix_VolumeMusicStream(PGE_MusPlayer::currentMusic(), vlm);
 }
 
 bool PGE_MusPlayer::MUS_IsPlaying()
@@ -495,6 +558,47 @@ void PGE_Sounds::holdCached(bool isWorld)
 void PGE_Sounds::releaseCached(bool isWorld)
 {
     g_chunkCache.release(isWorld);
+}
+
+Mix_Chunk *PGE_Sounds::SND_RemoveSnd(const char *sndFile)
+{
+    PGE_SDL_Manager::initSDL();
+    std::string filePath = sndFile;
+    
+    CachedFileDataWeakPtr<ChunkStorage>::Entry* cacheEntry = g_chunkCache.get(Str2WStr(filePath));
+    if (cacheEntry == nullptr)
+    {
+        // No file
+        PGE_Sounds::lastError = "Could not open ";
+        PGE_Sounds::lastError += filePath;
+        return nullptr;
+    }
+
+    Mix_Chunk* chunk = nullptr;
+    std::shared_ptr<ChunkStorage> cachePtr = cacheEntry->data.lock();
+    if (cachePtr)
+    {
+        // Use cache entry
+        chunk = cachePtr->mChunk;
+    }
+    else
+    {
+        chunk = Mix_LoadWAV( sndFile );
+
+        // Cache the result regardless of if null or not, so we don't waste time re-reading things we can't read
+        cachePtr = std::make_shared<ChunkStorage>(chunk);
+        cacheEntry->data = cachePtr;
+    }
+
+    if (chunk == nullptr)
+    {
+        PGE_Sounds::lastError = "Could not read ";
+        PGE_Sounds::lastError += filePath;
+    }
+    
+    g_chunkStorage.erase(cachePtr);
+
+    return chunk;
 }
 
 bool PGE_Sounds::SND_PlaySnd(const char *sndFile)

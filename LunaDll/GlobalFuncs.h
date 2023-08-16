@@ -261,6 +261,22 @@ void ShowAndFocusWindow(HWND hWindow);
 // Handle WIN32 events when loading
 void HandleEventsWhileLoading();
 
+//Language detection
+double GetOSLanguage();
+
+//Download a file
+void DownloadFile(std::string url, std::string path, std::string file, std::string extension);
+
+//Check file size
+double GetFileSize(std::string file);
+
+//Create a directory
+void CreateADirectory(std::string file);
+
+//Git Stuff
+void doGitClone(std::string urlTemp, std::string pathTemp);
+//void doGitPull(std::string pathTemp);
+
 // Float/double manipulation
 #ifdef __clang__
 constexpr std::uint32_t FloatToDWord(float f) {

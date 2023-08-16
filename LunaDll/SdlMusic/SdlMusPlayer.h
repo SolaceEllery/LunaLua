@@ -27,8 +27,15 @@ public:
     static std::string currentTrack;
     static Mix_Music* currentMusic();
     static void MUS_playMusic();
+    static void MUS_playMusicStream();
+    static void MUS_rewindMusic();
+    static void MUS_addMusicWithMultiMusic(const char *musFile);
     static void MUS_playMusicFadeIn(int ms);
     static void MUS_pauseMusic();
+    static void MUS_pauseMusicChannel(int channel);
+    static void MUS_resumeMusicChannel(int channel);
+    static void MUS_isChannelPaused(int channel);
+    static void MUS_pauseMusicStream();
     static void MUS_stopMusic();
     static void MUS_stopMusicFadeOut(int ms);
     static std::string MUS_MusicTitle();
@@ -38,6 +45,7 @@ public:
     static std::string MUS_MusicCopyrightTag();
 
     static void MUS_changeVolume(int vlm);
+    static void MUS_changeVolumeStream(int vlm);
     static void MUS_openFile(const char *musFile);
     static bool setSampleRate(int sampleRate);
     static int sampleRate();
@@ -93,6 +101,7 @@ public:
     static Mix_Chunk *SND_OpenSnd(const char *sndFile);
     static void holdCached(bool isWorld);
     static void releaseCached(bool isWorld);
+    static Mix_Chunk *SND_RemoveSnd(const char *sndFile);
     static bool playOverrideForAlias(const std::string& alias, int ch);
     static void setOverrideForAlias(const std::string& alias, Mix_Chunk* chunk);
     static Mix_Chunk *getChunkForAlias(const std::string& alias);
