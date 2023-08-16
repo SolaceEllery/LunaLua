@@ -876,7 +876,8 @@ void CLunaLua::bindAll()
                 def("MusicFadeOut", (void(*)(int, int))&LuaProxy::Audio::musicFadeOut),
                 
                 //Music - SEE Mod
-                def("MusicTrackGet", (void(*)())&LuaProxy::Audio::MusicGetTracks),
+                def("MusicReset", (void(*)())&LuaProxy::Audio::MusicRewind),
+                def("MusicTrackGet", (double(*)())&LuaProxy::Audio::MusicGetTracks),
                 def("MusicTrackMute", (void(*)(int))&LuaProxy::Audio::MusicMuteTrackLayer),
                 def("MusicTrackUnmute", (void(*)(int))&LuaProxy::Audio::MusicUnmuteTrackLayer),
                 def("MusicSetTempo", (void(*)(double))&LuaProxy::Audio::MusicSetTempo),
