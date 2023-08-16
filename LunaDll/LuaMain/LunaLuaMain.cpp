@@ -695,7 +695,8 @@ void CLunaLua::bindAll()
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
                 //SEE Mod
-                def("getOSLanguage", &GetOSLanguage)
+                def("getOSLanguage", &GetOSLanguage),
+                def("getFileSize", (double(*)(std::string))&GetFileSize)
             ],
 
             namespace_("FileFormats")[
