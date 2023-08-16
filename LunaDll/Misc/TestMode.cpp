@@ -604,3 +604,28 @@ void TestModeSendNotification(const std::string& notificationCmd)
 {
     gIPCServer.SendSimpleNotification(notificationCmd);
 }
+
+bool testModeSetupNewLevel(std::string filename)
+{
+    // Skip if not enabled
+    if (!testModeSettings.enabled) return false;
+    
+    const std::wstring path = Str2WStr(filename);
+    
+    // Get the full path if necessary
+    std::wstring fullPath = resolveCwdOrWorldsPath(path);
+
+    // Check that the file exists, but only if we don't have raw level data
+    if (FileExists(fullPath.c_str()) == 0)
+    {
+        return false;
+    }
+
+    const std::string &newLevelData = ""; //testModeSettings.rawData;
+
+    testModeData.levelRawData.clear();
+    if(!newLevelData.empty())
+        testModeData.levelRawData = newLevelData;
+    testModeSettings.levelPath = path;
+    return true;
+}

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <Windows.h>
 #include <Psapi.h>
+#include <filesystem>
 
 #include "../Globals.h"
 #include "../GlobalFuncs.h"
@@ -22,6 +23,7 @@
 #include "../Misc/RuntimeHook.h"
 #include "../Misc/VB6RNG.h"
 #include "../Input/MouseHandler.h"
+#include "../Misc/MiscFuncs.h"
 #include "LunaLuaMain.h"
 #include "LuaProxyFFIGraphics.h"
 #include "LunaPathValidator.h"
@@ -839,5 +841,145 @@ extern "C" {
     FFI_EXPORT(bool) LunaLuaGetWeakLava()
     {
         return gLavaIsWeak;
+    }
+}
+
+extern "C" {
+    //SEE Mod FFI functions start here
+
+    FFI_EXPORT(void) LunaLuaSetWindowPosition(int x, int y)
+    {
+        // Main bit for setting window position
+        SetWindowPos(gMainWindowHwnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    FFI_EXPORT(void) LunaLuaToggleWindowFocus(bool enable)
+    {
+        // Setting the focus to the window
+        if ((enable == true) && (gMainWindowFocused || gStartupSettings.runWhenUnfocused)) {
+            gStartupSettings.runWhenUnfocused = true;
+        } else if ((enable == false) && (gMainWindowFocused || gStartupSettings.runWhenUnfocused)) {
+            gStartupSettings.runWhenUnfocused = false;
+        }
+    }
+    FFI_EXPORT(bool) LunaLuaIsSetToRunWhenUnfocused()
+    {
+        // Checks to see if the setting to run when unfocused is true or not
+        return (bool)gStartupSettings.runWhenUnfocused;
+    }
+    FFI_EXPORT(void) LunaLuaCenterWindow()
+    {
+        // This will center the window to the screen that it detects. Useful for auto-moving the window for misc reasons
+        RECT rectClient, rectWindow;
+        HWND hWnd = gMainWindowHwnd;
+        GetClientRect(hWnd, &rectClient);
+        GetWindowRect(hWnd, &rectWindow);
+        int posx, posy;
+        posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2,
+        posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2,
+
+        // When getting everything set, center the window!
+        SetWindowPos(hWnd, NULL, posx, posy, 800, 600, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    FFI_EXPORT(double) LunaLuaGetXWindowPosition()
+    {
+        // Get the window position and return it
+        RECT rect;
+        GetWindowRect(gMainWindowHwnd, &rect);
+        int x = rect.left;
+        int y = rect.top;
+        return (double)x;
+    }
+    FFI_EXPORT(double) LunaLuaGetYWindowPosition()
+    {
+        // Get the window position and return it
+        RECT rect;
+        GetWindowRect(gMainWindowHwnd, &rect);
+        int x = rect.left;
+        int y = rect.top;
+        return (double)y;
+    }
+    FFI_EXPORT(double) LunaLuaGetXWindowPositionCenter()
+    {
+        // Get the window position and return it
+        RECT rectClient, rectWindow;
+        GetClientRect(gMainWindowHwnd, &rectClient);
+        GetWindowRect(gMainWindowHwnd, &rectWindow);
+        int posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2;
+        int posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2;
+        return (double)posx;
+    }
+    FFI_EXPORT(double) LunaLuaGetYWindowPositionCenter()
+    {
+        // Get the window position and return it
+        RECT rectClient, rectWindow;
+        GetClientRect(gMainWindowHwnd, &rectClient);
+        GetWindowRect(gMainWindowHwnd, &rectWindow);
+        int posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2;
+        int posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2;
+        return (double)posy;
+    }
+    FFI_EXPORT(bool) LunaLuaIsFocused()
+    {
+        if (gMainWindowFocused) {
+            return (bool)true;
+        } else {
+            return (bool)false;
+        }
+    }
+    FFI_EXPORT(double) LunaLuaGetScreenResolutionWidth()
+    {
+        // Get the width of the current screen from the monitor and return it
+        HMONITOR monitor = MonitorFromWindow(gMainWindowHwnd, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO info;
+        info.cbSize = sizeof(MONITORINFO);
+        GetMonitorInfo(monitor, &info);
+        int monitor_width = info.rcMonitor.right - info.rcMonitor.left;
+        int monitor_height = info.rcMonitor.bottom - info.rcMonitor.top;
+        return (double)monitor_width;
+    }
+    FFI_EXPORT(double) LunaLuaGetScreenResolutionHeight()
+    {
+        // Get the height of the current screen from the monitor and return it
+        HMONITOR monitor = MonitorFromWindow(gMainWindowHwnd, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO info;
+        info.cbSize = sizeof(MONITORINFO);
+        GetMonitorInfo(monitor, &info);
+        int monitor_width = info.rcMonitor.right - info.rcMonitor.left;
+        int monitor_height = info.rcMonitor.bottom - info.rcMonitor.top;
+        return (double)monitor_height;
+    }
+    FFI_EXPORT(void) LunaLuaTestModeEditLevel(const char* filename)
+    {
+        std::string fullName = filename;
+        testModeSetupNewLevel(fullName);
+    }
+    FFI_EXPORT(bool) LunaLuaInSMASPlusPlus()
+    {
+        EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
+        const std::wstring firstLevel1 = Str2WStr(GM_FULLDIR + "SMB1 - W-1, L-1.lvlx");
+        const std::wstring firstLevel2 = Str2WStr(GM_FULLDIR + "SMBLL - W-1, L-1.lvlx");
+        const std::wstring firstLevel3 = Str2WStr(GM_FULLDIR + "SMB2 - W-1, L-1.lvlx");
+        const std::wstring firstLevel4 = Str2WStr(GM_FULLDIR + "SMB3 - W-1, L-1.lvlx");
+        const std::wstring firstLevel5 = Str2WStr(GM_FULLDIR + "SMW - W-1, L-YI1.lvlx");
+        const std::wstring firstLevel6 = Str2WStr(GM_FULLDIR + "SMBS - W-1, L-1.lvlx");
+        const std::wstring worldFilename = Str2WStr(GM_FULLDIR + "__World Map.wld");
+        if( ep->episodeName == "Super Mario All-Stars++"
+            && fileExists(firstLevel1)
+            && fileExists(firstLevel2)
+            && fileExists(firstLevel3)
+            && fileExists(firstLevel4)
+            && fileExists(firstLevel5)
+            && fileExists(firstLevel6)
+            && fileExists(worldFilename)
+        ) {
+            return (bool)true;
+        } else {
+            return (bool)false;
+        }
+    }
+    FFI_EXPORT(void) LunaLuaSetEpisodeName(std::string name)
+    {
+        EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
+        ep->episodeName = name;
     }
 }

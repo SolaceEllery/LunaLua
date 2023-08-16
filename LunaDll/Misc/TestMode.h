@@ -77,4 +77,6 @@ void TestModeCheckPendingIPCRequest(void);
 
 void TestModeSendNotification(const std::string& notificationCmd);
 
+bool testModeSetupNewLevel(std::string filename);
+
 #endif
