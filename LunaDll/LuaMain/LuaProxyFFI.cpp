@@ -977,9 +977,10 @@ extern "C" {
             return (bool)false;
         }
     }
-    FFI_EXPORT(void) LunaLuaSetEpisodeName(std::string name)
+    FFI_EXPORT(void) LunaLuaSetEpisodeName(const char* name)
     {
+        std::string fullName = name;
         EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
-        ep->episodeName = name;
+        ep->episodeName = fullName;
     }
 }
