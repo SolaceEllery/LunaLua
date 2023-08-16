@@ -205,3 +205,5 @@ return;
 
 
 #endif
+
+extern double soundEffectCount;

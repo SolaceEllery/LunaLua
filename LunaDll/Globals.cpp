@@ -127,3 +127,5 @@ void printBoxA(const char *fmt, ...)
     va_end(ap);
     dbgboxA(buf);
 }
+
+double soundEffectCount = 0;
