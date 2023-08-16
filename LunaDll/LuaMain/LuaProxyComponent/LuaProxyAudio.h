@@ -27,6 +27,7 @@ namespace LuaProxy
         void MusicStopFadeOut(int ms);
         int  GetMusicVolume(void);
         void MusicVolume(int vlm);
+        void MusicPause();
         void MusicPauseStream();
         void MusicResume();
         void MusicResumeStream();
@@ -38,7 +39,7 @@ namespace LuaProxy
         std::string MusicArtistTag();
         std::string MusicAlbumTag();
         std::string MusicCopyrightTag();
-        void    MusicGetTracks();
+        double  MusicGetTracks();
         void    MusicMuteTrackLayer(int trackNumber);
         void    MusicUnmuteTrackLayer(int trackNumber);
         void    MusicSetPosition(double seconds);

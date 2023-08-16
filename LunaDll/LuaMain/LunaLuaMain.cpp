@@ -31,6 +31,8 @@
 
 #include "LunaPathValidator.h"
 
+#include <libgit2/include/git2.h>
+
 /*static*/ DWORD CLunaFFILock::currentLockTlsIdx = TlsAlloc();
 
 const std::wstring CLunaLua::LuaLibsPath = L"\\scripts\\base\\engine\\main.lua";
@@ -194,20 +196,12 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
     lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_jit);
     lua_call(L, 0, 0);
-
-    //SOCKET TESTING STUFF
+    lua_pushcfunction(L, luaopen_socket_core);
+    lua_call(L, 0, 0);
+    lua_pushcfunction(L, luaopen_mime_core);
+    lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_io);
     lua_call(L,0,0);
-
-    lua_getfield(L, LUA_GLOBALSINDEX, "package");
-    lua_getfield(L, -1, "preload");
-    lua_pushcfunction(L, luaopen_socket_core);
-    lua_setfield(L, -2, "socket.core");
-
-    lua_pushcfunction(L, luaopen_mime_core);
-    lua_setfield(L, -2, "mime.core");
-
-    //SOCKET TESTING STUFF
 
     //Remove unsafe apis
     {
@@ -216,8 +210,8 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
         osTable["execute"] = object();
         osTable["exit"] = object();
         //osTable["getenv"] = object();
-        osTable["remove"] = object();
-        osTable["rename"] = object();
+        //osTable["remove"] = object();
+        //osTable["rename"] = object();
         osTable["setlocal"] = object();
         osTable["tmpname"] = object();
     }
@@ -699,7 +693,9 @@ void CLunaLua::bindAll()
                 def("__disablePerfTracker", &LuaProxy::Misc::__disablePerfTracker),
                 def("__getPerfTrackerData", &LuaProxy::Misc::__getPerfTrackerData),
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
-                def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress)
+                def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
+                //SEE Mod
+                def("getOSLanguage", &GetOSLanguage)
             ],
 
             namespace_("FileFormats")[
@@ -820,6 +816,20 @@ void CLunaLua::bindAll()
                 def("openNpcConfig", &LuaProxy::Formats::openNpcConfig)
             ],
             /*************************FileFormats*end*************************/
+            
+            namespace_("CacheSystem")[
+                def("ClearSoundBuffer", (void(*)())&LuaProxy::Audio::clearSFXBuffer),
+                def("ClearSpecifiedSoundFromCache", (Mix_Chunk*(*)(const std::string&, lua_State*))&PGE_Sounds::SND_RemoveSnd)
+            ],
+            
+            namespace_("Internet")[
+                def("DownloadFile", (void(*)(std::string, std::string, std::string, std::string))&DownloadFile),
+                def("GitStart", (int(*)(void))&git_libgit2_init),
+                def("GitEnd", (int(*)(void))&git_libgit2_shutdown),
+                //def("GitInit", (void(*)())&doGitInit),
+                def("GitClone", (void(*)(std::string, std::string))&doGitClone)
+                //def("GitPull", (void(*)(std::string))&doGitPull)
+            ],
 
             namespace_("Audio")[
                 //SDL_Mixer's Mix_Chunk structure
@@ -863,6 +873,17 @@ void CLunaLua::bindAll()
                 def("MusicChange", (void(*)(int, int, int))&LuaProxy::Audio::changeMusic),
                 def("MusicChange", (void(*)(int, const std::string&, int))&LuaProxy::Audio::changeMusic),
                 def("MusicFadeOut", (void(*)(int, int))&LuaProxy::Audio::musicFadeOut),
+                
+                //Music - SEE Mod
+                def("MusicTrackGet", (void(*)())&LuaProxy::Audio::MusicGetTracks),
+                def("MusicTrackMute", (void(*)(int))&LuaProxy::Audio::MusicMuteTrackLayer),
+                def("MusicTrackUnmute", (void(*)(int))&LuaProxy::Audio::MusicUnmuteTrackLayer),
+                def("MusicSetTempo", (void(*)(double))&LuaProxy::Audio::MusicSetTempo),
+                def("MusicSetPitch", (void(*)(double))&LuaProxy::Audio::MusicSetPitch),
+                def("MusicSetSpeed", (void(*)(double))&LuaProxy::Audio::MusicSetSpeed),
+                def("MusicGetTempo", (double(*)())&LuaProxy::Audio::MusicGetTempo),
+                def("MusicGetPitch", (double(*)())&LuaProxy::Audio::MusicGetPitch),
+                def("MusicGetSpeed", (double(*)())&LuaProxy::Audio::MusicGetSpeed),
 
                 //SFX
                 def("newMix_Chunk", (Mix_Chunk*(*)())&LuaProxy::Audio::newMix_Chunk),
