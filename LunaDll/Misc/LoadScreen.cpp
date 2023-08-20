@@ -114,6 +114,9 @@ static void LoadThread(void)
         luasetconst(L, "FIELD_DFLOAT", 5);
         luasetconst(L, "FIELD_STRING", 6);
         luasetconst(L, "FIELD_BOOL", 7);
+        
+        luasetconst(L, "frameBufferWidth", g_GLContextManager.GetMainFBWidth());
+        luasetconst(L, "frameBufferHeight", g_GLContextManager.GetMainFBHeight());
 
         DEF_CONST(L, GL_FLOAT);
         DEF_CONST(L, GL_FLOAT_VEC2);

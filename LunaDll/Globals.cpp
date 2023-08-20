@@ -129,3 +129,4 @@ void printBoxA(const char *fmt, ...)
 }
 
 double soundEffectCount = 0;
+bool canUseSEEModFeatures = false;

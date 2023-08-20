@@ -207,3 +207,4 @@ return;
 #endif
 
 extern double soundEffectCount;
+extern bool canUseSEEModFeatures;

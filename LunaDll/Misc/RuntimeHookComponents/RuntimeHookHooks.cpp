@@ -1088,7 +1088,18 @@ void __stdcall runtimeHookMsgbox(unsigned int* pPlayerIdx)
             messageBoxEvent->setDirectEventName("onMessageBox");
             messageBoxEvent->setLoopable(false);
             gLunaLua.callEvent(messageBoxEvent, (std::string)GM_STR_MSGBOX, *pPlayerIdx);
-            isCancelled = messageBoxEvent->native_cancelled();
+            if(!canUseSEEModFeatures)
+            {
+                isCancelled = messageBoxEvent->native_cancelled();
+            }
+            else if(canUseSEEModFeatures)
+            {
+                isCancelled = true;
+                std::shared_ptr<Event> messageBoxEvent2 = std::make_shared<Event>("onMessageBoxSEEMod", true);
+                messageBoxEvent2->setDirectEventName("onMessageBoxSEEMod");
+                messageBoxEvent2->setLoopable(false);
+                gLunaLua.callEvent(messageBoxEvent2, (std::string)GM_STR_MSGBOX, *pPlayerIdx);
+            }
         }
     }
     else
@@ -1098,7 +1109,18 @@ void __stdcall runtimeHookMsgbox(unsigned int* pPlayerIdx)
             messageBoxEvent->setDirectEventName("onPause");
             messageBoxEvent->setLoopable(false);
             gLunaLua.callEvent(messageBoxEvent, *pPlayerIdx);
-            isCancelled = messageBoxEvent->native_cancelled();
+            if(!canUseSEEModFeatures)
+            {
+                isCancelled = messageBoxEvent->native_cancelled();
+            }
+            else if(canUseSEEModFeatures)
+            {
+                isCancelled = true;
+                std::shared_ptr<Event> messageBoxEvent2 = std::make_shared<Event>("onPauseSEEMod", true);
+                messageBoxEvent2->setDirectEventName("onPauseSEEMod");
+                messageBoxEvent2->setLoopable(false);
+                gLunaLua.callEvent(messageBoxEvent2, *pPlayerIdx);
+            }
         }
     }
 
@@ -1120,7 +1142,18 @@ static void __stdcall runtimeHookNpcMsgbox(unsigned int npcIdxWithOffset, unsign
         messageBoxEvent->setDirectEventName("onMessageBox");
         messageBoxEvent->setLoopable(false);
         gLunaLua.callEvent(messageBoxEvent, (std::string)GM_STR_MSGBOX, *pPlayerIdx, npcIdx);
-        isCancelled = messageBoxEvent->native_cancelled();
+        if(!canUseSEEModFeatures)
+        {
+            isCancelled = messageBoxEvent->native_cancelled();
+        }
+        else if(canUseSEEModFeatures)
+        {
+            isCancelled = true;
+            std::shared_ptr<Event> messageBoxEvent2 = std::make_shared<Event>("onMessageBoxSEEMod", true);
+            messageBoxEvent2->setDirectEventName("onMessageBoxSEEMod");
+            messageBoxEvent2->setLoopable(false);
+            gLunaLua.callEvent(messageBoxEvent2, (std::string)GM_STR_MSGBOX, *pPlayerIdx, npcIdx);
+        }
     }
 
     if (!isCancelled)

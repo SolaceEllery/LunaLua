@@ -987,4 +987,19 @@ extern "C" {
         EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
         ep->episodeName = fullName;
     }
+    FFI_EXPORT(void) LunaLuaSetSEEModFeatureBool(bool enable)
+    {
+        //This is used for enabling certain events and things when on an SEE Mod-oriented episode.
+        if(enable) {
+            canUseSEEModFeatures = true;
+        }
+        else if(!enable)
+        {
+            canUseSEEModFeatures = false;
+        }
+    }
+    FFI_EXPORT(bool) LunaLuaGetSEEModFeatureBool()
+    {
+        return (bool)canUseSEEModFeatures;
+    }
 }
