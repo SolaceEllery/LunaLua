@@ -308,11 +308,24 @@ void MainLauncherWindow::init(const QString &configName)
 
     QSettings settingFile(configName, QSettings::IniFormat);
     settingFile.setIniCodec("UTF-8");
+    
+#ifndef _WIN32
+    static const char *(CDECL *pwine_get_version)(void);
+    HMODULE hntdll = GetModuleHandle("ntdll.dll");
+    
+    pwine_get_version = (void *)GetProcAddress(hntdll, "wine_get_version");
+#endif
 
     // Load launcher settings
     if(QFile::exists(configName)){
         m_smbxExe = settingFile.value("smbx-exe", "smbx.exe").toString();
         m_editorExe = settingFile.value("editor-exe-64", "PGE/pge_editor.exe").toString();
+#ifndef _WIN32
+        if(pwine_get_version)
+        {
+            m_editorExe = settingFile.value("editor-exe-64", "PGE/pge_editor").toString();
+        }
+#endif
         m_editorExe = settingFile.value("pge-exe", m_editorExe).toString(); // Deprecated alias
         m_editorExe32bit = settingFile.value("editor-exe-32", QString()).toString();
         m_editorBootstrap32 = settingFile.value("devkit-bootstrap-32", "PGEx32/generate-build.bat").toString();
