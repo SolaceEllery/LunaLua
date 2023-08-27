@@ -343,14 +343,13 @@ void fixup_Credits()
 
 void fixup_Mushbug()
 {
-    const uint8_t mushbugPatch[22] = {
-        0x0f, 0x84, 0x2e, 0x01, 0x00, 0x00,      // 0x00a2d08b je 0x00a2d1bf
-        0x66, 0x3d, 0x05, 0x00,                  // 0x00a2d091 cmp ax, 5
-        0x0f, 0x95, 0xc2,                        // 0x00a2d095 setne dl
-        0x33, 0xc9,                              // 0x00a2d098 xor ecx, ecx
-        0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00 // 0x00a2d09a nop (7-byte version)
-    };
-    memcpy((void*)0x00a2d08b, mushbugPatch, sizeof(mushbugPatch));
+    PATCH(0xA2D08B)
+        .JE(0xA2D1BF)                                    // je 0xa2d1bf
+        .bytes(0x66, 0x3d, 0x05, 0x00)                   // cmp ax, 5
+        .bytes(0x0f, 0x95, 0xc2)                         // setne dl
+        .bytes(0x33, 0xc9)                               // xor ecx, ecx
+        .bytes(0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00) // nop
+        .Apply();
 }
 
 void fixup_Veggibug()
