@@ -43,6 +43,13 @@ struct STestModeSettings
     STestModePlayerSettings players[2];
     //! Warp Index
     unsigned int entranceIndex;
+    
+    //NPC ID of the editor NPC
+    int npcEditorID;
+    //Block ID of the block NPC
+    int blockEditorID;
+    //Current entity, from the editor
+    int currentEntity;
 
     STestModeSettings();
     /**

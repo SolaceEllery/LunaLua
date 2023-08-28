@@ -74,6 +74,10 @@ void STestModeSettings::ResetToDefault(void)
     players[1].mountType = 0;
     players[1].mountColor = 0;
     entranceIndex = 0;
+    
+    npcEditorID = 0;
+    blockEditorID = 0;
+    currentEntity = -1;
 }
 
 STestModeSettings getTestModeSettings()
