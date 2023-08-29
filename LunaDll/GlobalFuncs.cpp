@@ -1131,3 +1131,15 @@ void doGitPull(std::string pathTemp)
     git_annotated_commit_free( heads[ 0 ] );
     git_repository_state_cleanup( repo );
 }*/
+
+std::string GetEditorPlacedItem()
+{
+    if(editorPlacedItem != "nil")
+    {
+        return (std::string)editorPlacedItem;
+    }
+    else if(editorPlacedItem == "nil")
+    {
+        return (std::string)"nil";
+    }
+}

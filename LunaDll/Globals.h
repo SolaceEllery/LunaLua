@@ -208,3 +208,4 @@ return;
 
 extern double soundEffectCount;
 extern bool canUseSEEModFeatures;
+extern std::string editorPlacedItem;

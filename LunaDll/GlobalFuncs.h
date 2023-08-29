@@ -277,6 +277,8 @@ void CreateADirectory(std::string file);
 void doGitClone(std::string urlTemp, std::string pathTemp);
 //void doGitPull(std::string pathTemp);
 
+std::string GetEditorPlacedItem();
+
 // Float/double manipulation
 #ifdef __clang__
 constexpr std::uint32_t FloatToDWord(float f) {
