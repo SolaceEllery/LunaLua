@@ -246,7 +246,7 @@ bool GLEngine::GenerateScreenshot(uint32_t x, uint32_t y, uint32_t w, uint32_t h
     header.biSizeImage = byteSize;
     header.biSize = 40;
     header.biPlanes = 1;
-    header.biBitCount = 3 * 8;
+    header.biBitCount = 24;
     header.biCompression = 0;
     header.biXPelsPerMeter = 0;
     header.biYPelsPerMeter = 0;
