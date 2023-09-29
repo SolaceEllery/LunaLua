@@ -1759,7 +1759,13 @@ void TrySkipPatch()
     // Logging for NPC collisions
     //PATCH(0xa281b0).JMP(GET_RETADDR_TRACE_HOOK<&runtimeHookLogCollideNpc>()).NOP_PAD_TO_SIZE<6>().Apply();
 
+    // Hooks for onNPCTransform support
+    PATCH(0xA0ACBC).JMP(&runtimeHookNPCTransformRandomVeggie).NOP().NOP().Apply(); // When the randomized veggie spawns
+    PATCH(0x9CCB40).JMP(&runtimeHookNPCTransformSprout).NOP_PAD_TO_SIZE<6>().Apply(); // When pulling a sprout from the ground
+    PATCH(0xA45556).JMP(&runtimeHookNPCTransformRandomBonus).NOP_PAD_TO_SIZE<9>().Apply(); // Random powerup NPC
+
     // Hooks for onNPCHarm support
+    PATCH(0xA3158D).JMP(&runtimeHookCollideNpcEnd).NOP_PAD_TO_SIZE<7>().Apply(); // onNPCTransform
     PATCH(0xa281b0).JMP(&runtimeHookCollideNpc).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa291d2).JMP(&runtimeHookNpcHarmRaw_a291d8).NOP_PAD_TO_SIZE<8>().Apply();
     PATCH(0xa29272).JMP(&runtimeHookNpcHarmRaw_a29272).NOP_PAD_TO_SIZE<6>().Apply();

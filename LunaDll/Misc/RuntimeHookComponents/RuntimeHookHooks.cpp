@@ -4363,3 +4363,123 @@ _declspec(naked) void __stdcall runtimeHookPlayerKillLavaSolidExit(short* player
         ret
     }
 }
+
+//////////////////////////////////////////////////////// onNPCTransform
+
+void __stdcall runtimeHookNPCTransformRandomVeggie_internal(NPCMOB* npc)
+{
+    // update size and position of the transformed NPC, to match basegame code overwritten by this patch
+    npc->momentum.x = npc->momentum.x + npc->momentum.width / 2.0;
+    npc->momentum.y = npc->momentum.y + npc->momentum.height / 2.0;
+    npc->momentum.width = npc_width[npc->id];
+    npc->momentum.height = npc_height[npc->id];
+    npc->momentum.x = npc->momentum.x - npc->momentum.width / 2.0;
+    npc->momentum.y = npc->momentum.y - npc->momentum.height / 2.0;
+
+    if (gLunaLua.isValid()) {
+        // dispatch transform event
+        std::shared_ptr<Event> npcTransformEvent = std::make_shared<Event>("onNPCTransform", false);
+        npcTransformEvent->setDirectEventName("onNPCTransform");
+        npcTransformEvent->setLoopable(false);
+        gLunaLua.callEvent(npcTransformEvent, ((int)(npc-GM_NPCS_PTR)-128), 147);
+    }
+}
+_declspec(naked) void __stdcall runtimeHookNPCTransformRandomVeggie()
+{
+    __asm {
+        // call function to handle transformation
+        pushfd
+        push eax
+        push ebx
+        push ecx
+        push edx
+        push esi
+        push esi // pointer to the npc struct
+        call runtimeHookNPCTransformRandomVeggie_internal
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+        popfd
+        // jump to end position
+        push 0xA0AE01
+        ret
+    }
+}
+
+void __stdcall runtimeHookNPCTransformSprout_internal(short* pNpcIdx)
+{
+    // replicate the basegame code that this hook overwrites
+    native_setNPCFrame(pNpcIdx);
+    // invoke transformation event
+    if (gLunaLua.isValid()) {
+        // dispatch transform event
+        std::shared_ptr<Event> npcTransformEvent = std::make_shared<Event>("onNPCTransform", false);
+        npcTransformEvent->setDirectEventName("onNPCTransform");
+        npcTransformEvent->setLoopable(false);
+        gLunaLua.callEvent(npcTransformEvent, (int)*pNpcIdx, 91);
+    }
+}
+const static int _transformSprouteJmpDestination = 0x9CCB46;
+_declspec(naked) void __stdcall runtimeHookNPCTransformSprout()
+{
+    __asm {
+        pushfd
+        push eax
+        push ebx
+        push ecx
+        push edx
+        push esi
+        push ecx // pointer to npc index
+        call runtimeHookNPCTransformSprout_internal
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
+        popfd
+
+        jmp _transformSprouteJmpDestination
+    }
+}
+
+
+
+void __stdcall runtimeHookNPCTransformRandomBonus_internal(NPCMOB* npc, int newType)
+{
+    // replicate the basegame code that this hook overwrites
+    npc->id = newType;
+
+    // invoke transformation event
+    if (gLunaLua.isValid()) {
+        // dispatch transform event
+        std::shared_ptr<Event> npcTransformEvent = std::make_shared<Event>("onNPCTransform", false);
+        npcTransformEvent->setDirectEventName("onNPCTransform");
+        npcTransformEvent->setLoopable(false);
+        gLunaLua.callEvent(npcTransformEvent, ((int)(npc - GM_NPCS_PTR) - 128), 287);
+    }
+}
+const static int _transformRandomBonusJmpDestination = 0xA4555F;
+_declspec(naked) void __stdcall runtimeHookNPCTransformRandomBonus()
+{
+    __asm {
+        pushfd
+        push ebx
+        push ecx
+        push edx
+        push esi
+        push eax // new NPC type
+        push esi // address of the NPC in memory
+        call runtimeHookNPCTransformRandomBonus_internal
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        popfd
+
+        lea ecx, dword ptr ss:[ebp-0x1EC] // instruction overwritten by this code
+        jmp _transformRandomBonusJmpDestination
+    }
+}
+//////////////////////////////////////////////////////// onNPCTransform end
