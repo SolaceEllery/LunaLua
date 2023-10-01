@@ -1,3 +1,4 @@
+prefix=N:/SMBX/SDL_Builds/mixerx-install
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
