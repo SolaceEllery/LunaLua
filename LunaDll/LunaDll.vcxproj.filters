@@ -1451,6 +1451,9 @@
     <ClCompile Include="libs\luabind-deboostified\src\headertest.cpp">
       <Filter>libs\luabind-deboostified\src</Filter>
     </ClCompile>
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNPCTransform.cpp">
+      <Filter>Misc\RuntimeHookComponents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Misc\scratch.txt">
