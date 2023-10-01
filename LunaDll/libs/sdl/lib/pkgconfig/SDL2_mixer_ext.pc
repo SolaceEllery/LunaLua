@@ -1,4 +1,3 @@
-prefix=E:/Github/SDL-Mixer-X/build/out
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
