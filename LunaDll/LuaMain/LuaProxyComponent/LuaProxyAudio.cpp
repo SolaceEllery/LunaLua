@@ -266,6 +266,21 @@ void LuaProxy::Audio::MusicSetSpeed(double speed)
     Mix_SetMusicSpeed(PGE_MusPlayer::currentMusic(), speed);
 }
 
+double LuaProxy::Audio::MusicGetTempo()
+{
+    return Mix_GetMusicTempo(PGE_MusPlayer::currentMusic());
+}
+
+double LuaProxy::Audio::MusicGetPitch()
+{
+    return Mix_GetMusicPitch(PGE_MusPlayer::currentMusic());
+}
+
+double LuaProxy::Audio::MusicGetSpeed()
+{
+    return Mix_GetMusicSpeed(PGE_MusPlayer::currentMusic());
+}
+
 void LuaProxy::Audio::seizeStream(int section)
 {
     MusicManager::setSeized(section, true);
