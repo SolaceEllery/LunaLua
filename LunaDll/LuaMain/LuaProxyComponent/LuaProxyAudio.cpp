@@ -62,14 +62,6 @@ void LuaProxy::Audio::MusicChannelIsPaused(int channel)
 }
 
 
-void LuaProxy::Audio::MusicRewind()
-{
-#ifndef NO_SDL
-    PGE_MusPlayer::MUS_rewindMusic();
-#endif
-}
-
-
 void LuaProxy::Audio::MusicRewindStream()
 {
 #ifndef NO_SDL
