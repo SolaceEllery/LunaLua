@@ -28,7 +28,6 @@ public:
     static Mix_Music* currentMusic();
     static void MUS_playMusic();
     static void MUS_playMusicStream();
-    static void MUS_rewindMusic();
     static void MUS_addMusicWithMultiMusic(const char *musFile);
     static void MUS_playMusicFadeIn(int ms);
     static void MUS_pauseMusic();
@@ -36,6 +35,7 @@ public:
     static void MUS_resumeMusicChannel(int channel);
     static void MUS_isChannelPaused(int channel);
     static void MUS_pauseMusicStream();
+    static void MUS_rewindMusic();
     static void MUS_stopMusic();
     static void MUS_stopMusicFadeOut(int ms);
     static std::string MUS_MusicTitle();
