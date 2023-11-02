@@ -58,7 +58,7 @@ CLunaLua::CLunaLua() :
 CLunaLua::~CLunaLua()
 {
     //Just to be safe
-    shutdown();
+    if (!gIsShuttingDown) shutdown();
 }
 
 void CLunaLua::exitContext()
@@ -130,6 +130,9 @@ bool CLunaLua::shutdown()
     gDisableNPCSectionFix.Apply();
     for (int i = 0; gFenceFixes[i] != nullptr; i++) {
         gFenceFixes[i]->Apply();
+    }
+    for (int i = 0; gLinkFairyClowncarFixes[i] != nullptr; i++) {
+        gLinkFairyClowncarFixes[i]->Apply();
     }
 
     // Request cached images/sounds/files be held onto for now
