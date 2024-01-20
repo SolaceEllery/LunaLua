@@ -540,7 +540,6 @@ int LuaProxy::Audio::SfxVolume(int channel, int vlm)
     return Mix_Volume(channel, vlm);
 }
 
-
 int LuaProxy::Audio::SfxIsFading(int channel)
 {
     if(channel<0) channel=1;//Anti-crash protection
@@ -566,6 +565,16 @@ int LuaProxy::Audio::SfxSet3DPosition(int channel, int angle, int distance)
 int LuaProxy::Audio::SfxReverseStereo(int channel, int flip)
 {
     return Mix_SetReverseStereo(channel, flip);
+}
+
+int LuaProxy::Audio::GetMixedSfxVolume()
+{
+    return Mix_MasterVolume(-1);
+}
+
+int LuaProxy::Audio::SetMixedSfxVolume(int vlm)
+{
+    return Mix_MasterVolume(vlm);
 }
 
 double LuaProxy::Audio::AudioClock()

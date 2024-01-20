@@ -1,4 +1,5 @@
 #include <comutil.h>
+#include "../../Misc/CollisionMatrix.h"
 #include "string.h"
 #include "../../Globals.h"
 #include "../RuntimeHook.h"
@@ -571,6 +572,9 @@ extern void __stdcall NPCKillHook(short* npcIndex_ptr, short* killReason)
     {
         short newIdx = npcIdx - 1;    // 0 based not including dummy
         short oldIdx = GM_NPCS_COUNT; // 0 based not including dummy
+
+        // Decrement the reference count of the removed NPC's collision group
+        gCollisionMatrix.decrementReferenceCount(NPC::GetRawExtended(newIdx+1)->collisionGroup);
 
         // Update extended NPC fields
         if (newIdx != oldIdx)
@@ -3280,11 +3284,13 @@ _declspec(naked) void __stdcall runtimeHookNPCWalkFixSlope()
 void __stdcall runtimeHookNPCSectionFix(short* npcIdx)
 {
     NPCMOB* npc = NPC::GetRaw(*npcIdx);
+    ExtendedNPCFields* ext = NPC::GetRawExtended(*npcIdx);
     const Momentum& momentum = npc->momentum;
 
     // Skip if in the main menu
     if (GM_LEVEL_MODE == -1)
     {
+        ext->fullyInsideSection = npc->currentSection;
         return;
     }
 
@@ -3297,7 +3303,6 @@ void __stdcall runtimeHookNPCSectionFix(short* npcIdx)
         
         // Match the player's section
         npc->currentSection = Player::Get(npc->grabbingPlayerIndex)->CurrentSection;
-
         return;
     }
 
@@ -3309,6 +3314,7 @@ void __stdcall runtimeHookNPCSectionFix(short* npcIdx)
         if (momentum.x <= bounds.right && momentum.y <= bounds.bottom && momentum.x+momentum.width >= bounds.left && momentum.y+momentum.height >= bounds.top)
         {
             npc->currentSection = sectionIdx;
+            ext->fullyInsideSection = sectionIdx;
             return;
         }
     }
@@ -3338,6 +3344,44 @@ void __stdcall runtimeHookNPCSectionFix(short* npcIdx)
 
     npc->currentSection = closestSection;
 }
+
+
+static void __stdcall runtimeHookNPCSectionWrapInternal(unsigned int npcIdx, unsigned int section)
+{
+    // At this point, we've passed the normal checks for if NPC level wraparound should apply
+    // aside from checking the coordinates
+    NPCMOB* npc = NPC::GetRaw(npcIdx);
+    ExtendedNPCFields* ext = NPC::GetRawExtended(npcIdx);
+    Momentum& momentum = npc->momentum;
+
+    // If not _actually_ in section bounds beforehand, don't wrap
+    if (npc->currentSection != ext->fullyInsideSection) return;
+
+    // Perform the normal section wrap logic
+    auto& bounds = GM_LVL_BOUNDARIES[section];
+    if ((momentum.x + momentum.width) < bounds.left)
+    {
+        momentum.x = bounds.right - 1.0;
+    }
+    else if (momentum.x > bounds.right)
+    {
+        momentum.x = bounds.left - momentum.width + 1.0;
+    }
+}
+
+__declspec(naked) void __stdcall runtimeHookNPCSectionWrap(void)
+{
+    // 00A0C931 | movsx edi,word ptr ds:[esi+146]
+    // eax, ecx, edx and flags are free for use at this point
+    __asm {
+        push edi                          // section
+        movsx eax, word ptr ss : [ebp - 0x180]
+        push eax                          // npc index
+        push 0xA0C9F3                     // return address
+        jmp runtimeHookNPCSectionWrapInternal
+    }
+}
+
 
 static void markBlocksUnsorted()
 {
@@ -3676,22 +3720,19 @@ static unsigned int __stdcall runtimeHookBlockNPCFilterInternal(unsigned int hit
 
         ExtendedNPCFields* ext = NPC::GetRawExtended(npcIdx);
 
-        if (ext->collisionGroup[0] != 0) // Collision group string isn't empty
+        if (block->OwnerNPCID != 0) // Belongs to an NPC
         {
-            if (block->OwnerNPCID != 0) // Belongs to an NPC
-            {
-                ExtendedNPCFields* ownerExt = NPC::GetRawExtended(block->OwnerNPCIdx);
+            ExtendedNPCFields* ownerExt = NPC::GetRawExtended(block->OwnerNPCIdx);
 
-                if (strcmp(ext->collisionGroup,ownerExt->collisionGroup) == 0) // Matching collision groups
-                    return 0;
-            }
-            else
-            {
-                ExtendedBlockFields* blockExt = Blocks::GetRawExtended(blockIdx);
+            if (!gCollisionMatrix.getIndicesCollide(ext->collisionGroup,ownerExt->collisionGroup)) // Check collision matrix
+                return 0;
+        }
+        else
+        {
+            ExtendedBlockFields* blockExt = Blocks::GetRawExtended(blockIdx);
 
-                if (strcmp(ext->collisionGroup,blockExt->collisionGroup) == 0) // Matching collision groups
-                    return 0;
-            }
+            if (!gCollisionMatrix.getIndicesCollide(ext->collisionGroup,blockExt->collisionGroup)) // Check collision matrix
+                return 0;
         }
     }
 
@@ -3724,14 +3765,10 @@ static unsigned int __stdcall runtimeHookNPCCollisionGroupInternal(int npcAIdx, 
         return 0; // Collision cancelled
     
     ExtendedNPCFields* extA = NPC::GetRawExtended(npcAIdx);
+    ExtendedNPCFields* extB = NPC::GetRawExtended(npcBIdx);
 
-    if (extA->collisionGroup[0] != 0) // Collision group string isn't empty
-    {
-        ExtendedNPCFields* extB = NPC::GetRawExtended(npcBIdx);
-
-        if (strcmp(extA->collisionGroup,extB->collisionGroup) == 0) // Matching collision groups
-            return 0; // Collision cancelled
-    }
+    if (!gCollisionMatrix.getIndicesCollide(extA->collisionGroup,extB->collisionGroup)) // Check collision matrix
+        return 0; // Collision cancelled
 
     return -1; // Collision goes ahead
 }
