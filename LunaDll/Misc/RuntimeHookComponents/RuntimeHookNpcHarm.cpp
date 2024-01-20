@@ -128,7 +128,7 @@ static unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* 
         }
         
         if(isNotProjectile)
-            npcHarmEventFunction(pNpcIdx, pObjType, pObjIdx);
+            npcHarmEventFunction(pNpcIdx, (int)*pObjType, pObjIdx);
     }
 
     return npcHarmCancelled ? -1 : 0;
