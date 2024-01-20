@@ -158,10 +158,13 @@ enum CollidersType : short {
     HARM_TYPE_OFFSCREEN = 9,       // other is 0. Triggered when timing out offscreen
     HARM_TYPE_SWORD = 10,          // other is 'player index'. Triggered for sword or sword-beam
 
-    // Extended types for Lua use
+    // Extended harm types
     HARM_TYPE_EXT_FIRE = -1,
     HARM_TYPE_EXT_ICE = -2,
     HARM_TYPE_EXT_HAMMER = -3,
+    HARM_TYPE_EXT_YOSHI_FIREBALL = -4,
+    HARM_TYPE_EXT_TOAD_BOOMERANG = -5,
+    HARM_TYPE_EXT_PLAYER_RINKA = -6
 };
 
 // value passed to onNPCTransform

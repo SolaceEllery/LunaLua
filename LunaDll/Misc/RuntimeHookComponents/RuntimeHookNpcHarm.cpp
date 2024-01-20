@@ -73,17 +73,62 @@ void __stdcall runtimeHookCollideNpc(short* pNpcIdx, CollidersType* pObjType, sh
     }
 }
 
+static void npcHarmEventFunction(short* pNpcIdx, int* harmType, short* pObjIdx)
+{
+    std::shared_ptr<Event> npcKillEvent = std::make_shared<Event>("onNPCHarm", true);
+    npcKillEvent->setDirectEventName("onNPCHarm");
+    npcKillEvent->setLoopable(false);
+    gLunaLua.callEvent(npcKillEvent, (int)*pNpcIdx, harmType, (int)*pObjIdx);
+
+    npcHarmCancelled = npcKillEvent->native_cancelled();
+    npcHarmResultSet = true;
+}
+
 // Hook to catch when NPC harm is about to occur
 static unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* pObjType, short* pObjIdx)
 {
-    if (!npcHarmResultSet && gLunaLua.isValid()) {
-        std::shared_ptr<Event> npcKillEvent = std::make_shared<Event>("onNPCHarm", true);
-        npcKillEvent->setDirectEventName("onNPCHarm");
-        npcKillEvent->setLoopable(false);
-        gLunaLua.callEvent(npcKillEvent, (int)*pNpcIdx, (int)*pObjType, (int)*pObjIdx);
+    if (!npcHarmResultSet && gLunaLua.isValid())
+    {
+        if((int)*pObjType == HARM_TYPE_NPC || (int)*pObjType == HARM_TYPE_PROJECTILE_USED) 
+        {
+            NPCMOB* npcToUse = NPC::Get(pObjIdx - 1);
+            int npcIDToUse = npcToUse->id;
+            int* harmTypeToUse;
+            bool isNotProjectile = false;
 
-        npcHarmCancelled = npcKillEvent->native_cancelled();
-        npcHarmResultSet = true;
+            switch (npcIDToUse) {
+            case 13:  // Harm Type: Fireball
+                harmTypeToUse = HARM_TYPE_EXT_FIRE; 
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            case 108: // Harm Type: Yoshi's Fireball
+                int harmTypeToUse = HARM_TYPE_EXT_YOSHI_FIREBALL;
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            case 171: // Harm Type: Hammer (Player Projectile)
+                int harmTypeToUse = HARM_TYPE_EXT_HAMMER;
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            case 265: // Harm Type: Iceball
+                harmTypeToUse = HARM_TYPE_EXT_ICE;
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            case 292: // Harm Type: Toad's Boomerang
+                harmTypeToUse = HARM_TYPE_EXT_TOAD_BOOMERANG;
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            case 667: // Harm Type: Player Rinka
+                harmTypeToUse = HARM_TYPE_EXT_PLAYER_RINKA;
+                npcHarmEventFunction(pNpcIdx, harmTypeToUse, pObjIdx);
+                break;
+            default:
+                isNotProjectile = true;
+                break;
+            }
+        }
+        
+        if(isNotProjectile)
+            npcHarmEventFunction(pNpcIdx, pObjType, pObjIdx);
     }
 
     return npcHarmCancelled ? -1 : 0;
