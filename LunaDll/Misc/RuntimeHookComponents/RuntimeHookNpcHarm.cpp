@@ -89,12 +89,14 @@ static unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* 
 {
     if (!npcHarmResultSet && gLunaLua.isValid())
     {
+        bool isNotProjectile = true;
+
         if((int)*pObjType == HARM_TYPE_NPC || (int)*pObjType == HARM_TYPE_PROJECTILE_USED) 
         {
             NPCMOB* npcToUse = NPC::Get(pObjIdx - 1);
             int npcIDToUse = npcToUse->id;
             int* harmTypeToUse;
-            bool isNotProjectile = false;
+            isNotProjectile = false;
 
             switch (npcIDToUse) {
             case 13:  // Harm Type: Fireball
