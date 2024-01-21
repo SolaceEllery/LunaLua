@@ -143,12 +143,6 @@ void IPCPipeServer::ReadThread()
         std::string pktMethod = pkt["method"];
         json pktId = pkt["id"];
         json pktParams = pkt["params"];
-        
-        if(pktMethod == "sendItemPlacing")
-        {
-            std::string result = pkt["params"].dump();
-            editorPlacedItem = result;
-        }
 
         // See if we have a callback for the method...
         const auto it = mCallbacks.find(pktMethod);
@@ -157,11 +151,8 @@ void IPCPipeServer::ReadThread()
             RunCallback(cb, pktParams, pktId);
             continue;
         }
-        
-        if(pktMethod != "sendItemPlacing")
-        {
-            SendJsonError(-32601, "Method not found", pktId);
-        }
+
+        SendJsonError(-32601, "Method not found", pktId);
     }
 
     // If we get here, the IPC pipe has been broken, which means we know the parent process has exited
@@ -327,8 +318,7 @@ json IPCGetSupportedFeatures(const json& params)
     return {
         {"LVLX", true},
         {"SelfForegrounding", true},
-        {"HideShowNotifications", true},
-        {"sendItemPlacing", true}
+        {"HideShowNotifications", true}
     };
 }
 
