@@ -10,6 +10,7 @@
 #include <string>
 #include <atomic>
 #include <cstdint>
+#include <mutex>
 #include "LevelCodes/LevelCodes.h"
 #include "Rendering/Rendering.h"
 #include "Autocode/AutocodeManager.h"
@@ -209,6 +210,8 @@ return;
 
 #endif
 
+extern std::string gEditorPlacedItem;
+extern std::mutex g_editorIPCMutex;
+
 extern double soundEffectCount;
 extern bool canUseSEEModFeatures;
-extern std::string editorPlacedItem;

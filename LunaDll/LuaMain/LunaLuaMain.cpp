@@ -711,10 +711,10 @@ void CLunaLua::bindAll()
                 def("__getPerfTrackerData", &LuaProxy::Misc::__getPerfTrackerData),
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
+                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
                 //SEE Mod
                 def("getOSLanguage", &GetOSLanguage),
                 def("getFileSize", (double(*)(std::string))&GetFileSize),
-                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem)
             ],
 
             namespace_("FileFormats")[
@@ -1086,6 +1086,7 @@ void CLunaLua::bindAll()
             class_<LuaProxy::Console>("Console")
             .def("print", &LuaProxy::Console::print)
             .def("println", &LuaProxy::Console::println)
+            .def("clear", &LuaProxy::Console::clear)
         ];
     if(m_type == LUNALUA_WORLD){
         module(L)
