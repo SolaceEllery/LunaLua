@@ -9,26 +9,29 @@ struct StartupEpisodeSettings;
 
 class GameAutostart
 {
-private:
-    //Settings
-    std::string selectedEpisode;
-    std::wstring selectedWldPath;
-    bool singleplayer;
-    Characters firstCharacter;
-    Characters secondCharacter;
-    int saveSlot;
-
 public:
     GameAutostart();
     ~GameAutostart();
     static GameAutostart createGameAutostartByIniConfig(IniProcessing& reader);
     static GameAutostart createGameAutostartByStartupEpisodeSettings(const StartupEpisodeSettings& settings);
+    static GameAutostart createGameAutostartByManualSettings(std::wstring wldPath, int players, int character1, int character2, int saveSlot);
     static void ClearAutostartPatch();
 
     void setSelectedEpisode(std::string val) { selectedEpisode = val; }
+    void setSelectedEpisodePath(std::wstring val) { selectedWldPath = val; }
     void setSaveSlot(int val) { saveSlot = val; }
+    void setPlayerCount(int val) { playerCount = val; }
 
     bool applyAutostart();
+    
+    //Settings
+    std::string selectedEpisode;
+    std::wstring selectedWldPath;
+    bool singleplayer;
+    int playerCount;
+    Characters firstCharacter;
+    Characters secondCharacter;
+    int saveSlot;
 };
 
 #endif

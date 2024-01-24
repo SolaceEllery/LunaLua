@@ -219,3 +219,4 @@ extern bool canUseSEEModFeatures;
 extern Characters gPlayerStoredCharacters[];
 
 extern bool gIsOnMainMenu;
+extern bool gEpisodeLoadedOnBoot;

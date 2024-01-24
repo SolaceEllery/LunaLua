@@ -1391,6 +1391,8 @@ void TrySkipPatch()
 
     PATCH(0x8C0763).SAFE_CALL(&runtimeHookGameMenu).JMP(0x8C11B1).Apply(); // The Game Menu
 
+    PATCH(0xA621A0).JMP(runtimeHookStopMusic).NOP_PAD_TO_SIZE<6>().Apply();
+
     PATCH(0x9B7B80).CALL(&runtimeHookGameover).NOP_PAD_TO_SIZE<28>().Apply();
 
     *(void**)0xB2F244 = (void*)&mciSendStringHookA;

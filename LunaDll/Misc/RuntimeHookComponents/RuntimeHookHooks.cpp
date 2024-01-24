@@ -813,7 +813,7 @@ static void __stdcall UpdateInputFinishHook()
 {
     //https://github.com/smbx/smbx-legacy-source/blob/4a7ff946da8924d2268f6ee8d824034f3a7d7658/modPlayer.bas#L5959
     int playerCount = GM_PLAYERS_COUNT;
-    if (playerCount > 2 && GM_LEVEL_MODE == 0 && GM_WINNING == 0 && GM_UNK_IS_CONNECTED == 0) {
+    if (playerCount > 2 && GM_LEVEL_MODE == 0 && GM_WINNING == 0 && GM_UNK_IS_CONNECTED == 0 && !gIsOnMainMenu) {
         for (int playerIdx = 2; playerIdx <= playerCount; playerIdx++) {
             Player::Get(playerIdx)->keymap = Player::Get(1)->keymap;
         }
@@ -843,10 +843,13 @@ static __declspec(naked) void updateInput_Orig()
 
 extern void __stdcall runtimeHookUpdateInput()
 {
-    gLunaGameControllerManager.pollInputs();
-    gEscPressedRegistered = gEscPressed;
-    gEscPressed = false;
-    updateInput_Orig();
+    if(!gIsOnMainMenu)
+    {
+        gLunaGameControllerManager.pollInputs();
+        gEscPressedRegistered = gEscPressed;
+        gEscPressed = false;
+        updateInput_Orig();
+    }
 }
 
 extern void __stdcall WindowInactiveHook()
@@ -2873,6 +2876,25 @@ _declspec(naked) void __stdcall runtimeHookStaticDirectionWrapper(void)
         pop ecx
 
         push eax
+        ret
+    }
+}
+
+static void __stdcall runtimeHookStopMusic()
+{
+    if(!gIsOnMainMenu)
+    {
+        runtimeHookStopMusic_origFunc();
+    }
+}
+
+__declspec(naked) void __stdcall runtimeHookStopMusic_origFunc()
+{
+    __asm {
+        push ebp
+        mov ebp, esp
+        sub esp, 0x8
+        push 0xA621A6
         ret
     }
 }

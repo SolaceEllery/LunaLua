@@ -8,6 +8,8 @@
 #include <string.h>
 #include <mutex>
 
+#include "Defines.h"
+
 //String manupulation things
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator);
 void replaceSubStr(std::string& str, const std::string& from, const std::string& to);

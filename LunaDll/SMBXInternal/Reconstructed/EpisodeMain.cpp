@@ -35,6 +35,8 @@
 #include "../../Misc/CollisionMatrix.h"
 #include "../../FileManager/SMBXFileManager.h"
 
+#include "../../Misc/VB6RNG.h"
+
 extern PlayerMOB* getTemplateForCharacterWithDummyFallback(int id);
 extern "C" void __cdecl LunaLuaSetGameData(const char* dataPtr, int dataLen);
 
@@ -483,6 +485,7 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
 {
     EpisodeMain episodeMainFunc;
     VB6StrPtr fullDirWithFilenameVB6 = mainMenuLvl;
+    bool tempBool = false;
 
     // make sure it knows the file exists
     if(fileExists(Str2WStr(fullDirWithFilename)))
@@ -516,45 +519,296 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
             // make the world map false
             GM_EPISODE_MODE = COMBOOL(false);
 
-            // clean up the level and world
-            native_cleanupLevel();
+            // we're on the main menu, so this is true
+            gIsOnMainMenu = true;
+
+            //--ElseIf GameMenu = True Then 'The Game Menu (line 1515)--
+
+            // reset battleintro and battleoutro
+            GM_MARIO_VS_LUIGI_T = 0; //--BattleIntro = 0 (line 1516)--
+            GM_WINS_T = 0; //--BattleOutro = 0 (line 1517)--
+
+            // reset cheat status
+            GM_CHEATED = COMBOOL(false);
+
+            // unset battle mode
+            GM_BATTLE_MODE = COMBOOL(false);
+
+            // reset checkpoints
+            GM_STR_CHECKPOINT = "";
+
+            // reset cheat string
+            GM_INPUTSTR_BUF_PTR = "";
+
+            // set levelbeatcode to 0
+            GM_LEVEL_EXIT_TYPE = 0;
+
+            // curworldlevel
+            GM_OVERWORLD_CUR_LVL = 0;
+
+            // cleanup the world
             native_cleanupWorld();
+            
+            // disable these global bool cheats
+            GM_PLAYER_SHADOWSTAR = COMBOOL(false);
+            GM_PLAYER_INVULN = COMBOOL(false);
+            GM_PLAYER_GRABALL = COMBOOL(false);
+            GM_PLAYER_CAPTAINN = COMBOOL(false);
+            GM_PLAYER_FLAMETHROWER = COMBOOL(false);
+
+            // disable frozen enemies
+            GM_FREEZWITCH_ACTIV = COMBOOL(false);
+
+            // disable illparkwhereiwant
+            GM_PLAYER_PARKIWANT = COMBOOL(false);
+
+            // disable more cheats
+            GM_PLAYER_INFJUMP = COMBOOL(false);
+            GM_PLAYER_SONIC = COMBOOL(false);
+            GM_PLAYER_FLYER = COMBOOL(false);
+
+            // set camera control to 2 (Follow all players, used for most of the supermario# cheats)
+            GM_CAMERA_CONTROL = 2;
+
+            // set player count to 6
+            GM_PLAYERS_COUNT = 6;
+
+            For(i, 1, GM_PLAYERS_COUNT)
+            {
+                auto p = Player::Get(i);
+                auto t = getTemplateForCharacterWithDummyFallback(static_cast<int>(p->Identity));
+                if (t != nullptr) {
+                    memcpy(p, t, sizeof(PlayerMOB));
+                }
+            }
             
             // apply the dir and filename, and load it!
             native_loadLevel(&fullDirWithFilenameVB6);
+
+            // init SetupPlayers
+            native_initLevelEnv();
+
+            For(i, 1, GM_PLAYERS_COUNT)
+            {
+                auto p = Player::Get(i);
+                p->currentPowerup = (VB6RNG::generateNumber() * 6) + 2;
+                p->Identity = static_cast<int>((VB6RNG::generateNumber() * 5) + 1);
+                if(i >= 1 && i <= 5)
+                {
+                    p->Identity = static_cast<int>(i);
+                }
+
+                double levelX = Level::GetBoundary(p->CurrentSection, 0);
+                double levelY = Level::GetBoundary(p->CurrentSection, 1);
+                double levelWidth = Level::GetBoundary(p->CurrentSection, 3) - Level::GetBoundary(p->CurrentSection, 2);
+                double levelHeight = Level::GetBoundary(p->CurrentSection, 1) - Level::GetBoundary(p->CurrentSection, 0);
+
+                p->PowerupBoxContents = 0;
+                p->CurrentSection = 0;
+                p->momentum.x = levelX + ((128 + VB6RNG::generateNumber() * 64) * i);
+                p->momentum.y = (levelHeight - p->momentum.height - 65)
+
+                do
+                {
+                    tempBool = true;
+
+                    For(B, 1, GM_BLOCK_COUNT)
+                    {
+                        Block* cur_block = Blocks::Get(B);
+                        if(CheckCollision(p->momentum, cur_block->momentum))
+                        {
+                            p->momentum.y = cur_block.momentum.y - ->momentum.height - 0.1;
+                            tempBool = false;
+                        }
+                    }
+                } while (!tempBool)
+
+                p->DeathState = -1;
+            }
             
             // unapply force pause-exit patch
             exitPausePatch.Unapply();
 
-            // we're on the main menu, so this is true
-            gIsOnMainMenu = true;
-
             // hide loadscreen
             LunaLoadScreenKill();
-
-            // start the main menu lvl
-            episodeMainFunc.onStartMainMenu()
-
         }
         // that's the end of that
     }
 }
 
-void EpisodeMain::onStartMainMenu()
+void EpisodeMain::mainMenuLoop()
 {
-    // reset battleintro and battleoutro
-    GM_MARIO_VS_LUIGI_T = 0;
-    GM_WINS_T = 0;
+    EpisodeMain episodeMainFunc;
 
-    // reset cheat status
-    GM_CHEATED = COMBOOL(false);
+    For(A, 1, GM_PLAYERS_COUNT) //line 5316
+    {
+        auto p = Player::Get(A);
+        Momentum tempLocation;
+        
+        double levelX = Level::GetBoundary(p->CurrentSection, 0);
+        double levelY = Level::GetBoundary(p->CurrentSection, 1);
+        double levelWidth = Level::GetBoundary(p->CurrentSection, 3) - Level::GetBoundary(p->CurrentSection, 2);
+        double levelHeight = Level::GetBoundary(p->CurrentSection, 1) - Level::GetBoundary(p->CurrentSection, 0);
 
-    // reset checkpoints
-    GM_STR_CHECKPOINT = "";
+        if(p->DeathTimer > 0)
+        {
+            p->DeathTimer = 0;
+            p->DeathState = -1;
+        }
 
-    // reset cheat string
-    GM_INPUTSTR_BUF_PTR = "";
+        p->keymap.downKeyState = COMBOOL(false);
+        p->keymap.dropItemKeyState = COMBOOL(false);
+        p->keymap.rightKeyState = COMBOOL(true);
+        p->keymap.leftKeyState = COMBOOL(false);
+        p->keymap.runKeyState = COMBOOL(true);
+        p->keymap.upKeyState = COMBOOL(false);
+        p->keymap.altRunKeyState = COMBOOL(false);
+        p->keymap.altJumpKeyState = COMBOOL(false);
+        
+        p->FacingDirection = 1;
+        
+        if(p->currentPowerup > 1)
+        {
+            p->Hearts = 2;
+        }
+        else
+        {
+            p->Hearts = 1;
+        }
 
-    // set camera control to 2 (Follow all players, used for most of the supermario# cheats)
-    GM_CAMERA_CONTROL = 2;
+        if(p->UpwardJumpingForce == 0 || p->momentum.y < levelY + 200)
+        {
+            p->keymap.jumpKeyState = COMBOOL(false);
+        }
+        
+        if(p->momentum->speedX < 0.5)
+        {
+            p->keymap.jumpKeyState = COMBOOL(true);
+            if(p->SlopeRelated > 0 || p->NPCBeingStoodOnIndex > 0 || p->momentum.speedY == 0)
+            {
+                p->JumpButtonHeld = COMBOOL(true);
+            }
+            if(p->HeldNPCIndex == 0)
+            {
+                if((p->currentPowerup == 3 || p->currentPowerup == 6 || p->currentPowerup == 7) && VB6RNG::generateNumber() * 100 > 90)
+                {
+                    if(p->ProjectileTimer1 == 0 && p->HoldingFlightRunButton == 0)
+                    {
+                        p->keymap.runKeyState = COMBOOL(false);
+                    }
+                }
+                if((p->currentPowerup == 4 || p->currentPowerup == 5) && p->TailswipeTimer == 0 && p->HoldingFlightRunButton == 0)
+                {
+                    tempLocation.width = 24;
+                    tempLocation.height = 20;
+                    tempLocation.x = p->momentum.x + p->momentum.height - 22;
+                    tempLocation.y = p->momentum.y + p->momentum.width;
+                    For(B, 1, GM_NPCS_COUNT)
+                    {
+                        NPCMOB* npc = NPC::Get(B - 1);
+                        if(npc->unknown_124 == -1 && episodeMainFunc.getNPCConfigValue(isInteractableNPC_ptr, npc->id) == 0 && episodeMainFunc.getNPCConfigValue(npc_nohurt, npc->id) == 0 && npc->grabbingPlayerIndex == 0)
+                        {
+                            if(CheckCollision(tempLocation, npc->momentum))
+                            {
+                                p->keymap.runKeyState = COMBOOL(false);
+                            }
+                        }
+                    }
+                }
+                if(p->NPCBeingStoodOnIndex > 0)
+                {
+                    if(episodeMainFunc.getNPCConfigValue(npc_grabtop, npc->id) == -1)
+                    {
+                        p->keymap.downKeyState = COMBOOL(true);
+                        p->keymap.runKeyState = COMBOOL(true);
+                        p->HoldingFlightRunButton = COMBOOL(true);
+                    }
+                }
+            }
+            if(p->Identity == static_cast<Characters>(5))
+            {
+                if(p->ProjectileTimer1 == 0 && p->HoldingFlightRunButton == 0)
+                {
+                    tempLocation.width = 38 + p->momentum.speedX * 0.5;
+                    tempLocation.height = p->momentum.height - 8;
+                    tempLocation.y = p->momentum.y + 4;
+                    tempLocation.x = p->momentum.x + p->momentum.height;
+
+                    For(B, 1, GM_NPCS_COUNT)
+                    {
+                        NPCMOB* npc = NPC::Get(B - 1);
+                        if(npc->unknown_124 == -1 && episodeMainFunc.getNPCConfigValue(isInteractableNPC_ptr, npc->id) == 0 && episodeMainFunc.getNPCConfigValue(npc_nohurt, npc->id) == 0 && npc->grabbingPlayerIndex == 0)
+                        {
+                            if(CheckCollision(tempLocation, npc->momentum))
+                            {
+                                p->HoldingFlightRunButton = COMBOOL(true);
+                                if(npc->momentum.y > p->momentum.y + p->momentum.height / 2)
+                                {
+                                    p->keymap.downKeyState = COMBOOL(true);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(p->SlopeRelated == 0 && p->NPCBeingStoodOnIndex == 0)
+                {
+                    if(p->momentum.speedY < 0)
+                    {
+                        tempLocation.width = 200;
+                        tempLocation.height = p->momentum.y - levelY + p->momentum.height;
+                        tempLocation.y = levelY;
+                        tempLocation.x = p->momentum.x;
+                        
+                        For(B, 1, GM_NPCS_COUNT)
+                        {
+                            NPCMOB* npc = NPC::Get(B - 1);
+                            if(npc->unknown_124 == -1 && episodeMainFunc.getNPCConfigValue(isInteractableNPC_ptr, npc->id) == 0 && episodeMainFunc.getNPCConfigValue(npc_nohurt, npc->id) == 0 && npc->grabbingPlayerIndex == 0)
+                            {
+                                if(CheckCollision(tempLocation, npc->momentum))
+                                {
+                                    p->keymap.upKeyState = COMBOOL(true);
+                                }
+                            }
+                        }
+                    }
+                    else if(p->momentum.speedY > 0)
+                    {
+                        tempLocation.width = 200;
+                        tempLocation.height = levelHeight - p->momentum.y;
+                        tempLocation.y = p->momentum.y;
+                        tempLocation.x = p->momentum.x;
+                        
+                        For(B, 1, GM_NPCS_COUNT)
+                        {
+                            NPCMOB* npc = NPC::Get(B - 1);
+                            if(npc->unknown_124 == -1 && episodeMainFunc.getNPCConfigValue(isInteractableNPC_ptr, npc->id) == 0 && episodeMainFunc.getNPCConfigValue(npc_nohurt, npc->id) == 0 && npc->grabbingPlayerIndex == 0)
+                            {
+                                if(CheckCollision(tempLocation, npc->momentum))
+                                {
+                                    p->keymap.downKeyState = COMBOOL(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+int EpisodeMain::getNPCConfigValue(short* configPtr, int npcID)
+{
+    NPCMOB* npc = NPC::Get(B - 1);
+    if (npcID < 1 && npcID > NPC::MAX_ID)
+    {
+        return 0;
+    }
+    else
+    {
+        WORD* Array = (WORD*)configPtr;
+        if (Array[npcID] != 0) {
+            return -1;
+        }
+    }
+    return 0;
 }

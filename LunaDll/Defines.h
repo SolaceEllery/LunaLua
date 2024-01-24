@@ -405,10 +405,18 @@ DEFMEM(GM_INPUTSTR_BUF_PTR, VB6StrPtr, 0x00B2C898);
 DEFMEM(GM_CUR_SAVE_SLOT,    WORD,  0x00B2C62A);      // 1 2 or 3
 
 // Cheats
-DEFMEM(GM_PLAYER_INVULN,    WORD,   0x00B2C8C0);    // 0xFFFF = invuln
-DEFMEM(GM_PLAYER_INFJUMP,   WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
-DEFMEM(GM_PLAYER_SHADOWSTAR,WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
-DEFMEM(GM_CHEATED,          WORD,   0x00B2C8C4);    // 0xFFFF = cheated
+DEFMEM(GM_PLAYER_INVULN,       WORD,   0x00B2C8C0);    // 0xFFFF = invuln
+DEFMEM(GM_PLAYER_INFJUMP,      WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
+DEFMEM(GM_PLAYER_SHADOWSTAR,   WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
+DEFMEM(GM_PLAYER_GRABALL,      WORD,   0x00B2C8C2);    // 0xFFFF = stickyfingers
+DEFMEM(GM_PLAYER_CAPTAINN,     WORD,   0x00B2C8B6);    // 0xFFFF = captainn
+DEFMEM(GM_PLAYER_FLAMETHROWER, WORD,   0x00B2C8B8);    // 0xFFFF = flamethrower
+DEFMEM(GM_PLAYER_SONIC,        WORD,   0x00B2C8AE);    // 0xFFFF = sonicstooslow
+DEFMEM(GM_PLAYER_FLYER,        WORD,   0x00B2C8B2);    // 0xFFFF = wingman
+
+DEFMEM(GM_PLAYER_PARKIWANT,    WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
+
+DEFMEM(GM_CHEATED,             WORD,   0x00B2C8C4);    // 0xFFFF = cheated
 
 // Frame counter
 DEFMEM(GM_SHOW_FPS,         WORD,   0x00B25108);    // 0xFFFF = show FPS counter
@@ -637,6 +645,8 @@ DEFMEM(GM_WORLD_NAME,             VB6StrPtr, 0x00B2C624);
 DEFMEM(GM_WORLD_INTRO_FILENAME,   VB6StrPtr, 0x00B25724);
 DEFMEM(GM_HUB_STYLED_EPISODE,     WORD,      0x00B25728);
 DEFMEM(GM_RESTART_ON_DEATH,       WORD,      0x00B2572A);
+
+DEFMEM(GM_BATTLE_MODE, WORD, 0x00B2D740);
 
 
 /////////////////////
@@ -1530,6 +1540,9 @@ _O_Pub_Obj_Inf31_Event0x6                    .text 00B23F40 000000A7 0000000C 00
 //DEBUG:
 #define dbgbox(msg) MessageBoxW(NULL, msg, L"Dbg", NULL);
 #define dbgboxA(msg) MessageBoxA(NULL, msg, "Dbg", NULL);
+
+//Easier for loops
+#define For(A, From, To) for(int A = From; A <= To; ++A)
 
 #endif
 

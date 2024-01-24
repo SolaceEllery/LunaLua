@@ -27,6 +27,7 @@
 #include "SMBXInternal/Blocks.h"
 #include "SMBXInternal/NPCs.h"
 #include "Misc/RuntimeHook.h"
+#include "Defines.h"
 
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator)
 {

@@ -714,7 +714,7 @@ void CLunaLua::bindAll()
                 def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
                 //SEE Mod
                 def("getOSLanguage", &GetOSLanguage),
-                def("getFileSize", (double(*)(std::string))&GetFileSize),
+                def("getFileSize", (double(*)(std::string))&GetFileSize)
             ],
 
             namespace_("FileFormats")[

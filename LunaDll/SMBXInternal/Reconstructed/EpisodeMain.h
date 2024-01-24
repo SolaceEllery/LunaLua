@@ -4,6 +4,9 @@
 
 #include <string>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "../Menu.h"
 
@@ -21,9 +24,12 @@ class EpisodeMain {
 
         bool canExecuteViaLua;
         int currentOverworldLvl;
+        
+        // loop functions
+        void mainMenuLoop();
 
-        // onStart events
-        void onStartMainMenu();
+        // npc config functions
+        int getNPCConfigValue(short* configPtr, int npcID);
 };
 
 #endif
