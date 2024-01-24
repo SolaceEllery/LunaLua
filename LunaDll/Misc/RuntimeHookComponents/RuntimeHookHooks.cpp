@@ -43,6 +43,8 @@
 
 #include "../../Misc/VB6RNG.h"
 
+#include "../../SMBXInternal/Reconstructed/EpisodeMain.h"
+
 void CheckIPCQuitRequest();
 
 extern HHOOK HookWnd;
