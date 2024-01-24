@@ -13,8 +13,7 @@ class EpisodeMain {
         ~EpisodeMain();
 
         void LaunchEpisode(std::wstring wldPath, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound);
-        void loadLevel(std::string levelName, int warpIdx, bool suppressSound);
-        void loadLevelFromLevelTile(std::string levelName, int currentOverworldLvl);
+        void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound);
 
         bool canExecuteViaLua;
         int currentOverworldLvl;

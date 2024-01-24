@@ -19,6 +19,7 @@
 #include <iomanip>
 #include <fstream>
 #include <mutex>
+#include <cstddef>
 
 #include "Misc/MiscFuncs.h"
 #include "Input/Input.h"
@@ -1084,4 +1085,95 @@ std::string GetEditorPlacedItem()
 {
     std::lock_guard<std::mutex> editorEntityIPCLock(g_editorIPCMutex);
     return (std::string)gEditorPlacedItem;
+}
+
+int findEpisodeIDFromWorldFileAndPath(std::string worldName)
+{
+    int id = 0;
+    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
+        auto ep = EpisodeListItem::Get(i - 1);
+        if(worldName == std::string(ep->episodePath) + std::string(ep->episodeWorldFile))
+        {
+            id = i;
+            break;
+        }
+    }
+    return id - 1;
+}
+
+std::string findEpisodeWorldPathFromName(std::string name)
+{
+    if(name.empty())
+    {
+        return "";
+    }
+    std::string finalWldPath;
+    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
+        auto ep = EpisodeListItem::Get(i - 1);
+        if(name == std::string(ep->episodeName))
+        {
+            finalWldPath = std::string(ep->episodePath) + std::string(ep->episodeWorldFile);
+            break;
+        }
+    }
+    return finalWldPath;
+}
+
+std::string findNameFromEpisodeWorldPath(std::string wldPath)
+{
+    if(wldPath.empty())
+    {
+        return "";
+    }
+    std::string finalName;
+    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
+        auto ep = EpisodeListItem::Get(i - 1);
+        if(wldPath == std::string(ep->episodePath) + std::string(ep->episodeWorldFile))
+        {
+            finalName = std::string(ep->episodeName);
+            break;
+        }
+    }
+    return finalName;
+}
+
+int getUnblockedCharacterFromWorld(int curWorldID)
+{
+    int identity = 1;
+    EpisodeListItem* ep = EpisodeListItem::GetRaw(curWorldID);
+    for (int i = 1; i <= 5; i++)
+    {
+        if(ep->blockChar[i - 1] == 0)
+        {
+            identity = i;
+            break;
+        }
+    }
+    return identity;
+}
+
+
+
+void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID)
+{
+    for (size_t i = 0; i < 5; i++)
+    {
+        auto p = Player::Get(playerID);
+        EpisodeListItem* ep = EpisodeListItem::GetRaw(GM_CUR_MENULEVEL);
+        if(ep->blockChar[i] == -1 && p->Identity == static_cast<Characters>(i + 1))
+        {
+            // if Player 1's character that was specified is blocked from the new episode, use the first character that isn't blocked
+            p->Identity = static_cast<Characters>(getUnblockedCharacterFromWorld(GM_CUR_MENULEVEL));
+        }
+    }
+}
+
+
+
+bool CheckCollision(Momentum momentumA, Momentum momentumB)
+{
+    return  ((momentumA.y + momentumA.height >= momentumB.y) &&
+            (momentumA.y <= momentumB.y + momentumB.height) &&
+            (momentumA.x <= momentumB.x + momentumB.width) &&
+            (momentumA.x + momentumA.width >= momentumB.x));
 }

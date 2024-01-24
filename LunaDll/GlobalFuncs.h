@@ -299,3 +299,12 @@ constexpr std::uint32_t DoubleMostSignificantDWord(double d) {
 #endif
 
 std::string GetEditorPlacedItem();
+
+int findEpisodeIDFromWorldFileAndPath(std::string worldName);
+std::string findEpisodeWorldPathFromName(std::string name);
+std::string findNameFromEpisodeWorldPath(std::string wldPath);
+
+int getUnblockedCharacterFromWorld(int curWorldID);
+void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
+
+bool CheckCollision(Momentum momentumA, Momentum momentumB);
