@@ -205,4 +205,6 @@ namespace CachedReadFile {
     void releaseCached(bool isWorld);
 };
 
+extern void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound);
+
 #endif

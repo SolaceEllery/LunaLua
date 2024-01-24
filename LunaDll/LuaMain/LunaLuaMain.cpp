@@ -1606,3 +1606,93 @@ void CLunaLua::queuePlayerSectionChangeEvent(int playerIdx) {
     m_playerSectionChangeList.push_back(playerIdx);
     m_executeSectionChangeFlag = true;
 }
+
+// This will load a level from the current episode anywhere in the engine (Even the world map!)
+void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
+{
+    // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
+    std::string fullDir = (std::string)GM_FULLDIR;
+    std::string fullDirWithFilename = fullDir + levelName;
+    VB6StrPtr fullDirWithFilenameVB6 = fullDirWithFilename;
+
+    if(episodeName != "")
+    {
+        
+    }
+
+    // make sure it knows the file exists
+    if(fileExists(Str2WStr(fullDirWithFilename))) //--If Dir(SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName) <> "" Then (line 7263)--
+    {
+        // skip to line 7262, the parts before that pertain to warps...
+        if(levelName != "" && levelName != ".lvl" && levelName != ".lvlx") //--If WorldLevel(A).FileName <> "" And WorldLevel(A).FileName <> ".lvl" Then (line 7262)--
+        {
+            // make sure the game unpauses and Lua is gone before starting a level
+            exitPausePatch.Apply();
+
+            gLunaLua.exitContext();
+            gCachedFileMetadata.purge();
+
+            // start with WorldLoop on modMain.bas, line 7244
+
+            // show loadscreen
+            LunaLoadScreenStart();
+            
+            // if warpIdx is greater than or equal to 0, apply the warp idx
+            if(warpIdx >= 0)
+            {
+                GM_NEXT_LEVEL_WARPIDX = warpIdx; //--StartWarp = WorldLevel(A).StartWarp (line 7264)--
+            }
+
+            // stop the music
+            native_stopMusic(); //--StopMusic (line 7265)--
+
+            if(gIsOverworld)
+            {
+                //cleanup world
+                native_cleanupWorld();
+            }
+
+            // play the sound if not suppressed
+            if(!suppressSound)
+            {
+                short soundID = 28;
+                native_playSFX(&soundID); //--PlaySound 28 (line 7266)--
+            }
+            
+            if(gIsOverworld)
+            {
+                if(overworldLvlID >= 1)
+                {
+                    GM_OVERWORLD_CUR_LVL = overworldLvlID;
+                }
+                else
+                {
+                    GM_OVERWORLD_CUR_LVL = 1;
+                }
+            }
+
+            // make the world map false
+            GM_EPISODE_MODE = COMBOOL(false); //--LevelSelect = False (line 7269)--
+
+            // clean up the level
+            native_cleanupLevel(); //--ClearLevel (line 7271)--
+
+            // make sure we aren't in overworld anymore if we were
+            if(gIsOverworld)
+            {
+                gIsOverworld = false;
+            }
+            
+            // apply the dir and filename, and load it!
+            native_loadLevel(&fullDirWithFilenameVB6); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
+            
+            // unapply force pause-exit patch
+            exitPausePatch.Unapply();
+
+            // hide loadscreen
+            LunaLoadScreenKill();
+
+        } //--End If (line 7275)--
+        // that's the end of WorldLoop.bas stuff
+    }
+}

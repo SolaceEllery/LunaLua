@@ -303,6 +303,7 @@ DEFMEM(GM_OVERWORLD_PTR,    void*, 0x00B2C5C8);
 // Overworld Level Array
 DEFMEM(GM_LEVEL_COUNT,      WORD,  0x00B25960);
 DEFMEM(GM_LEVEL_BASE,       void*, 0x00B25994);
+DEFMEM(GM_OVERWORLD_CUR_LVL, WORD, 0x00B2C5D6);
 
 
 // Level related memory
