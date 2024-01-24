@@ -52,6 +52,9 @@ EpisodeMain::~EpisodeMain() {}
 // The big one. This will load an episode anywhere in the engine. This is also used when booting the engine.
 void EpisodeMain::LaunchEpisode(std::wstring wldPath, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound)
 {
+    // make sure this is false before we begin
+    gIsOnMainMenu = false;
+
     //--ElseIf .Jump = True Or .Start = True Or (GetKeyState(vbKeySpace) And KEY_PRESSED) Or (GetKeyState(vbKeyReturn) And KEY_PRESSED) Or MenuMouseClick = True Then (line 4945)--
 
     // put the world together
@@ -359,6 +362,9 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPath, int saveSlot, int playerCo
 // This will load a level from the current episode anywhere in the engine (Even the world map!)
 void EpisodeMain::LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
 {
+    // make sure this is false before we begin
+    gIsOnMainMenu = false;
+
     // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
     std::string fullDir = (std::string)GM_FULLDIR;
     std::string fullDirWithFilename = fullDir + levelName;
@@ -444,4 +450,111 @@ void EpisodeMain::LoadLevel(std::string levelName, int warpIdx, std::string epis
         } //--End If (line 7275)--
         // that's the end of WorldLoop.bas stuff
     }
+}
+
+void EpisodeMain::preLoadMainMenu()
+{
+    EpisodeMain episodeMainFunc;
+    // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
+    std::string fullDir = gAppPathUTF8 + "\\";
+    std::string fullDirWithFilename = fullDir + "intro.lvl";
+    std::string fullDirWithFilenameAlt = fullDir + "intro.lvlx";
+
+    // check and see if intro.lvl exists
+    if(fileExists(Str2WStr(fullDirWithFilename)))
+    {
+        episodeMainFunc.loadMainMenu(std::string fullDirWithFilename);
+    }
+    // else just use intro.lvlx
+    else if(fileExists(Str2WStr(fullDirWithFilenameAlt)))
+    {
+        episodeMainFunc.loadMainMenu(std::string fullDirWithFilenameAlt);
+    }
+    // or if nothing exists, error and exit
+    else
+    {
+        std::string msg = "There is no intro.lvl, or intro.lvlx. Unless you're booting an episode, they will be needed in order to load the alt launcher. Please press OK so that the game can close.";
+        MessageBoxA(gMainWindowHwnd, msg.c_str(), "Error", MB_ICONWARNING | MB_OK);
+        _exit(0);
+    }
+}
+
+void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
+{
+    EpisodeMain episodeMainFunc;
+    VB6StrPtr fullDirWithFilenameVB6 = mainMenuLvl;
+
+    // make sure it knows the file exists
+    if(fileExists(Str2WStr(fullDirWithFilename)))
+    {
+        // skip to line 7262, the parts before that pertain to warps...
+        if(mainMenuLvl != "" && mainMenuLvl != ".lvl" && mainMenuLvl != ".lvlx")
+        {
+            // make sure the game unpauses and Lua is gone before starting a level
+            exitPausePatch.Apply();
+
+            if(gEpisodeLoadedOnBoot)
+            {
+                gLunaLua.exitContext();
+                gCachedFileMetadata.purge();
+
+                if(gIsOverworld)
+                {
+                    gIsOverworld = false;
+                }
+            }
+
+            // show loadscreen
+            LunaLoadScreenStart();
+            
+            // apply the warp idx
+            GM_NEXT_LEVEL_WARPIDX = 0;
+
+            // stop the music
+            native_stopMusic();
+
+            // make the world map false
+            GM_EPISODE_MODE = COMBOOL(false);
+
+            // clean up the level and world
+            native_cleanupLevel();
+            native_cleanupWorld();
+            
+            // apply the dir and filename, and load it!
+            native_loadLevel(&fullDirWithFilenameVB6);
+            
+            // unapply force pause-exit patch
+            exitPausePatch.Unapply();
+
+            // we're on the main menu, so this is true
+            gIsOnMainMenu = true;
+
+            // hide loadscreen
+            LunaLoadScreenKill();
+
+            // start the main menu lvl
+            episodeMainFunc.onStartMainMenu()
+
+        }
+        // that's the end of that
+    }
+}
+
+void EpisodeMain::onStartMainMenu()
+{
+    // reset battleintro and battleoutro
+    GM_MARIO_VS_LUIGI_T = 0;
+    GM_WINS_T = 0;
+
+    // reset cheat status
+    GM_CHEATED = COMBOOL(false);
+
+    // reset checkpoints
+    GM_STR_CHECKPOINT = "";
+
+    // reset cheat string
+    GM_INPUTSTR_BUF_PTR = "";
+
+    // set camera control to 2 (Follow all players, used for most of the supermario# cheats)
+    GM_CAMERA_CONTROL = 2;
 }

@@ -1687,10 +1687,9 @@ void __stdcall runtimeHookGameMenu()
         }
         else if(!gStartupSettings.epSettings.enabled && autostarter.selectedWldPath == L"")
         {
-            // If there's still nothing, we don't have any settings so we shouldn't continue booting LunaDLL
-            std::string msg = "There is no world file specified on starting LunaLua. This means that you booted LunaLoader.exe with no arguments regarding selecting a world or level. Please load a world or level starting SMBX2 by loading the X2 launcher (Or Command Prompt) instead.";
-            MessageBoxA(gMainWindowHwnd, msg.c_str(), "Error", MB_ICONWARNING | MB_OK);
-            _exit(0);
+            // If there's still nothing, we don't have any settings so we should just load the new launcher
+            EpisodeMain mainEpisodeFunc;
+            mainEpisodeFunc.preLoadMainMenu();
         }
     }
     else if(gEpisodeLoadedOnBoot)
