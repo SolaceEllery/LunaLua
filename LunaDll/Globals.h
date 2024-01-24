@@ -215,3 +215,5 @@ extern std::mutex g_editorIPCMutex;
 
 extern double soundEffectCount;
 extern bool canUseSEEModFeatures;
+
+extern Characters gPlayerStoredCharacters[];

@@ -138,3 +138,5 @@ std::mutex g_editorIPCMutex;
 
 double soundEffectCount = 0;
 bool canUseSEEModFeatures = false;
+
+Characters gPlayerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO };
