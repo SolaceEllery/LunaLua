@@ -414,7 +414,7 @@ DEFMEM(GM_PLAYER_FLAMETHROWER, WORD,   0x00B2C8B8);    // 0xFFFF = flamethrower
 DEFMEM(GM_PLAYER_SONIC,        WORD,   0x00B2C8AE);    // 0xFFFF = sonicstooslow
 DEFMEM(GM_PLAYER_FLYER,        WORD,   0x00B2C8B2);    // 0xFFFF = wingman
 
-DEFMEM(GM_PLAYER_PARKIWANT,    WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
+DEFMEM(GM_WORLD_UNLOCK,     WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
 
 DEFMEM(GM_CHEATED,             WORD,   0x00B2C8C4);    // 0xFFFF = cheated
 
@@ -862,6 +862,7 @@ DEFMEM(IMP_vbaInputFile, void*, 0x00401158); // Ptr to __cdecl
 #define GF_UPDATE_BLOCK_ANIM 0x009E14B0
 
 #define GF_CLEANUP_LEVEL    0x008DC6E0
+#define GF_CLEANUP_WORLD    0x008E2E40
 #define GF_LOAD_LEVEL       0x008D8F40
 #define GF_INIT_CAMERA      0x009502E0
 #define GF_RENDER_INIT_SCREEN 0x00987DE0
@@ -958,6 +959,7 @@ static const auto native_renderLevel    = (void(__stdcall *)(void))GF_RENDER_LEV
 static const auto native_updateBlockAnim = (void(__stdcall *)(void))GF_UPDATE_BLOCK_ANIM;
 
 static const auto native_cleanupLevel   = (void(__stdcall *)(void))GF_CLEANUP_LEVEL;
+static const auto native_cleanupWorld   = (void(__stdcall *)(void))GF_CLEANUP_WORLD;
 static const auto native_loadLevel      = (void(__stdcall *)(VB6StrPtr* /*path*/))GF_LOAD_LEVEL;
 static const auto native_initCamera     = (void(__stdcall *)(void))GF_INIT_CAMERA;
 static const auto native_renderInitScreen = (void(__stdcall *)(void))GF_RENDER_INIT_SCREEN;

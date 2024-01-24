@@ -465,12 +465,12 @@ void EpisodeMain::preLoadMainMenu()
     // check and see if intro.lvl exists
     if(fileExists(Str2WStr(fullDirWithFilename)))
     {
-        episodeMainFunc.loadMainMenu(std::string fullDirWithFilename);
+        episodeMainFunc.loadMainMenu(fullDirWithFilename);
     }
     // else just use intro.lvlx
     else if(fileExists(Str2WStr(fullDirWithFilenameAlt)))
     {
-        episodeMainFunc.loadMainMenu(std::string fullDirWithFilenameAlt);
+        episodeMainFunc.loadMainMenu(fullDirWithFilenameAlt);
     }
     // or if nothing exists, error and exit
     else
@@ -488,7 +488,7 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
     bool tempBool = false;
 
     // make sure it knows the file exists
-    if(fileExists(Str2WStr(fullDirWithFilename)))
+    if(fileExists(Str2WStr(mainMenuLvl)))
     {
         // skip to line 7262, the parts before that pertain to warps...
         if(mainMenuLvl != "" && mainMenuLvl != ".lvl" && mainMenuLvl != ".lvlx")
@@ -560,7 +560,7 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
             GM_FREEZWITCH_ACTIV = COMBOOL(false);
 
             // disable illparkwhereiwant
-            GM_PLAYER_PARKIWANT = COMBOOL(false);
+            GM_WORLD_UNLOCK = COMBOOL(false);
 
             // disable more cheats
             GM_PLAYER_INFJUMP = COMBOOL(false);
@@ -591,11 +591,11 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
             For(i, 1, GM_PLAYERS_COUNT)
             {
                 auto p = Player::Get(i);
-                p->currentPowerup = (VB6RNG::generateNumber() * 6) + 2;
-                p->Identity = static_cast<int>((VB6RNG::generateNumber() * 5) + 1);
+                p->CurrentPowerup = (RndValue() * 6) + 2;
+                p->Identity = static_cast<Characters>((RndValue() * 5) + 1);
                 if(i >= 1 && i <= 5)
                 {
-                    p->Identity = static_cast<int>(i);
+                    p->Identity = static_cast<Characters>(i);
                 }
 
                 double levelX = Level::GetBoundary(p->CurrentSection, 0);
@@ -605,8 +605,8 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
 
                 p->PowerupBoxContents = 0;
                 p->CurrentSection = 0;
-                p->momentum.x = levelX + ((128 + VB6RNG::generateNumber() * 64) * i);
-                p->momentum.y = (levelHeight - p->momentum.height - 65)
+                p->momentum.x = levelX + ((128 + RndValue() * 64) * i);
+                p->momentum.y = (levelHeight - p->momentum.height - 65);
 
                 do
                 {
@@ -617,11 +617,11 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
                         Block* cur_block = Blocks::Get(B);
                         if(CheckCollision(p->momentum, cur_block->momentum))
                         {
-                            p->momentum.y = cur_block.momentum.y - ->momentum.height - 0.1;
+                            p->momentum.y = cur_block->momentum.y - p->momentum.height - 0.1;
                             tempBool = false;
                         }
                     }
-                } while (!tempBool)
+                } while (!tempBool);
 
                 p->DeathState = -1;
             }
@@ -667,7 +667,7 @@ void EpisodeMain::mainMenuLoop()
         
         p->FacingDirection = 1;
         
-        if(p->currentPowerup > 1)
+        if(p->CurrentPowerup > 1)
         {
             p->Hearts = 2;
         }
@@ -681,7 +681,7 @@ void EpisodeMain::mainMenuLoop()
             p->keymap.jumpKeyState = COMBOOL(false);
         }
         
-        if(p->momentum->speedX < 0.5)
+        if(p->momentum.speedX < 0.5)
         {
             p->keymap.jumpKeyState = COMBOOL(true);
             if(p->SlopeRelated > 0 || p->NPCBeingStoodOnIndex > 0 || p->momentum.speedY == 0)
@@ -690,14 +690,14 @@ void EpisodeMain::mainMenuLoop()
             }
             if(p->HeldNPCIndex == 0)
             {
-                if((p->currentPowerup == 3 || p->currentPowerup == 6 || p->currentPowerup == 7) && VB6RNG::generateNumber() * 100 > 90)
+                if((p->CurrentPowerup == 3 || p->CurrentPowerup == 6 || p->CurrentPowerup == 7) && RndValue() * 100 > 90)
                 {
                     if(p->ProjectileTimer1 == 0 && p->HoldingFlightRunButton == 0)
                     {
                         p->keymap.runKeyState = COMBOOL(false);
                     }
                 }
-                if((p->currentPowerup == 4 || p->currentPowerup == 5) && p->TailswipeTimer == 0 && p->HoldingFlightRunButton == 0)
+                if((p->CurrentPowerup == 4 || p->CurrentPowerup == 5) && p->TailswipeTimer == 0 && p->HoldingFlightRunButton == 0)
                 {
                     tempLocation.width = 24;
                     tempLocation.height = 20;
@@ -717,6 +717,7 @@ void EpisodeMain::mainMenuLoop()
                 }
                 if(p->NPCBeingStoodOnIndex > 0)
                 {
+                    NPCMOB* npc = NPC::Get(p->NPCBeingStoodOnIndex - 1);
                     if(episodeMainFunc.getNPCConfigValue(npc_grabtop, npc->id) == -1)
                     {
                         p->keymap.downKeyState = COMBOOL(true);
@@ -798,7 +799,7 @@ void EpisodeMain::mainMenuLoop()
 
 int EpisodeMain::getNPCConfigValue(short* configPtr, int npcID)
 {
-    NPCMOB* npc = NPC::Get(B - 1);
+    NPCMOB* npc = NPC::Get(npcID - 1);
     if (npcID < 1 && npcID > NPC::MAX_ID)
     {
         return 0;

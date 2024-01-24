@@ -2128,7 +2128,7 @@ PlayerMOB* getTemplateForCharacter(int id)
     return nullptr;
 }
 
-static PlayerMOB* getTemplateForCharacterWithDummyFallback(int id)
+PlayerMOB* getTemplateForCharacterWithDummyFallback(int id)
 {
     static PlayerMOB dummyPlayerStruct = {0};
 

@@ -2880,15 +2880,7 @@ _declspec(naked) void __stdcall runtimeHookStaticDirectionWrapper(void)
     }
 }
 
-static void __stdcall runtimeHookStopMusic()
-{
-    if(!gIsOnMainMenu)
-    {
-        runtimeHookStopMusic_origFunc();
-    }
-}
-
-__declspec(naked) void __stdcall runtimeHookStopMusic_origFunc()
+static _declspec(naked) void __stdcall runtimeHookStopMusic_origFunc()
 {
     __asm {
         push ebp
@@ -2896,6 +2888,14 @@ __declspec(naked) void __stdcall runtimeHookStopMusic_origFunc()
         sub esp, 0x8
         push 0xA621A6
         ret
+    }
+}
+
+void __stdcall runtimeHookStopMusic()
+{
+    if(!gIsOnMainMenu)
+    {
+        runtimeHookStopMusic_origFunc();
     }
 }
 

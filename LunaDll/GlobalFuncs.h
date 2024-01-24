@@ -63,6 +63,8 @@ bool isAbsolutePath(const std::string& path);
 std::wstring resolveCwdOrWorldsPath(const std::wstring& path);
 std::wstring resolveIfNotAbsolutePath(std::wstring filename);
 std::string resolveIfNotAbsolutePath(std::string filename);
+std::string splitPathFromFilename(std::string str);
+std::string splitFilenameFromPath(std::string str);
 
 extern void removeFilePathW(std::wstring &path);
 extern void removeFilePathW(wchar_t*path, int length);
@@ -310,3 +312,4 @@ int getUnblockedCharacterFromWorld(int curWorldID);
 void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
 
 bool CheckCollision(Momentum momentumA, Momentum momentumB);
+int RndValue();
