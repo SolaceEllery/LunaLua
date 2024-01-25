@@ -458,9 +458,8 @@ void EpisodeMain::preLoadMainMenu()
 {
     EpisodeMain episodeMainFunc;
     // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
-    std::string fullDir = gAppPathUTF8 + "\\";
-    std::string fullDirWithFilename = fullDir + "intro.lvl";
-    std::string fullDirWithFilenameAlt = fullDir + "intro.lvlx";
+    std::string fullDirWithFilename = gAppPathUTF8 + "/intro.lvl";
+    std::string fullDirWithFilenameAlt = gAppPathUTF8 + "/intro.lvlx";
 
     // check and see if intro.lvl exists
     if(fileExists(Str2WStr(fullDirWithFilename)))
@@ -490,7 +489,6 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
     // make sure it knows the file exists
     if(fileExists(Str2WStr(mainMenuLvl)))
     {
-        // skip to line 7262, the parts before that pertain to warps...
         if(mainMenuLvl != "" && mainMenuLvl != ".lvl" && mainMenuLvl != ".lvlx")
         {
             // make sure the game unpauses and Lua is gone before starting a level
@@ -509,7 +507,7 @@ void EpisodeMain::loadMainMenu(std::string mainMenuLvl)
 
             // show loadscreen
             LunaLoadScreenStart();
-            
+
             // apply the warp idx
             GM_NEXT_LEVEL_WARPIDX = 0;
 
