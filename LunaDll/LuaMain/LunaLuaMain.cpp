@@ -37,6 +37,9 @@
 #include "LunaPathValidator.h"
 #include "../Misc/CollisionMatrix.h"
 
+#include "../Misc/TestMode.h"
+#include "../FileManager/SMBXFileManager.h"
+
 /*static*/ DWORD CLunaFFILock::currentLockTlsIdx = TlsAlloc();
 
 extern bool luaDidGameOverFlag;
@@ -1632,115 +1635,146 @@ static auto exitPausePatch = PATCH(0x8E6564).NOP().NOP().NOP().NOP().NOP().NOP()
 bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
 {
     // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
-    std::string fullDir = (std::string)GM_FULLDIR;
-    std::string fullDirWithFilename = fullDir + levelName;
-    VB6StrPtr fullDirWithFilenameVB6 = fullDirWithFilename;
+    std::string fullDir;
+    std::string fullDirWithFilename;
+    std::wstring fullDirWithFilenameWStr;
+    VB6StrPtr fullDirWithFilenameVB6;
+    VB6StrPtr* fullDirWithFilenameVB6Star;
+
+    std::size_t findDirWithLevel = levelName.find((std::string)GM_FULLDIR);
+
+    if (findDirWithLevel!=std::string::npos)
+    {
+        fullDir = (std::string)GM_FULLDIR;
+        fullDirWithFilename = levelName;
+        fullDirWithFilenameWStr = Str2WStr(fullDirWithFilename);
+        fullDirWithFilenameVB6 = fullDirWithFilename;
+        fullDirWithFilenameVB6Star = new VB6StrPtr(std::string(fullDirWithFilename));
+    }
+    else
+    {
+        fullDir = (std::string)GM_FULLDIR;
+        fullDirWithFilename = fullDir + levelName;
+        fullDirWithFilenameWStr = Str2WStr(fullDirWithFilename);
+        fullDirWithFilenameVB6 = fullDirWithFilename;
+        fullDirWithFilenameVB6Star = new VB6StrPtr(std::string(fullDirWithFilename));
+    }
+    
 
     if(episodeName != "")
     {
         //LaunchEpisode code will go here, but will be applied after the fast episode boot PR is merged
     }
 
-    // make sure it knows the file exists
-    if(fileExists(Str2WStr(fullDirWithFilename))) //--If Dir(SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName) <> "" Then (line 7263)--
+    if (testModeLoadLevelHook(fullDirWithFilenameVB6Star))
     {
-        // skip to line 7262, the parts before that pertain to warps...
-        if(levelName != "" && levelName != ".lvl" && levelName != ".lvlx") //--If WorldLevel(A).FileName <> "" And WorldLevel(A).FileName <> ".lvl" Then (line 7262)--
-        {
-            // make sure the game unpauses and Lua is gone before starting a level
-            exitPausePatch.Apply();
-
-            gLunaLua.exitContext();
-            gCachedFileMetadata.purge();
-
-            // start with WorldLoop on modMain.bas, line 7244
-
-            // show loadscreen
-            LunaLoadScreenStart();
-            
-            // if warpIdx is greater than or equal to 0, apply the warp idx
-            if(warpIdx >= 0)
-            {
-                GM_NEXT_LEVEL_WARPIDX = warpIdx; //--StartWarp = WorldLevel(A).StartWarp (line 7264)--
-            }
-
-            // stop the music
-            native_stopMusic(); //--StopMusic (line 7265)--
-
-            if(overworldLvlID >= 1)
-            {
-                GM_OVERWORLD_CUR_LVL = overworldLvlID;
-            }
-            else
-            {
-                For(i, 1, GM_LEVEL_COUNT)
-                {
-                    WorldLevel* worldLevel = SMBXLevel::get(i);
-                    Overworld* worldPlayer = SMBXOverworld::get();
-
-                    if(CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
-                    {
-                        GM_OVERWORLD_CUR_LVL = i;
-                    }
-                    else if(!CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
-                    {
-                        int dist = std::numeric_limits<int>::infinity();
-                        int directX = worldLevel->momentum.x - worldPlayer->momentum.x;
-                        int directY = worldLevel->momentum.y - worldPlayer->momentum.y;
-                        int cdist = std::sqrt(directX * directX + directY * directY);
-                        if (cdist < dist)
-                        {
-                            GM_OVERWORLD_CUR_LVL = i;
-                        }
-                    }
-                    else
-                    {
-                        // We can't set the GM_OVERWORLD_CUR_LVL at this point... so set it as 1
-                        GM_OVERWORLD_CUR_LVL = 1;
-                    }
-                }
-            }
-
-            // play the sound if not suppressed
-            if(!suppressSound)
-            {
-                short soundID = 28;
-                native_playSFX(&soundID); //--PlaySound 28 (line 7266)--
-            }
-
-            if(gIsOverworld)
-            {
-                //cleanup world
-                native_cleanupWorld();
-            }
-
-            // make the world map false
-            GM_EPISODE_MODE = COMBOOL(false); //--LevelSelect = False (line 7269)--
-
-            // clean up the level
-            native_cleanupLevel(); //--ClearLevel (line 7271)--
-
-            // make sure we aren't in overworld anymore if we were
-            if(gIsOverworld)
-            {
-                gIsOverworld = false;
-            }
-            
-            // apply the dir and filename, and load it!
-            native_loadLevel(&fullDirWithFilenameVB6); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
-            
-            // unapply force pause-exit patch
-            exitPausePatch.Unapply();
-
-            // hide loadscreen
-            LunaLoadScreenKill();
-            
-            return true;
-        } //--End If (line 7275)--
-        // that's the end of WorldLoop.bas stuff
+        // If handled by testModeLoadLevelHook, skip
     }
     else
     {
-        return false;
+        if (gStartupSettings.oldLvlLoader)
+        {
+            loadLevel_OrigFunc(fullDirWithFilenameVB6Star);
+        }
+        else
+        {
+            // make sure it knows the file exists
+            if(fileExists(Str2WStr(fullDirWithFilename))) //--If Dir(SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName) <> "" Then (line 7263)--
+            {
+                // skip to line 7262, the parts before that pertain to warps...
+                if(levelName != "" && levelName != ".lvl" && levelName != ".lvlx") //--If WorldLevel(A).FileName <> "" And WorldLevel(A).FileName <> ".lvl" Then (line 7262)--
+                {
+                    // make sure the game unpauses and Lua is gone before starting a level
+                    exitPausePatch.Apply();
+
+                    gLunaLua.exitContext();
+                    gCachedFileMetadata.purge();
+
+                    // start with WorldLoop on modMain.bas, line 7244
+
+                    // show loadscreen
+                    LunaLoadScreenStart();
+                    
+                    // if warpIdx is greater than or equal to 0, apply the warp idx
+                    if(warpIdx >= 0)
+                    {
+                        GM_NEXT_LEVEL_WARPIDX = warpIdx; //--StartWarp = WorldLevel(A).StartWarp (line 7264)--
+                    }
+
+                    // stop the music
+                    native_stopMusic(); //--StopMusic (line 7265)--
+
+                    if(overworldLvlID >= 1)
+                    {
+                        GM_OVERWORLD_CUR_LVL = overworldLvlID;
+                    }
+                    else
+                    {
+                        For(i, 1, GM_LEVEL_COUNT)
+                        {
+                            WorldLevel* worldLevel = SMBXLevel::get(i);
+                            Overworld* worldPlayer = SMBXOverworld::get();
+
+                            if(CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
+                            {
+                                GM_OVERWORLD_CUR_LVL = i;
+                            }
+                            else if(!CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
+                            {
+                                int dist = std::numeric_limits<int>::infinity();
+                                int directX = worldLevel->momentum.x - worldPlayer->momentum.x;
+                                int directY = worldLevel->momentum.y - worldPlayer->momentum.y;
+                                int cdist = std::sqrt(directX * directX + directY * directY);
+                                if (cdist < dist)
+                                {
+                                    GM_OVERWORLD_CUR_LVL = i;
+                                }
+                            }
+                            else
+                            {
+                                // We can't set the GM_OVERWORLD_CUR_LVL at this point... so set it as 1
+                                GM_OVERWORLD_CUR_LVL = 1;
+                            }
+                        }
+                    }
+
+                    // play the sound if not suppressed
+                    if(!suppressSound)
+                    {
+                        short soundID = 28;
+                        native_playSFX(&soundID); //--PlaySound 28 (line 7266)--
+                    }
+
+                    // make the world map false
+                    GM_EPISODE_MODE = COMBOOL(false); //--LevelSelect = False (line 7269)--
+
+                    // clean up the level
+                    native_cleanupLevel(); //--ClearLevel (line 7271)--
+
+                    // make sure we aren't in overworld anymore if we were
+                    if(gIsOverworld)
+                    {
+                        gIsOverworld = false;
+                    }
+
+                    // apply the dir and filename, and load it!
+                    SMBXLevelFileBase base;
+                    base.ReadFile(Str2WStr(fullDirWithFilename), getCurrentLevelData()); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
+                    
+                    // unapply force pause-exit patch
+                    exitPausePatch.Unapply();
+
+                    // hide loadscreen
+                    LunaLoadScreenKill();
+                    
+                    return true;
+                } //--End If (line 7275)--
+                // that's the end of WorldLoop.bas stuff
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

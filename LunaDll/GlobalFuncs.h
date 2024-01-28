@@ -122,7 +122,7 @@ std::vector<std::string> listOfDir(const std::string& path, DWORD fileAttributes
 //std::wstring getModulePath();
 std::wstring getEpisodeFolderPath();
 std::wstring getCustomFolderPath();
-void revertToEpisodeFolderPath();
+std::string splitFilenameFromPath(std::string str);
 std::wstring getLatestFile(const std::initializer_list<std::wstring>& paths);
 std::wstring getLatestConfigFile(const std::wstring& configname);
 

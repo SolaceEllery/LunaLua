@@ -28,6 +28,8 @@
 #include "../../SMBXInternal/Blocks.h"
 #include "../../SMBXInternal/Level.h"
 #include "../../SMBXInternal/Sound.h"
+#include "../../SMBXInternal/Overworld.h"
+#include "../../SMBXInternal/WorldLevel.h"
 
 #include "../PerfTracker.h"
 
@@ -274,7 +276,6 @@ extern DWORD __stdcall WorldLoop()
 
     gSavedVarBank.SaveIfNeeded();
 
-    revertToEpisodeFolderPath();
     checkForLevelLoad();
 
 #pragma warning(suppress: 28159)
@@ -1629,25 +1630,14 @@ void __stdcall runtimeHookLoadLevel(VB6StrPtr* filename)
         }
     }
     
-    // Shut down Lua stuff before level loading just in case
-    gLunaLua.exitContext();
-    gCachedFileMetadata.purge();
-
-    if (testModeLoadLevelHook(filename))
+    std::wstring filenameWStr = static_cast<std::wstring>(*filename);
+    if(gIsOverworld)
     {
-        // If handled by testModeLoadLevelHook, skip
+        LoadLevel(WStr2Str(filenameWStr), GM_NEXT_LEVEL_WARPIDX, "", 0, false);
     }
     else
     {
-        if (gStartupSettings.oldLvlLoader)
-        {
-            loadLevel_OrigFunc(filename);
-        }
-        else
-        {
-            SMBXLevelFileBase base;
-            base.ReadFile(static_cast<std::wstring>(*filename), getCurrentLevelData());
-        }
+        LoadLevel(WStr2Str(filenameWStr), GM_NEXT_LEVEL_WARPIDX, "", 0, true);
     }
 }
 

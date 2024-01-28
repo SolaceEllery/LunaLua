@@ -852,15 +852,11 @@ std::wstring getCustomFolderPath()
     return full_path;
 }
 
-void revertToEpisodeFolderPath()
+std::string splitFilenameFromPath(std::string str)
 {
-    std::string finalStr = "";
-    std::string full_path = (std::string)GM_FULLDIR;
-    if(fileExists(Str2WStr(full_path)))
-    {
-        finalStr = full_path.substr(0, full_path.find_last_of("\\/"));
-        GM_FULLDIR = finalStr;
-    }
+    replaceSubStr(str, "/", "\\");
+    std::string finalStr = str.substr(0, str.find_last_of("/\\"));
+    return finalStr;
 }
 
 std::wstring getLatestFile(const std::initializer_list<std::wstring>& paths)
