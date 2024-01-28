@@ -852,6 +852,17 @@ std::wstring getCustomFolderPath()
     return full_path;
 }
 
+void revertToEpisodeFolderPath()
+{
+    std::string finalStr = "";
+    std::string full_path = (std::string)GM_FULLDIR;
+    if(fileExists(Str2WStr(full_path)))
+    {
+        finalStr = full_path.substr(0, full_path.find_last_of("\\/"));
+        GM_FULLDIR = finalStr;
+    }
+}
+
 std::wstring getLatestFile(const std::initializer_list<std::wstring>& paths)
 {
     FILETIME newest = { 0 };
@@ -1084,4 +1095,12 @@ std::string GetEditorPlacedItem()
 {
     std::lock_guard<std::mutex> editorEntityIPCLock(g_editorIPCMutex);
     return (std::string)gEditorPlacedItem;
+}
+
+bool CheckCollision(Momentum momentumA, Momentum momentumB)
+{
+    return  ((momentumA.y + momentumA.height >= momentumB.y) &&
+            (momentumA.y <= momentumB.y + momentumB.height) &&
+            (momentumA.x <= momentumB.x + momentumB.width) &&
+            (momentumA.x + momentumA.width >= momentumB.x));
 }

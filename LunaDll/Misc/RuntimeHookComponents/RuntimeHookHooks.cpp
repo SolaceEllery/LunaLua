@@ -250,7 +250,7 @@ static void checkForLevelLoad()
 {
     if(gIsLoadingLevelLua)
     {
-        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 1, gIsLoadingLevelLuaSuppressSFX);
+        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 0, gIsLoadingLevelLuaSuppressSFX);
 
         gIsLoadingLevelLuaName = "";
         gIsLoadingLevelLuaWarpID = 0;
@@ -273,7 +273,8 @@ extern DWORD __stdcall WorldLoop()
     g_EventHandler.hookWorldLoop();
 
     gSavedVarBank.SaveIfNeeded();
-    
+
+    revertToEpisodeFolderPath();
     checkForLevelLoad();
 
 #pragma warning(suppress: 28159)

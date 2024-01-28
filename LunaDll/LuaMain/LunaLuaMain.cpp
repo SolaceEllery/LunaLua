@@ -1,5 +1,8 @@
 #include <string>
 #include <memory>
+#include <iostream>
+#include <cmath>
+
 #include <luabind/adopt_policy.hpp>
 #include <luabind/out_value_policy.hpp>
 
@@ -13,6 +16,8 @@
 #include "../SMBXInternal/NPCs.h"
 #include "../SMBXInternal/BGOs.h"
 #include "../SMBXInternal/Animation.h"
+#include "../SMBXInternal/Overworld.h"
+#include "../SMBXInternal/WorldLevel.h"
 
 #include "../Rendering/FrameCapture.h"
 
@@ -1662,10 +1667,38 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
             // stop the music
             native_stopMusic(); //--StopMusic (line 7265)--
 
-            if(gIsOverworld)
+            if(overworldLvlID >= 1)
             {
-                //cleanup world
-                native_cleanupWorld();
+                GM_OVERWORLD_CUR_LVL = overworldLvlID;
+            }
+            else
+            {
+                For(i, 1, GM_LEVEL_COUNT)
+                {
+                    WorldLevel* worldLevel = SMBXLevel::get(i);
+                    Overworld* worldPlayer = SMBXOverworld::get();
+
+                    if(CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
+                    {
+                        GM_OVERWORLD_CUR_LVL = i;
+                    }
+                    else if(!CheckCollision(worldPlayer->momentum, worldLevel->momentum) && worldLevel->visible)
+                    {
+                        int dist = std::numeric_limits<int>::infinity();
+                        int directX = worldLevel->momentum.x - worldPlayer->momentum.x;
+                        int directY = worldLevel->momentum.y - worldPlayer->momentum.y;
+                        int cdist = std::sqrt(directX * directX + directY * directY);
+                        if (cdist < dist)
+                        {
+                            GM_OVERWORLD_CUR_LVL = i;
+                        }
+                    }
+                    else
+                    {
+                        // We can't set the GM_OVERWORLD_CUR_LVL at this point... so set it as 1
+                        GM_OVERWORLD_CUR_LVL = 1;
+                    }
+                }
             }
 
             // play the sound if not suppressed
@@ -1674,20 +1707,11 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
                 short soundID = 28;
                 native_playSFX(&soundID); //--PlaySound 28 (line 7266)--
             }
-            
+
             if(gIsOverworld)
             {
-                if(overworldLvlID >= 1)
-                {
-                    GM_OVERWORLD_CUR_LVL = overworldLvlID;
-                }
-                else
-                {
-                    For(i, 1, GM_LEVEL_COUNT)
-                    {
-                        
-                    }
-                }
+                //cleanup world
+                native_cleanupWorld();
             }
 
             // make the world map false

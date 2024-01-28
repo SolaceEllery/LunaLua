@@ -8,6 +8,8 @@
 #include <string.h>
 #include <mutex>
 
+#include "Defines.h"
+
 //String manupulation things
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator);
 void replaceSubStr(std::string& str, const std::string& from, const std::string& to);
@@ -120,6 +122,7 @@ std::vector<std::string> listOfDir(const std::string& path, DWORD fileAttributes
 //std::wstring getModulePath();
 std::wstring getEpisodeFolderPath();
 std::wstring getCustomFolderPath();
+void revertToEpisodeFolderPath();
 std::wstring getLatestFile(const std::initializer_list<std::wstring>& paths);
 std::wstring getLatestConfigFile(const std::wstring& configname);
 
@@ -281,3 +284,4 @@ constexpr std::uint32_t DoubleMostSignificantDWord(double d) {
 #endif
 
 std::string GetEditorPlacedItem();
+bool CheckCollision(Momentum momentumA, Momentum momentumB);

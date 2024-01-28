@@ -265,7 +265,7 @@ static void checkForLevelLoad()
 {
     if(gIsLoadingLevelLua)
     {
-        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 1, gIsLoadingLevelLuaSuppressSFX);
+        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 0, gIsLoadingLevelLuaSuppressSFX);
 
         gIsLoadingLevelLuaName = "";
         gIsLoadingLevelLuaWarpID = 0;
