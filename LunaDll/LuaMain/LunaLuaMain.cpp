@@ -18,6 +18,7 @@
 #include "../SMBXInternal/Animation.h"
 #include "../SMBXInternal/Overworld.h"
 #include "../SMBXInternal/WorldLevel.h"
+#include "../SMBXInternal/Sound.h"
 
 #include "../Rendering/FrameCapture.h"
 
@@ -1749,19 +1750,23 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
                         gIsOverworld = false;
                     }
 
-                    // do SetupPlayers
-                    native_initLevelEnv();
-
                     // apply the dir and filename, and load it!
                     SMBXLevelFileBase base;
                     base.ReadFile(Str2WStr(fullDirWithFilename), getCurrentLevelData()); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
+
+                    // do SetupPlayers
+                    native_initLevelEnv();
 
                     // unapply force pause-exit patch
                     exitPausePatch.Unapply();
 
                     // hide loadscreen
                     LunaLoadScreenKill();
-                    
+
+                    // dumb bug when loading the same level twice
+                    PlayerMOB* p = Player::Get(1);
+                    SMBXSound::PlayMusic(p->CurrentSection, true);
+
                     return true;
                 } //--End If (line 7275)--
                 // that's the end of WorldLoop.bas stuff
