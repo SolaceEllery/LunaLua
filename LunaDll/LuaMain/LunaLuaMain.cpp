@@ -1079,13 +1079,6 @@ void CLunaLua::bindAll()
     if(m_type == LUNALUA_WORLD){
         module(L)
             [
-                namespace_("Level")[
-                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
-                ],
-                
                 namespace_("Graphics")[
                     def("activateOverworldHud", &LuaProxy::Graphics::activateOverworldHud),
                     def("getOverworldHudState", &LuaProxy::Graphics::getOverworldHudState)
@@ -1205,6 +1198,10 @@ void CLunaLua::bindAll()
                 .property("filename", &LuaProxy::LevelObject::filename)
                 .def("mem", static_cast<void (LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, const luabind::object &, lua_State*)>(&LuaProxy::LevelObject::mem))
                 .def("mem", static_cast<luabind::object(LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, lua_State*) const>(&LuaProxy::LevelObject::mem))
+                .def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load)
+                .def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load)
+                .def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load)
+                .def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
 
             ];
     }
