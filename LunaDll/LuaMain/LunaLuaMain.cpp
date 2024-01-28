@@ -1749,10 +1749,13 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
                         gIsOverworld = false;
                     }
 
+                    // do SetupPlayers
+                    native_initLevelEnv();
+
                     // apply the dir and filename, and load it!
                     SMBXLevelFileBase base;
                     base.ReadFile(Str2WStr(fullDirWithFilename), getCurrentLevelData()); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
-                    
+
                     // unapply force pause-exit patch
                     exitPausePatch.Unapply();
 
