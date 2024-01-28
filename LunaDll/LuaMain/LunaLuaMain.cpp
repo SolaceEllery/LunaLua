@@ -725,7 +725,11 @@ void CLunaLua::bindAll()
                 def("__getPerfTrackerData", &LuaProxy::Misc::__getPerfTrackerData),
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
-                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem)
+                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
+                def("loadLevel", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
+                def("loadLevel", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
+                def("loadLevel", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
+                def("loadLevel", (bool(*)(std::string))&LuaProxy::Level::load)
             ],
 
             namespace_("FileFormats")[
@@ -1205,16 +1209,8 @@ void CLunaLua::bindAll()
                 .property("title", &LuaProxy::LevelObject::title)
                 .property("filename", &LuaProxy::LevelObject::filename)
                 .def("mem", static_cast<void (LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, const luabind::object &, lua_State*)>(&LuaProxy::LevelObject::mem))
-                .def("mem", static_cast<luabind::object(LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, lua_State*) const>(&LuaProxy::LevelObject::mem)),
+                .def("mem", static_cast<luabind::object(LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, lua_State*) const>(&LuaProxy::LevelObject::mem))
                 
-                namespace_("level")[
-                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
-                ]
-                
-
             ];
     }
 
@@ -1245,11 +1241,7 @@ void CLunaLua::bindAll()
                     def("filename", &LuaProxy::Level::filename),
                     def("name", &LuaProxy::Level::name),
                     // This isn't just useful in level situation... it is useful for overworld too, so, there's a copy in Misc too
-                    def("loadPlayerHitBoxes", (void(*)(int, int, const std::string&))&LuaProxy::loadHitboxes),
-                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
-                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
+                    def("loadPlayerHitBoxes", (void(*)(int, int, const std::string&))&LuaProxy::loadHitboxes)
                 ],
 
                 namespace_("Graphics")[
