@@ -1079,6 +1079,13 @@ void CLunaLua::bindAll()
     if(m_type == LUNALUA_WORLD){
         module(L)
             [
+                namespace_("Level")[
+                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
+                ],
+                
                 namespace_("Graphics")[
                     def("activateOverworldHud", &LuaProxy::Graphics::activateOverworldHud),
                     def("getOverworldHudState", &LuaProxy::Graphics::getOverworldHudState)
@@ -1229,7 +1236,11 @@ void CLunaLua::bindAll()
                     def("filename", &LuaProxy::Level::filename),
                     def("name", &LuaProxy::Level::name),
                     // This isn't just useful in level situation... it is useful for overworld too, so, there's a copy in Misc too
-                    def("loadPlayerHitBoxes", (void(*)(int, int, const std::string&))&LuaProxy::loadHitboxes)
+                    def("loadPlayerHitBoxes", (void(*)(int, int, const std::string&))&LuaProxy::loadHitboxes),
+                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
                 ],
 
                 namespace_("Graphics")[
@@ -1608,7 +1619,7 @@ void CLunaLua::queuePlayerSectionChangeEvent(int playerIdx) {
 }
 
 // This will load a level from the current episode anywhere in the engine (Even the world map!)
-void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
+bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
 {
     // get the full dir as a string, combine the level name and directory, and turn the other string into a VB6StrPtr, for later
     std::string fullDir = (std::string)GM_FULLDIR;
@@ -1617,7 +1628,7 @@ void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
 
     if(episodeName != "")
     {
-        
+        //LaunchEpisode code will go here, but will be applied after the fast episode boot PR is merged
     }
 
     // make sure it knows the file exists
@@ -1691,8 +1702,13 @@ void LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
 
             // hide loadscreen
             LunaLoadScreenKill();
-
+            
+            return true;
         } //--End If (line 7275)--
         // that's the end of WorldLoop.bas stuff
+    }
+    else
+    {
+        return false;
     }
 }

@@ -885,6 +885,10 @@ namespace LuaProxy {
     namespace Level{
         std::string filename();
         std::string name();
+        bool load(std::string levelName, std::string episodeName, int warpIdx, bool useLoadSFX);
+        bool load(std::string levelName, std::string episodeName, int warpIdx);
+        bool load(std::string levelName, std::string episodeName);
+        bool load(std::string levelName);
     }
 
     namespace Misc{
