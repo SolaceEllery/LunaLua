@@ -317,6 +317,34 @@ std::string LuaProxy::Misc::showRichDialog(const std::string& title, const std::
     return dialog.getRtfText();
 }
 
+bool LuaProxy::Misc::loadLevel(std::string levelName, std::string episodeName, int warpIdx, bool useLoadSFX)
+{
+    gIsLoadingLevelLuaName = levelName;
+    gIsLoadingLevelLuaWarpID = warpIdx;
+    gIsLoadingLevelLuaEpisodeName = episodeName;
+    gIsLoadingLevelLuaSuppressSFX = useLoadSFX;
+    gIsLoadingLevelLua = true;
+    return true;
+}
+
+bool LuaProxy::Misc::loadLevel(std::string levelName)
+{
+    LuaProxy::Misc::loadLevel(levelName, "", 0, true);
+    return true;
+}
+
+bool LuaProxy::Misc::loadLevel(std::string levelName, std::string episodeName)
+{
+    LuaProxy::Misc::loadLevel(levelName, episodeName, 0, true);
+    return true;
+}
+
+bool LuaProxy::Misc::loadLevel(std::string levelName, std::string episodeName, int warpIdx)
+{
+    LuaProxy::Misc::loadLevel(levelName, episodeName, warpIdx, true);
+    return true;
+}
+
 // Internal use profiler functions
 void LuaProxy::Misc::__enablePerfTracker()
 {
@@ -345,4 +373,3 @@ luabind::object LuaProxy::Misc::__getPerfTrackerData(lua_State* L)
     }
     return retTable;
 }
-

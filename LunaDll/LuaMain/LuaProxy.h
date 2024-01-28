@@ -885,10 +885,6 @@ namespace LuaProxy {
     namespace Level{
         std::string filename();
         std::string name();
-        bool load(std::string levelName, std::string episodeName, int warpIdx, bool useLoadSFX);
-        bool load(std::string levelName, std::string episodeName, int warpIdx);
-        bool load(std::string levelName, std::string episodeName);
-        bool load(std::string levelName);
     }
 
     namespace Misc{
@@ -921,6 +917,10 @@ namespace LuaProxy {
         void warning(const std::string& str);
         void registerCharacterId(const luabind::object& namedArgs, lua_State* L);
         std::string showRichDialog(const std::string& title, const std::string& rtfText, bool isReadOnly);
+        bool loadLevel(std::string levelName, std::string episodeName, int warpIdx, bool useLoadSFX);
+        bool loadLevel(std::string levelName, std::string episodeName, int warpIdx);
+        bool loadLevel(std::string levelName, std::string episodeName);
+        bool loadLevel(std::string levelName);
 
         // Internal use profiler functions
         void __enablePerfTracker();

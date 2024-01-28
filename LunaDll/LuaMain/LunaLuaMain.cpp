@@ -727,10 +727,10 @@ void CLunaLua::bindAll()
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
                 def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
-                def("loadLevel", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
-                def("loadLevel", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
-                def("loadLevel", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
-                def("loadLevel", (bool(*)(std::string))&LuaProxy::Level::load)
+                def("loadLevel", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Misc::loadLevel),
+                def("loadLevel", (bool(*)(std::string, std::string, int))&LuaProxy::Misc::loadLevel),
+                def("loadLevel", (bool(*)(std::string, std::string))&LuaProxy::Misc::loadLevel),
+                def("loadLevel", (bool(*)(std::string))&LuaProxy::Misc::loadLevel)
             ],
 
             namespace_("FileFormats")[
@@ -1753,9 +1753,6 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
                     // apply the dir and filename, and load it!
                     SMBXLevelFileBase base;
                     base.ReadFile(Str2WStr(fullDirWithFilename), getCurrentLevelData()); //--OpenLevel SelectWorld(selWorld).WorldPath & WorldLevel(A).FileName (line 7273)--
-
-                    // do SetupPlayers
-                    native_initLevelEnv();
 
                     // unapply force pause-exit patch
                     exitPausePatch.Unapply();

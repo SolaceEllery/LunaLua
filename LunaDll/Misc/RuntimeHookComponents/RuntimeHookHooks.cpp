@@ -153,6 +153,7 @@ extern int __stdcall LoadWorld()
     LunaLoadScreenStart();
 
     ResetLunaModule();
+
     gIsOverworld = true;
 
 #ifndef NO_SDL
@@ -262,7 +263,6 @@ static void checkForLevelLoad()
         gIsLoadingLevelLua = false;
     }
 }
-
 
 extern DWORD __stdcall WorldLoop()
 {
