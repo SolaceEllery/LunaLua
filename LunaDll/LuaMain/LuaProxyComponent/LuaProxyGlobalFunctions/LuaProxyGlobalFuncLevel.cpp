@@ -1,6 +1,7 @@
 #include "../../LuaProxy.h"
 #include "../../../Defines.h"
 #include "../../../GlobalFuncs.h"
+#include "../../LunaLuaMain.h"
 
 std::string LuaProxy::Level::filename()
 {
