@@ -939,6 +939,7 @@ static const auto native_renderLevel    = (void(__stdcall *)(void))GF_RENDER_LEV
 static const auto native_updateBlockAnim = (void(__stdcall *)(void))GF_UPDATE_BLOCK_ANIM;
 
 static const auto native_cleanupLevel   = (void(__stdcall *)(void))GF_CLEANUP_LEVEL;
+static const auto native_cleanupWorld   = (void(__stdcall *)(void))GF_CLEANUP_WORLD;
 static const auto native_loadLevel      = (void(__stdcall *)(VB6StrPtr* /*path*/))GF_LOAD_LEVEL;
 static const auto native_initCamera     = (void(__stdcall *)(void))GF_INIT_CAMERA;
 static const auto native_renderInitScreen = (void(__stdcall *)(void))GF_RENDER_INIT_SCREEN;
