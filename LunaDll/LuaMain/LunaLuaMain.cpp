@@ -1618,6 +1618,10 @@ void CLunaLua::queuePlayerSectionChangeEvent(int playerIdx) {
     m_executeSectionChangeFlag = true;
 }
 
+// Patch to allow exiting the pause menu. Apply when the vanilla pause/textbox
+// should be instantly exited always. Unapply when this should not be the case.
+static auto exitPausePatch = PATCH(0x8E6564).NOP().NOP().NOP().NOP().NOP().NOP();
+
 // This will load a level from the current episode anywhere in the engine (Even the world map!)
 bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int overworldLvlID, bool suppressSound)
 {
