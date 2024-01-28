@@ -111,6 +111,15 @@ extern bool            gLavaIsWeak;
 // Set to true when returning from gameover screen, read by lua to handle gameover-related stuff
 extern bool            gDidGameOver;
 
+// For loading levels in Lua
+extern bool gIsLoadingLevelLua;
+
+extern std::string gIsLoadingLevelLuaName;
+extern std::string gIsLoadingLevelLuaEpisodeName;
+extern int gIsLoadingLevelLuaWarpID;
+extern bool gIsLoadingLevelLuaSuppressSFX;
+extern int gIsLoadingLevelLuaCurrentOverworldID;
+
 extern StartupSettings gStartupSettings;
 
 /// General use globals - These are all defined in Globals.cpp ///

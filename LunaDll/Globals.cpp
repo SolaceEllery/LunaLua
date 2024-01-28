@@ -38,6 +38,16 @@ bool gLavaIsWeak = false;
 // Flag for returning from gameover screen
 bool gDidGameOver = false;
 
+// For loading levels in Lua
+bool gIsLoadingLevelLua = false;
+
+std::string gIsLoadingLevelLuaName = "";
+std::string gIsLoadingLevelLuaEpisodeName = "";
+int gIsLoadingLevelLuaWarpID = 0;
+bool gIsLoadingLevelLuaSuppressSFX = false;
+
+int gIsLoadingLevelLuaCurrentOverworldID = 0;
+
 // Global variables
 int	gFrames;
 

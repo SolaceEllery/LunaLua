@@ -1197,11 +1197,15 @@ void CLunaLua::bindAll()
                 .property("title", &LuaProxy::LevelObject::title)
                 .property("filename", &LuaProxy::LevelObject::filename)
                 .def("mem", static_cast<void (LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, const luabind::object &, lua_State*)>(&LuaProxy::LevelObject::mem))
-                .def("mem", static_cast<luabind::object(LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, lua_State*) const>(&LuaProxy::LevelObject::mem))
-                .def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load)
-                .def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load)
-                .def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load)
-                .def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
+                .def("mem", static_cast<luabind::object(LuaProxy::LevelObject::*)(int, LuaProxy::L_FIELDTYPE, lua_State*) const>(&LuaProxy::LevelObject::mem)),
+                
+                namespace_("level")[
+                    def("loadV2", (bool(*)(std::string, std::string, int, bool))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string, int))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string, std::string))&LuaProxy::Level::load),
+                    def("loadV2", (bool(*)(std::string))&LuaProxy::Level::load)
+                ]
+                
 
             ];
     }
@@ -1679,7 +1683,10 @@ bool LoadLevel(std::string levelName, int warpIdx, std::string episodeName, int 
                 }
                 else
                 {
-                    GM_OVERWORLD_CUR_LVL = 1;
+                    For(i, 1, GM_LEVEL_COUNT)
+                    {
+                        
+                    }
                 }
             }
 

@@ -261,6 +261,21 @@ int OnLvlLoad() {
     return 0;
 }
 
+static void checkForLevelLoad()
+{
+    if(gIsLoadingLevelLua)
+    {
+        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 1, gIsLoadingLevelLuaSuppressSFX);
+
+        gIsLoadingLevelLuaName = "";
+        gIsLoadingLevelLuaWarpID = 0;
+        gIsLoadingLevelLuaEpisodeName = "";
+        gIsLoadingLevelLuaSuppressSFX = false;
+
+        gIsLoadingLevelLua = false;
+    }
+}
+
 // *EXPORT* Test Func -- Run once per gameplay frame
 int TestFunc()
 {
@@ -288,9 +303,12 @@ int TestFunc()
         // Run any framecode
         TestFrameCode();
         LevelFrameCode();
+        
+        checkForLevelLoad();
     }
 
     Blocks::DoSortingIfRequired();
+
     return 0;
 }
 

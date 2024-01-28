@@ -246,6 +246,21 @@ extern int __stdcall LoadIntro()
     return GetTickCount();
 }
 
+static void checkForLevelLoad()
+{
+    if(gIsLoadingLevelLua)
+    {
+        LoadLevel(gIsLoadingLevelLuaName, gIsLoadingLevelLuaWarpID, gIsLoadingLevelLuaEpisodeName, 1, gIsLoadingLevelLuaSuppressSFX);
+
+        gIsLoadingLevelLuaName = "";
+        gIsLoadingLevelLuaWarpID = 0;
+        gIsLoadingLevelLuaEpisodeName = "";
+        gIsLoadingLevelLuaSuppressSFX = false;
+
+        gIsLoadingLevelLua = false;
+    }
+}
+
 
 extern DWORD __stdcall WorldLoop()
 {
@@ -258,6 +273,8 @@ extern DWORD __stdcall WorldLoop()
     g_EventHandler.hookWorldLoop();
 
     gSavedVarBank.SaveIfNeeded();
+    
+    checkForLevelLoad();
 
 #pragma warning(suppress: 28159)
     return GetTickCount();

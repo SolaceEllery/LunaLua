@@ -305,7 +305,6 @@ DEFMEM(GM_LEVEL_COUNT,      WORD,  0x00B25960);
 DEFMEM(GM_LEVEL_BASE,       void*, 0x00B25994);
 DEFMEM(GM_OVERWORLD_CUR_LVL, WORD, 0x00B2C5D6);
 
-
 // Level related memory
 DEFMEM(GM_LVLFILENAME_PTR,  VB6StrPtr, 0x00B2C5A4);   // Lvl filename
 DEFMEM(GM_LVLNAME_PTR,      VB6StrPtr, 0x00B2D764);
@@ -1523,6 +1522,8 @@ _O_Pub_Obj_Inf31_Event0x6                    .text 00B23F40 000000A7 0000000C 00
 //DEBUG:
 #define dbgbox(msg) MessageBoxW(NULL, msg, L"Dbg", NULL);
 #define dbgboxA(msg) MessageBoxA(NULL, msg, "Dbg", NULL);
+
+#define For(A, From, To) for(int A = From; A <= To; ++A)
 
 #endif
 

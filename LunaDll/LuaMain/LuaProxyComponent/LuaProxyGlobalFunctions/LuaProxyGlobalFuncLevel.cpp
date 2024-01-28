@@ -2,6 +2,7 @@
 #include "../../../Defines.h"
 #include "../../../GlobalFuncs.h"
 #include "../../LunaLuaMain.h"
+#include "../../../Globals.h"
 
 std::string LuaProxy::Level::filename()
 {
@@ -15,20 +16,40 @@ std::string LuaProxy::Level::name()
 
 bool LuaProxy::Level::load(std::string levelName, std::string episodeName, int warpIdx, bool useLoadSFX)
 {
-    return LoadLevel(levelName, warpIdx, episodeName, 1, useLoadSFX);
+    gIsLoadingLevelLuaName = levelName;
+    gIsLoadingLevelLuaWarpID = warpIdx;
+    gIsLoadingLevelLuaEpisodeName = episodeName;
+    gIsLoadingLevelLuaSuppressSFX = useLoadSFX;
+    gIsLoadingLevelLua = true;
+    return true;
 }
 
 bool LuaProxy::Level::load(std::string levelName)
 {
-    return LuaProxy::Level::load(levelName, "", 0, false);
+    gIsLoadingLevelLuaName = levelName;
+    gIsLoadingLevelLuaWarpID = 0;
+    gIsLoadingLevelLuaEpisodeName = "";
+    gIsLoadingLevelLuaSuppressSFX = true;
+    gIsLoadingLevelLua = true;
+    return true;
 }
 
 bool LuaProxy::Level::load(std::string levelName, std::string episodeName)
 {
-    return LuaProxy::Level::load(levelName, episodeName, 0, false);
+    gIsLoadingLevelLuaName = levelName;
+    gIsLoadingLevelLuaWarpID = 0;
+    gIsLoadingLevelLuaEpisodeName = episodeName;
+    gIsLoadingLevelLuaSuppressSFX = true;
+    gIsLoadingLevelLua = true;
+    return true;
 }
 
 bool LuaProxy::Level::load(std::string levelName, std::string episodeName, int warpIdx)
 {
-    return LuaProxy::Level::load(levelName, episodeName, warpIdx, false);
+    gIsLoadingLevelLuaName = levelName;
+    gIsLoadingLevelLuaWarpID = warpIdx;
+    gIsLoadingLevelLuaEpisodeName = episodeName;
+    gIsLoadingLevelLuaSuppressSFX = true;
+    gIsLoadingLevelLua = true;
+    return true;
 }
