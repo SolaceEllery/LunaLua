@@ -35,6 +35,7 @@ bool gOnStartRan = false;
 bool gDisablePlayerFilterBounceFix = false;
 
 // Other gameplay settings
+bool gRightClickPaste = false;
 bool gLavaIsWeak = false;
 bool gRunWhenUnfocused = false;
 

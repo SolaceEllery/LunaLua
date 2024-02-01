@@ -831,7 +831,7 @@ typedef struct ExtendedPlayerFields_\
     {
         return g_GLEngine.GifRecorderIsRunning();
     }
-    
+
     FFI_EXPORT(bool) LunaLuaIsFullscreen()
     {
         if (gMainWindowHwnd != NULL)
@@ -858,7 +858,6 @@ typedef struct ExtendedPlayerFields_\
             ShowWindow(gMainWindowHwnd, SW_MAXIMIZE);
         }
     }
-
     FFI_EXPORT(void) LunaLuaMarkNPCTransformationAsHandledByLua(int npcIdx, int oldID, int newID)
     {
         markNPCTransformationAsHandledByLua(npcIdx, oldID, newID);
@@ -1063,5 +1062,14 @@ extern "C" {
     FFI_EXPORT(bool) LunaLuaIsRunningWhenUnfocused(bool value)
     {
         return gRunWhenUnfocused;
+    }
+    FFI_EXPORT(void) LunaLuaSetRightClickPasteSetting(bool enable)
+    {
+        // This will let the user alternatively paste content via right clicking, similar to using the command prompt. Useful for repl
+        gRightClickPaste = enable;
+    }
+    FFI_EXPORT(bool) LunaLuaSetIsRightClickPasteSettingEnabled()
+    {
+        return gRightClickPaste;
     }
 }

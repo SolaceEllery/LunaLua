@@ -110,6 +110,7 @@ extern bool            gOnStartRan;
 extern bool            gDisablePlayerFilterBounceFix;
 
 // Other gameplay settings
+extern bool            gRightClickPaste;
 extern bool            gLavaIsWeak;
 extern bool            gRunWhenUnfocused;
 
