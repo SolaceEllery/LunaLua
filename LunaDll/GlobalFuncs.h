@@ -66,6 +66,12 @@ std::string resolveIfNotAbsolutePath(std::string filename);
 std::string splitPathFromFilename(std::string str);
 std::string splitFilenameFromPath(std::string str);
 
+std::string splitPathFromFilename(std::string str);
+std::string splitFilenameFromPath(std::string str);
+std::string replaceFowardSlashesWithBackSlashes(std::string str);
+bool checkIfWorldIsInAppPath(std::string worldPath);
+bool checkIfWorldIsInWorldPath(std::string worldPath);
+
 extern void removeFilePathW(std::wstring &path);
 extern void removeFilePathW(wchar_t*path, int length);
 void removeFilePathA(std::string &path);
@@ -304,6 +310,7 @@ constexpr std::uint32_t DoubleMostSignificantDWord(double d) {
 
 std::string GetEditorPlacedItem();
 
+// World finding value functions
 int findEpisodeIDFromWorldFileAndPath(std::string worldName);
 std::string findEpisodeWorldPathFromName(std::string name);
 std::string findNameFromEpisodeWorldPath(std::string wldPath);
@@ -312,4 +319,12 @@ int getUnblockedCharacterFromWorld(int curWorldID);
 void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
 
 bool CheckCollision(Momentum momentumA, Momentum momentumB);
+
+// Blocked character world functions
+int getUnblockedCharacterFromWorld(int curWorldID);
+void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
+
+// Collision functions
+bool CheckCollision(Momentum momentumA, Momentum momentumB);
+
 int RndValue();

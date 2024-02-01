@@ -212,8 +212,13 @@ return;
 
 #endif
 
+// Editor IPC Entities
 extern std::string gEditorPlacedItem;
 extern std::mutex g_editorIPCMutex;
 
 extern double soundEffectCount;
 extern bool canUseSEEModFeatures;
+
+// Episode loading
+extern Characters gPlayerStoredCharacters[];
+extern bool gEpisodeLoadedOnBoot;

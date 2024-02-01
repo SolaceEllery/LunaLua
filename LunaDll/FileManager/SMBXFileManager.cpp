@@ -22,6 +22,8 @@
 #include "../SMBXInternal/Layer.h"
 #include "../SMBXInternal/SMBXEvents.h"
 
+#include "../SMBXInternal/Reconstructed/EpisodeMain.h"
+
 #include <DirManager/dirman.h>
 
 SMBXLevelFileBase::SMBXLevelFileBase() :
@@ -151,7 +153,7 @@ void  SMBXLevelFileBase::ReadFileMem(std::string &rawData, LevelData &outData, c
 void SMBXWorldFileBase::PopulateEpisodeList()
 {
     static const std::vector<std::string> wldExtensions({".wld", ".wldx"});
-    std::string worldsPath = normalizeToBackslashAndResolvePath<std::string>(gAppPathUTF8 + "\\worlds");
+    std::string worldsPath = replaceFowardSlashesWithBackSlashes(gAppPathUTF8 + "/worlds");
     DirMan worldDir(worldsPath);
 
     // Reset episode count

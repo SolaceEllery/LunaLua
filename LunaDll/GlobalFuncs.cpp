@@ -21,14 +21,6 @@
 #include <mutex>
 #include <cstddef>
 
-#include <limits>
-#include <tchar.h>
-#include <urlmon.h>
-#include <sys/stat.h>
-#include <filesystem>
-
-#pragma comment (lib,"urlmon.lib")
-
 #include "Misc/MiscFuncs.h"
 #include "Input/Input.h"
 #include "SMBXInternal/Level.h"
@@ -37,6 +29,13 @@
 #include "Misc/RuntimeHook.h"
 #include "Defines.h"
 
+#include <limits>
+#include <tchar.h>
+#include <urlmon.h>
+#include <sys/stat.h>
+#include <filesystem>
+
+#pragma comment (lib,"urlmon.lib")
 #include <libgit2/include/git2.h>
 
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator)
@@ -741,18 +740,47 @@ std::string resolveIfNotAbsolutePath(std::string filename) {
 
 std::string splitPathFromFilename(std::string str)
 {
-    replaceSubStr(str, "/", "\\");
     std::string finalStr = str.substr(str.find_last_of("/\\") + 1);
     return finalStr;
 }
 
 std::string splitFilenameFromPath(std::string str)
 {
-    replaceSubStr(str, "/", "\\");
     std::string finalStr = str.substr(0, str.find_last_of("/\\"));
     return finalStr;
 }
 
+std::string replaceFowardSlashesWithBackSlashes(std::string str)
+{
+    replaceSubStr(str, "/", "\\");
+    return str;
+}
+
+bool checkIfWorldIsInAppPath(std::string worldPath)
+{
+    std::string appPath = WStr2Str(gAppPathWCHAR);
+    if(!worldPath.find(appPath))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool checkIfWorldIsInWorldPath(std::string worldPath)
+{
+    std::string appPath = WStr2Str(gAppPathWCHAR) + "\\worlds";
+    if(!worldPath.find(appPath))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 std::string generateTimestamp(std::string format)
 {
@@ -877,6 +905,8 @@ std::wstring getCustomFolderPath()
     }
     return full_path;
 }
+
+
 
 std::wstring getLatestFile(const std::initializer_list<std::wstring>& paths)
 {
@@ -1112,6 +1142,8 @@ std::string GetEditorPlacedItem()
     return (std::string)gEditorPlacedItem;
 }
 
+
+
 int findEpisodeIDFromWorldFileAndPath(std::string worldName)
 {
     int id = 0;
@@ -1123,16 +1155,12 @@ int findEpisodeIDFromWorldFileAndPath(std::string worldName)
             break;
         }
     }
-    return id - 1;
+    return id;
 }
 
 std::string findEpisodeWorldPathFromName(std::string name)
 {
-    if(name.empty())
-    {
-        return "";
-    }
-    std::string finalWldPath;
+    std::string finalWldPath = "";
     for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
         auto ep = EpisodeListItem::Get(i - 1);
         if(name == std::string(ep->episodeName))
@@ -1140,23 +1168,27 @@ std::string findEpisodeWorldPathFromName(std::string name)
             finalWldPath = std::string(ep->episodePath) + std::string(ep->episodeWorldFile);
             break;
         }
+        else
+        {
+            finalWldPath = "";
+        }
     }
     return finalWldPath;
 }
 
 std::string findNameFromEpisodeWorldPath(std::string wldPath)
 {
-    if(wldPath.empty())
-    {
-        return "";
-    }
-    std::string finalName;
+    std::string finalName = "";
     for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
         auto ep = EpisodeListItem::Get(i - 1);
         if(wldPath == std::string(ep->episodePath) + std::string(ep->episodeWorldFile))
         {
             finalName = std::string(ep->episodeName);
             break;
+        }
+        else
+        {
+            finalName = "";
         }
     }
     return finalName;
@@ -1184,7 +1216,7 @@ void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID)
     for (size_t i = 0; i < 5; i++)
     {
         auto p = Player::Get(playerID);
-        EpisodeListItem* ep = EpisodeListItem::GetRaw(GM_CUR_MENULEVEL);
+        EpisodeListItem* ep = EpisodeListItem::Get(GM_CUR_MENULEVEL);
         if(ep->blockChar[i] == -1 && p->Identity == static_cast<Characters>(i + 1))
         {
             // if Player 1's character that was specified is blocked from the new episode, use the first character that isn't blocked

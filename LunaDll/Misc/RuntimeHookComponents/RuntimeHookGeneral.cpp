@@ -1169,6 +1169,11 @@ void ParseArgs(const std::vector<std::wstring>& args)
             gStartupSettings.patch = true;
         }
     }
+    
+    if (vecStrFind(args, L"--playSfxOnStartup"))
+    {
+        gStartupSettings.epSettings.canPlaySFXOnStartup = true;
+    }
 
     if (vecStrFind(args, L"--waitForIPC"))
     {
@@ -1389,6 +1394,8 @@ void TrySkipPatch()
     // related to some (typically unused?) logic that makes players jump in the credits, but the range is too low when hopping in shoe for some reason that doesn't matter in the base game
     PATCH(0x8F6E11).NOP_PAD_TO_SIZE<4>().Apply(); // effectively comments out line 9624 in modMain.bas, effectively increasing the range that blocks are checked for
 
+    PATCH(0x8C0763).SAFE_CALL(&runtimeHookGameMenu).JMP(0x8C11B1).Apply(); // The Game Menu
+
     PATCH(0x9B7B80).CALL(&runtimeHookGameover).NOP_PAD_TO_SIZE<28>().Apply();
 
     *(void**)0xB2F244 = (void*)&mciSendStringHookA;
@@ -1497,7 +1504,7 @@ void TrySkipPatch()
     PATCH(0x94D5E7).CALL(&GenerateScreenshotHook).Apply();
 
     PATCH(0x8C03DC).CALL(&InitLevelEnvironmentHook).Apply();
-    PATCH(0x8C0A1A).CALL(&InitLevelEnvironmentHook).Apply();
+    //PATCH(0x8C0A1A).CALL(&InitLevelEnvironmentHook).Apply();
     PATCH(0x8C1383).CALL(&InitLevelEnvironmentHook).Apply();
     PATCH(0x8C1953).CALL(&InitLevelEnvironmentHook).Apply();
     PATCH(0x8CE292).CALL(&InitLevelEnvironmentHook).Apply();
@@ -1607,7 +1614,7 @@ void TrySkipPatch()
     // These ones are normally not sensitive to the "max FPS" setting
     PATCH(0x8BFD4A).SAFE_CALL(frameTimingHookPtr).NOP_PAD_TO_SIZE<0x40>().Apply();
     PATCH(0x8C0488).SAFE_CALL(frameTimingHookPtr).NOP_PAD_TO_SIZE<0x40>().Apply();
-    PATCH(0x8C0EE6).SAFE_CALL(frameTimingHookPtr).NOP_PAD_TO_SIZE<0x40>().Apply();
+    //PATCH(0x8C0EE6).SAFE_CALL(frameTimingHookPtr).NOP_PAD_TO_SIZE<0x40>().Apply();
 
     // These ones are normally sensitive to the "max FPS" setting
     PATCH(0x8C15A7).SAFE_CALL(frameTimingMaxFPSHookPtr).NOP_PAD_TO_SIZE<0x4A>().Apply();

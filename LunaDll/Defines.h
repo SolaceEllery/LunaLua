@@ -194,6 +194,9 @@ enum NPCTransformationCause {
 #define GM_PLAYER_KEY_SEL   8
 #define GM_PLAYER_KEY_STR   9
 
+#define GM_MAX_PLAYERS       200
+#define GM_MAX_CHARACTERS    5
+
 #define DEFMEM(name, type, addr) static auto& name = *(type*)(addr); \
     static constexpr std::uintptr_t name ## _ADDR = addr; \
     static auto name ## _POINTER = (type*)(addr);
@@ -207,7 +210,7 @@ DEFMEM(GM_DO_SCREENSHOT,    short, 0x00B2504C);
 DEFMEM(GM_CREDITS_MODE,     WORD,  0x00B2C89C);
 DEFMEM(GM_EPISODE_MODE,     WORD,  0x00B2C5B4);      // 0xFFFF = leave current level
 DEFMEM(GM_LEVEL_MODE,       WORD,  0x00B2C620);
-DEFMEM(GM_TITLE_INTRO_MODE, WORD,  0x00B2C620)
+DEFMEM(GM_TITLE_INTRO_MODE, WORD,  0x00B2C620);
 /*
 The modes work as followed:
 GM_CREDITS_MODE == -1                        --> Credits
@@ -294,6 +297,7 @@ DEFMEM(GM_KEYRELEASED,      WORD,  0x00B2C884);
 // States
 DEFMEM(GM_FREEZWITCH_ACTIV, WORD,  0x00B2C8B4);
 DEFMEM(GM_PAUSE_OPEN,       WORD,  0x00B250E2);
+DEFMEM(GM_FORCED_CONTROLS,  WORD,  0x00B2D712);
 
 DEFMEM(GM_CHEAT_MONEYTREE_HAVEMONEY, DWORD, 0x00B2C8BA);
 
@@ -309,7 +313,6 @@ DEFMEM(GM_OVERWORLD_PTR,    void*, 0x00B2C5C8);
 DEFMEM(GM_LEVEL_COUNT,      WORD,  0x00B25960);
 DEFMEM(GM_LEVEL_BASE,       void*, 0x00B25994);
 DEFMEM(GM_OVERWORLD_CUR_LVL, WORD, 0x00B2C5D6);
-
 
 // Level related memory
 DEFMEM(GM_LVLFILENAME_PTR,  VB6StrPtr, 0x00B2C5A4);   // Lvl filename
@@ -402,21 +405,21 @@ DEFMEM(GM_INPUTTYPE,        short*, 0x00B250A0);
 DEFMEM(GM_INPUTSTR_BUF_PTR, VB6StrPtr, 0x00B2C898);
 
 // Saves
-DEFMEM(GM_CUR_SAVE_SLOT,    WORD,  0x00B2C62A);      // 1 2 or 3
+DEFMEM(GM_CUR_SAVE_SLOT,       WORD,  0x00B2C62A);  // 1 2 or 3
+DEFMEM(GM_SAVE_PERCENTAGE_PTR, void*, 0x00B2C644);
 
 // Cheats
-DEFMEM(GM_PLAYER_INVULN,       WORD,   0x00B2C8C0);    // 0xFFFF = invuln
-DEFMEM(GM_PLAYER_INFJUMP,      WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
-DEFMEM(GM_PLAYER_SHADOWSTAR,   WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
+DEFMEM(GM_PLAYER_INVULN,    WORD,   0x00B2C8C0);    // 0xFFFF = invuln
+DEFMEM(GM_PLAYER_INFJUMP,   WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
+DEFMEM(GM_PLAYER_SHADOWSTAR,WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
+DEFMEM(GM_WORLD_UNLOCK,     WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
+DEFMEM(GM_CHEATED,          WORD,   0x00B2C8C4);    // 0xFFFF = cheated
+
 DEFMEM(GM_PLAYER_GRABALL,      WORD,   0x00B2C8C2);    // 0xFFFF = stickyfingers
 DEFMEM(GM_PLAYER_CAPTAINN,     WORD,   0x00B2C8B6);    // 0xFFFF = captainn
 DEFMEM(GM_PLAYER_FLAMETHROWER, WORD,   0x00B2C8B8);    // 0xFFFF = flamethrower
 DEFMEM(GM_PLAYER_SONIC,        WORD,   0x00B2C8AE);    // 0xFFFF = sonicstooslow
 DEFMEM(GM_PLAYER_FLYER,        WORD,   0x00B2C8B2);    // 0xFFFF = wingman
-
-DEFMEM(GM_WORLD_UNLOCK,     WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
-
-DEFMEM(GM_CHEATED,             WORD,   0x00B2C8C4);    // 0xFFFF = cheated
 
 // Frame counter
 DEFMEM(GM_SHOW_FPS,         WORD,   0x00B25108);    // 0xFFFF = show FPS counter
@@ -647,9 +650,6 @@ DEFMEM(GM_WORLD_NAME,             VB6StrPtr, 0x00B2C624);
 DEFMEM(GM_WORLD_INTRO_FILENAME,   VB6StrPtr, 0x00B25724);
 DEFMEM(GM_HUB_STYLED_EPISODE,     WORD,      0x00B25728);
 DEFMEM(GM_RESTART_ON_DEATH,       WORD,      0x00B2572A);
-
-DEFMEM(GM_BATTLE_MODE, WORD, 0x00B2D740);
-
 
 /////////////////////
 ///  -Assembly-   ///
