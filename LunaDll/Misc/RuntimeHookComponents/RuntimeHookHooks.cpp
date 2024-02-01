@@ -43,8 +43,6 @@
 
 #include "../../Misc/VB6RNG.h"
 
-#include "../../SMBXInternal/Reconstructed/EpisodeMain.h"
-
 void CheckIPCQuitRequest();
 
 extern HHOOK HookWnd;
@@ -184,15 +182,6 @@ extern int __stdcall LoadWorld()
 
         // Mark next render frame as the 'first'
         g_GLEngine.SetFirstFramePending();
-    }
-
-    if (!GM_CREDITS_MODE)
-    {
-        for (int i = 1; i <= min(GM_PLAYERS_COUNT, (WORD)4); i++) {
-            // store player characters at the time of level load,
-            // these are used to restore the character if the episode has to be reloaded
-            gPlayerStoredCharacters[i-1] = Player::Get(i)->Identity;
-        }
     }
 
     short plValue = GM_PLAYERS_COUNT;
@@ -813,7 +802,7 @@ static void __stdcall UpdateInputFinishHook()
 {
     //https://github.com/smbx/smbx-legacy-source/blob/4a7ff946da8924d2268f6ee8d824034f3a7d7658/modPlayer.bas#L5959
     int playerCount = GM_PLAYERS_COUNT;
-    if (playerCount > 2 && GM_LEVEL_MODE == 0 && GM_WINNING == 0 && GM_UNK_IS_CONNECTED == 0 && !gIsOnMainMenu) {
+    if (playerCount > 2 && GM_LEVEL_MODE == 0 && GM_WINNING == 0 && GM_UNK_IS_CONNECTED == 0) {
         for (int playerIdx = 2; playerIdx <= playerCount; playerIdx++) {
             Player::Get(playerIdx)->keymap = Player::Get(1)->keymap;
         }
@@ -843,13 +832,10 @@ static __declspec(naked) void updateInput_Orig()
 
 extern void __stdcall runtimeHookUpdateInput()
 {
-    if(!gIsOnMainMenu)
-    {
-        gLunaGameControllerManager.pollInputs();
-        gEscPressedRegistered = gEscPressed;
-        gEscPressed = false;
-        updateInput_Orig();
-    }
+    gLunaGameControllerManager.pollInputs();
+    gEscPressedRegistered = gEscPressed;
+    gEscPressed = false;
+    updateInput_Orig();
 }
 
 extern void __stdcall WindowInactiveHook()
@@ -1645,66 +1631,7 @@ _declspec(naked) void __stdcall loadLevel_OrigFunc(VB6StrPtr* filename)
     }
 }
 
-//If the legacy title screen is about to boot, prevent that and go straight to loading the episode
-void __stdcall runtimeHookGameMenu()
-{
-    GM_LEVEL_MODE = 0; // Set this to prevent multiple loops
-    // Check to see if IPC is not waiting and Test Mode isn't enabled. If so, continue.
-    if(!gEpisodeLoadedOnBoot)
-    {
-        GameAutostart autostarter = GameAutostart::createGameAutostartByStartupEpisodeSettings(gStartupSettings.epSettings);
-        if(!gStartupSettings.waitForIPC && !TestModeIsEnabled() && gEpisodeLoadedOnBoot)
-        {
-            std::string autostartFile = WStr2Str(getLatestConfigFile(L"autostart.ini"));
-            if(!gStartupSettings.epSettings.enabled && file_existsX(autostartFile))
-            {
-                // Try reading the autostart.ini file first if there's no settings available
-                IniProcessing autostartConfig(autostartFile);
-                if (autostartConfig.beginGroup("autostart"))
-                {
-                    bool doAutostart = autostartConfig.value("do-autostart", false).toBool();
-                    autostartConfig.endGroup();
-                    if (doAutostart)
-                    {
-                        // Note: Internally this uses beginGroup and endGroup, so the group won't be open after it
-                        autostarter = GameAutostart::createGameAutostartByIniConfig(autostartConfig);
-
-                        autostartConfig.beginGroup("autostart");
-                        if (autostartConfig.value("transient", false).toBool())
-                        {
-                            remove(autostartFile.c_str());
-                        }
-                        autostartConfig.endGroup();
-                    }
-                }
-                autostartConfig.endGroup();
-                EpisodeMain mainEpisodeFunc;
-                mainEpisodeFunc.LaunchEpisode(autostarter.selectedWldPath, autostarter.saveSlot, autostarter.playerCount, autostarter.firstCharacter, autostarter.secondCharacter, false);
-            }
-        }
-        else if(gStartupSettings.epSettings.enabled && autostarter.selectedWldPath != L"")
-        {
-            // If there's no autostart file but the command prompt gives out a world path and some other things, we will then boot to the episode from there
-            EpisodeMain mainEpisodeFunc;
-            mainEpisodeFunc.LaunchEpisode(autostarter.selectedWldPath, autostarter.saveSlot, autostarter.playerCount, autostarter.firstCharacter, autostarter.secondCharacter, false);
-        }
-        else if(!gStartupSettings.epSettings.enabled && autostarter.selectedWldPath == L"")
-        {
-            // If there's still nothing, we don't have any settings so we should just load the new launcher
-            EpisodeMain mainEpisodeFunc;
-            mainEpisodeFunc.preLoadMainMenu();
-        }
-    }
-    else if(gEpisodeLoadedOnBoot)
-    {
-        if(!gStartupSettings.waitForIPC && !TestModeIsEnabled() && gEpisodeLoadedOnBoot)
-        {
-            GameAutostart autostarter;
-            EpisodeMain mainEpisodeFunc;
-            mainEpisodeFunc.LaunchEpisode(autostarter.selectedWldPath, autostarter.saveSlot, autostarter.playerCount, autostarter.firstCharacter, autostarter.secondCharacter, true);
-        }
-    }
-}
+Characters playerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO };
 
 void __stdcall runtimeHookLoadLevel(VB6StrPtr* filename)
 {
@@ -1713,7 +1640,7 @@ void __stdcall runtimeHookLoadLevel(VB6StrPtr* filename)
         for (int i = 1; i <= min(GM_PLAYERS_COUNT, (WORD)4); i++) {
             // store player characters at the time of level load,
             // these are used to restore the character if the episode has to be reloaded
-            gPlayerStoredCharacters[i-1] = Player::Get(i)->Identity;
+            playerStoredCharacters[i-1] = Player::Get(i)->Identity;
         }
     }
     
@@ -2923,10 +2850,7 @@ static _declspec(naked) void __stdcall runtimeHookStopMusic_origFunc()
 
 void __stdcall runtimeHookStopMusic()
 {
-    if(!gIsOnMainMenu)
-    {
-        runtimeHookStopMusic_origFunc();
-    }
+    runtimeHookStopMusic_origFunc();
 }
 
 static void __stdcall runtimeHookStoreCustomMusicPath(unsigned int section)
@@ -5024,7 +4948,7 @@ static void LunaLuaResetEpisode() {
     for (int i = 1; i <= GM_PLAYERS_COUNT; i++) {
         auto p = Player::Get(i);
         // restore this player's character
-        p->Identity = gPlayerStoredCharacters[min(i, 4)-1];
+        p->Identity = playerStoredCharacters[min(i, 4)-1];
         // apply saved template
         auto t = getTemplateForCharacter(p->Identity);
         if (t != nullptr) {
