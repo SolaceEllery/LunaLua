@@ -13,6 +13,7 @@ HINSTANCE gHInstance;
 
 HWND gMainWindowHwnd = NULL;
 bool gMainWindowFocused = false;
+bool gMainWindowInBackground = false;
 
 // Global settings
 bool gLunaEnabled;
@@ -35,6 +36,7 @@ bool gDisablePlayerFilterBounceFix = false;
 
 // Other gameplay settings
 bool gLavaIsWeak = false;
+bool gRunWhenUnfocused = false;
 
 // Flag for returning from gameover screen
 bool gDidGameOver = false;
@@ -142,3 +144,6 @@ bool canUseSEEModFeatures = false;
 
 bool gEpisodeLoadedOnBoot = false;
 Characters gPlayerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO };
+
+int gUnfocusTimer = 2;
+int gFocusTimer = 2;

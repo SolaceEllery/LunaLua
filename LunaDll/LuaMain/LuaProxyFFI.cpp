@@ -1056,4 +1056,12 @@ extern "C" {
     {
         return (bool)canUseSEEModFeatures;
     }
+    FFI_EXPORT(void) LunaLuaRunWhenUnfocused(bool value)
+    {
+        gRunWhenUnfocused = value;
+    }
+    FFI_EXPORT(bool) LunaLuaIsRunningWhenUnfocused(bool value)
+    {
+        return gRunWhenUnfocused;
+    }
 }
