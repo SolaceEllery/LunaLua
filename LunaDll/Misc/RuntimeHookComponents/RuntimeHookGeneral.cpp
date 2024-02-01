@@ -1098,12 +1098,11 @@ void ParseArgs(const std::vector<std::wstring>& args)
     for (unsigned int i = 0; i < args.size(); i++)
     {
         const std::wstring& arg = args[i];
-        std::wstring levelPath;
         if ((arg.length() > 0) && (arg[0] == L'-'))
         {
             if (arg.find(L"--testLevel=") == 0)
             {
-                levelPath = arg.substr(12);
+                gStartupSettings.levelTest = arg.substr(12);
             }
         }
         else
@@ -1113,14 +1112,14 @@ void ParseArgs(const std::vector<std::wstring>& args)
             if ((lowerArg.rfind(L".lvl") == (lowerArg.size() - 4)) ||
                 (lowerArg.rfind(L".lvlx") == (lowerArg.size() - 5)))
             {
-                levelPath = arg;
+                gStartupSettings.levelTest = arg;
             }
         }
 
-        if (levelPath.length() > 0)
+        if (gStartupSettings.levelTest.length() > 0)
         {
             STestModeSettings settings;
-            settings.levelPath = levelPath;
+            settings.levelPath = gStartupSettings.levelTest;
             settings.rawData = "";
             if (!testModeEnable(settings))
             {
