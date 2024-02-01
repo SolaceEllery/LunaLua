@@ -145,7 +145,7 @@ public:
     void processSDLEvent(const SDL_Event& event);
 #if !defined(BUILDING_SMBXLAUNCHER)
 public:
-    void handleInputs(bool isOnMainMenu);
+    void handleInputs();
 private:
     void handleInputsForPlayer(int playerNum);
 public:

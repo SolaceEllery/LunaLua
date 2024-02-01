@@ -92,7 +92,7 @@ void LunaGameControllerManager::pollInputs()
     }
 
     #if !defined(BUILDING_SMBXLAUNCHER)
-    handleInputs(gIsOnMainMenu);
+    handleInputs();
     #endif // !defined(BUILDING_SMBXLAUNCHER)
 }
 
@@ -142,7 +142,7 @@ void LunaGameControllerManager::processSDLEvent(const SDL_Event& event)
 
 
 #if !defined(BUILDING_SMBXLAUNCHER)
-void LunaGameControllerManager::handleInputs(bool isOnMainMenu)
+void LunaGameControllerManager::handleInputs()
 {
     int playerCount = GM_PLAYERS_COUNT;
 
@@ -266,10 +266,7 @@ void LunaGameControllerManager::handleInputs(bool isOnMainMenu)
     // Update controller state for each player
     for (int playerNum = 1; (playerNum <= CONTROLLER_MAX_PLAYERS) && (playerNum <= playerCount); playerNum++)
     {
-        if(!isOnMainMenu)
-        {
-            handleInputsForPlayer(playerNum);
-        }
+        handleInputsForPlayer(playerNum);
     }
 
     // Send button press/release events

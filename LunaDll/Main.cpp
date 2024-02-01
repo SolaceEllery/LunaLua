@@ -35,7 +35,6 @@ using std::max;
 #include "Misc/AsmPatch.h"
 #include "Misc/LoadScreen.h"
 #include "../LunaLoader/LunaLoaderPatch.h"
-#include "SMBXInternal/Reconstructed/EpisodeMain.h"
 
 static bool LevelCustomSounds = false;
 
@@ -292,13 +291,6 @@ int TestFunc()
     }
 
     Blocks::DoSortingIfRequired();
-
-    EpisodeMain episodeMainFunc;
-
-    if(gIsOnMainMenu)
-    {
-        episodeMainFunc.mainMenuLoop();
-    }
 
     return 0;
 }
