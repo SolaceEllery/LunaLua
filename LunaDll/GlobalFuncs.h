@@ -318,13 +318,13 @@ std::string findNameFromEpisodeWorldPath(std::string wldPath);
 int getUnblockedCharacterFromWorld(int curWorldID);
 void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
 
-bool CheckCollision(Momentum momentumA, Momentum momentumB);
-
 // Blocked character world functions
 int getUnblockedCharacterFromWorld(int curWorldID);
 void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID);
 
-// Collision functions
+// Misc functions
 bool CheckCollision(Momentum momentumA, Momentum momentumB);
-
 int RndValue();
+
+// SFX functions
+bool createSFXStartLuaEvent(int id, std::string path);

@@ -12,6 +12,8 @@
 #include <string>
 #include <atomic>
 
+#include "../Misc/ResourceFileMapper.h"
+
 class PGE_SDL_Manager
 {
 public:
@@ -25,7 +27,7 @@ class PGE_MusPlayer
 {
 public:
     static std::string currentTrack;
-    static Mix_Music* currentMusic();
+    static Mix_Music *currentMusic();
     static void MUS_playMusic();
     static void MUS_playMusicStream();
     static void MUS_addMusicWithMultiMusic(const char *musFile);
@@ -43,6 +45,7 @@ public:
     static std::string MUS_MusicArtistTag();
     static std::string MUS_MusicAlbumTag();
     static std::string MUS_MusicCopyrightTag();
+    static std::string MUS_get();
 
     static void MUS_changeVolume(int vlm);
     static void MUS_changeVolumeStream(int vlm);
@@ -57,6 +60,10 @@ public:
 
     static unsigned __int64 sampleCount();
     static unsigned __int64 MUS_sampleCount();
+
+    static void setOverrideForMusicAlias(const std::string& alias, std::string chunk);
+    static std::string getMusicForAlias(const std::string& alias, int type);
+    static bool playOverrideForMusicAlias(const std::string& alias);
 
 private:
     static void MUS_StartDeferring();
@@ -90,6 +97,12 @@ private:
     static std::atomic<unsigned __int64> sCount;
     static std::atomic<unsigned __int64> musSCount;
     static void postMixCallback(void *udata, Uint8 *stream, int len);
+
+    struct MusicOverrideSettings {
+        std::string fullPath;
+    };
+    static bool overrideArrayIsUsed;
+    static std::map<std::string, MusicOverrideSettings > overrideSettings;
 };
 
 
