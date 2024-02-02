@@ -431,7 +431,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     // Process F12 key for screenshot to file
     if ((virtKey == VK_F12) && plainPress && g_GLEngine.IsEnabled())
     {
-        bool canMakeSound = true;
+        bool cantMakeSound = false;
         std::string screenshotDirectory = gAppPathUTF8 + "\\screenshots\\";
         std::string fullScreenshotPath = gAppPathUTF8 + "\\screenshots\\" + generateTimestampForFilename() + ".png";
         std::string timestamp = generateTimestampForFilename();
@@ -442,10 +442,10 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
             screenshotEvent->setDirectEventName("onScreenshotTake");
             screenshotEvent->setLoopable(false);
             gLunaLua.callEvent(screenshotEvent, screenshotDirectory, fullScreenshotPath, timestamp);
-            canMakeSound = screenshotEvent->native_cancelled();
+            cantMakeSound = screenshotEvent->native_cancelled();
         }
 
-        if(canMakeSound)
+        if(!cantMakeSound)
         {
             short screenshotSoundID = 12;
             native_playSFX(&screenshotSoundID);
@@ -468,7 +468,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     // Process F11 key for GIF recorder toggle
     if ((virtKey == VK_F11) && plainPress && g_GLEngine.IsEnabled())
     {
-        bool canMakeSound = true;
+        bool cantMakeSound = false;
 
         g_GLEngine.GifRecorderToggle();
 
@@ -478,10 +478,10 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
             gifEvent->setDirectEventName("onGIFRecord");
             gifEvent->setLoopable(false);
             gLunaLua.callEvent(gifEvent, g_GLEngine.GifRecorderIsRunning());
-            canMakeSound = gifEvent->native_cancelled();
+            cantMakeSound = gifEvent->native_cancelled();
         }
 
-        if(canMakeSound)
+        if(!cantMakeSound)
         {
             short gifRecSoundID = 1;
             if(!g_GLEngine.GifRecorderIsRunning())
