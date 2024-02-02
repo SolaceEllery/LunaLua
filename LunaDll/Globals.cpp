@@ -37,6 +37,7 @@ bool gDisablePlayerFilterBounceFix = false;
 // Other gameplay settings
 bool gRightClickPaste = false;
 bool gLavaIsWeak = false;
+bool gLavaIsSafe = false;
 bool gRunWhenUnfocused = false;
 
 // Flag for returning from gameover screen

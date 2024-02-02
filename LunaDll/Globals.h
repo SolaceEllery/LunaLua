@@ -113,6 +113,7 @@ extern bool            gDisablePlayerFilterBounceFix;
 // Other gameplay settings
 extern bool            gRightClickPaste;
 extern bool            gLavaIsWeak;
+extern bool            gLavaIsSafe;
 extern bool            gRunWhenUnfocused;
 
 // Set to true when returning from gameover screen, read by lua to handle gameover-related stuff

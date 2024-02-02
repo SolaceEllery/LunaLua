@@ -891,6 +891,15 @@ extern "C" {
 }
 
 extern "C" {
+    FFI_EXPORT(void) LunaLuaSetSafeLava(bool value)
+    {
+        gLavaIsSafe = value;
+    }
+    FFI_EXPORT(bool) LunaLuaGetSafeLava()
+    {
+        return gLavaIsSafe;
+    }
+
     FFI_EXPORT(void) LunaLuaSetWeakLava(bool value)
     {
         gLavaIsWeak = value;

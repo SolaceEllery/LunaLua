@@ -4899,11 +4899,11 @@ void __stdcall runtimeHookUpdateBGOMomentum(int bgoId, int layerId) {
 
 void __stdcall runtimeHookPlayerKillLava(short* playerIdxPtr)
 {
-    if (gLavaIsWeak)
+    if (gLavaIsWeak && !gLavaIsSafe)
     {
         native_harmPlayer(playerIdxPtr);
     }
-    else
+    else if (!gLavaIsWeak && !gLavaIsSafe)
     {
         native_killPlayer(playerIdxPtr);
     }
