@@ -1649,7 +1649,7 @@ void __stdcall runtimeHookGameMenu()
 {
     GM_LEVEL_MODE = 0; // Set this to prevent multiple loops
     // Check to see if IPC is not waiting and Test Mode isn't enabled. If so, continue.
-    if(gStartupSettings.levelTest != L"")
+    if(gStartupSettings.levelTest == L"")
     {
         if(!gEpisodeLoadedOnBoot)
         {
