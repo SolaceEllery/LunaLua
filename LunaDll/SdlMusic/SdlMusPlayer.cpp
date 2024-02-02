@@ -596,6 +596,20 @@ uint32_t PGE_Sounds::GetMemUsage()
     return PGE_Sounds::memUsage;
 }
 
+void PGE_Sounds::SND_ClearSndFromMemory(std::string sndFile)
+{
+    // clear the file from the cache
+    g_chunkCache.releaseFile(Str2WStr(sndFile));
+}
+
+void PGE_Sounds::SND_ClearChunkFromMemory(Mix_Chunk *chunk)
+{
+    // get the chunk's path and filename
+    std::wstring filePath = SND_findFilenameFromChunkData(chunk);
+    // clear the file from the cache
+    g_chunkCache.releaseFile(filePath);
+}
+
 Mix_Chunk *PGE_Sounds::SND_OpenSnd(const char *sndFile)
 {
     PGE_SDL_Manager::initSDL();
@@ -611,19 +625,23 @@ Mix_Chunk *PGE_Sounds::SND_OpenSnd(const char *sndFile)
     }
 
     Mix_Chunk* chunk = nullptr;
+    std::wstring fileNameChunk = L"";
     std::shared_ptr<ChunkStorage> cachePtr = cacheEntry->data.lock();
     if (cachePtr)
     {
         // Use cache entry
-        chunk = cachePtr->mChunk;
+        chunk = cachePtr->chunk;
+        fileNameChunk = cachePtr->fullPath;
     }
     else
     {
         chunk = Mix_LoadWAV( sndFile );
 
         // Cache the result regardless of if null or not, so we don't waste time re-reading things we can't read
-        cachePtr = std::make_shared<ChunkStorage>(chunk);
+        cachePtr = std::make_shared<ChunkStorage>(chunk, Str2WStr(filePath));
         cacheEntry->data = cachePtr;
+        // Make sure the filename is also cached too
+        cacheEntry->fullPath = Str2WStr(filePath);
     }
     g_chunkStorage.insert(cachePtr);
 
@@ -636,6 +654,47 @@ Mix_Chunk *PGE_Sounds::SND_OpenSnd(const char *sndFile)
     return chunk;
 }
 
+bool PGE_Sounds::SND_isSndInCache(std::string fileName)
+{
+    // get the cacheEntry
+    CachedFileDataWeakPtr<ChunkStorage>::Entry* cacheEntry = g_chunkCache.get(Str2WStr(fileName));
+    if (cacheEntry == nullptr) // if nothing was found, return false
+    {
+        return false;
+    }
+    else // else return the filename and path
+    {
+        if(cacheEntry->fullPath == Str2WStr(fileName))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+std::wstring PGE_Sounds::SND_findFilenameFromChunkData(Mix_Chunk *chunk)
+{
+    std::wstring filePath = g_chunkCache.getChunkFilename(chunk);
+    return filePath;
+}
+
+bool PGE_Sounds::SND_isChunkInCache(Mix_Chunk *chunk)
+{
+    // get the chunk's path and filename
+    std::wstring filePath = g_chunkCache.getChunkFilename(chunk);
+    if(filePath != L"")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }    
+}
+
 void PGE_Sounds::holdCached(bool isWorld)
 {
     g_chunkCache.hold(isWorld);
@@ -644,47 +703,6 @@ void PGE_Sounds::holdCached(bool isWorld)
 void PGE_Sounds::releaseCached(bool isWorld)
 {
     g_chunkCache.release(isWorld);
-}
-
-Mix_Chunk *PGE_Sounds::SND_RemoveSnd(const char *sndFile)
-{
-    PGE_SDL_Manager::initSDL();
-    std::string filePath = sndFile;
-    
-    CachedFileDataWeakPtr<ChunkStorage>::Entry* cacheEntry = g_chunkCache.get(Str2WStr(filePath));
-    if (cacheEntry == nullptr)
-    {
-        // No file
-        PGE_Sounds::lastError = "Could not open ";
-        PGE_Sounds::lastError += filePath;
-        return nullptr;
-    }
-
-    Mix_Chunk* chunk = nullptr;
-    std::shared_ptr<ChunkStorage> cachePtr = cacheEntry->data.lock();
-    if (cachePtr)
-    {
-        // Use cache entry
-        chunk = cachePtr->mChunk;
-    }
-    else
-    {
-        chunk = Mix_LoadWAV( sndFile );
-
-        // Cache the result regardless of if null or not, so we don't waste time re-reading things we can't read
-        cachePtr = std::make_shared<ChunkStorage>(chunk);
-        cacheEntry->data = cachePtr;
-    }
-
-    if (chunk == nullptr)
-    {
-        PGE_Sounds::lastError = "Could not read ";
-        PGE_Sounds::lastError += filePath;
-    }
-    
-    g_chunkStorage.erase(cachePtr);
-
-    return chunk;
 }
 
 bool PGE_Sounds::SND_PlaySnd(const char *sndFile)
@@ -713,7 +731,7 @@ void PGE_Sounds::clearSoundBuffer()
 
 void PGE_Sounds::setOverrideForAlias(const std::string& alias, Mix_Chunk* chunk)
 {
-    ChunkOverrideSettings settings = { nullptr, false };
+    ChunkOverrideSettings settings = { nullptr, false, L"" };
     if(overrideArrayIsUsed)
     {
         auto it = overrideSettings.find(alias);
@@ -765,7 +783,7 @@ bool PGE_Sounds::playOverrideForAlias(const std::string& alias, int ch)
 
 void PGE_Sounds::setMuteForAlias(const std::string& alias, bool muted)
 {
-    ChunkOverrideSettings settings = { nullptr, false };
+    ChunkOverrideSettings settings = { nullptr, false, L"" };
     if (overrideArrayIsUsed)
     {
         auto it = overrideSettings.find(alias);

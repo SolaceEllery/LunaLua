@@ -97,6 +97,10 @@ namespace LuaProxy
         int SfxSetDistance(int channel, int distance);
         int SfxSet3DPosition(int channel, int angle, int distance);
         int SfxReverseStereo(int channel, int flip);
+        void SfxClear(std::string sndFile);
+        void SfxClearChunk(Mix_Chunk *chunk);
+        bool SfxIsInCache(std::string fileName);
+        bool SfxIsInCacheChunk(Mix_Chunk *chunk);
         int GetMixedSfxVolume();
         int SetMixedSfxVolume(int vlm);
 

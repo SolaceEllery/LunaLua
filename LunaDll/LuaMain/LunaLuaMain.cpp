@@ -847,11 +847,6 @@ void CLunaLua::bindAll()
             ],
             /*************************FileFormats*end*************************/
             
-            namespace_("CacheSystem")[
-                def("ClearSoundBuffer", (void(*)())&LuaProxy::Audio::clearSFXBuffer),
-                def("ClearSpecifiedSoundFromCache", (Mix_Chunk*(*)(const std::string&, lua_State*))&PGE_Sounds::SND_RemoveSnd)
-            ],
-            
             namespace_("Internet")[
                 def("DownloadFile", (void(*)(std::string, std::string, std::string, std::string))&DownloadFile),
                 def("GitStart", (int(*)(void))&git_libgit2_init),
@@ -982,7 +977,13 @@ void CLunaLua::bindAll()
                 def("__setOverrideForAlias", LuaProxy::Audio::__setOverrideForAlias),
                 def("__getChunkForAlias", LuaProxy::Audio::__getChunkForAlias),
                 def("__setMuteForAlias", LuaProxy::Audio::__setMuteForAlias),
-                def("__getMuteForAlias", LuaProxy::Audio::__getMuteForAlias)
+                def("__getMuteForAlias", LuaProxy::Audio::__getMuteForAlias),
+                
+                // SEE Mod-related SFX functions
+                def("SfxClearFromCache", (void(*)(Mix_Chunk*))&LuaProxy::Audio::SfxClearChunk),
+                def("SfxClearFromCache", (void(*)(const std::string&))&LuaProxy::Audio::SfxClear),
+                def("SfxIsInCache", (bool(*)(Mix_Chunk*))&LuaProxy::Audio::SfxIsInCacheChunk),
+                def("SfxIsInCache", (bool(*)(std::string))&LuaProxy::Audio::SfxIsInCache)
             ],
             /*************************Audio*end*************************/
 

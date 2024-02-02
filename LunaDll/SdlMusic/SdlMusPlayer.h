@@ -111,30 +111,37 @@ class PGE_Sounds
 private:
     static std::string lastError;
 public:
+    static void SND_ClearSndFromMemory(std::string sndFile);
+    static void SND_ClearChunkFromMemory(Mix_Chunk *chunk);
+    static bool SND_isSndInCache(std::string fileName);
+    static bool SND_isChunkInCache(Mix_Chunk *chunk);
     static const char* SND_getLastError() { return lastError.c_str(); }
     static bool SND_PlaySnd(const char *sndFile);
     static void clearSoundBuffer();
     static Mix_Chunk *SND_OpenSnd(const char *sndFile);
     static void holdCached(bool isWorld);
     static void releaseCached(bool isWorld);
-    static Mix_Chunk *SND_RemoveSnd(const char *sndFile);
     static bool playOverrideForAlias(const std::string& alias, int ch);
     static void setOverrideForAlias(const std::string& alias, Mix_Chunk* chunk);
     static Mix_Chunk *getChunkForAlias(const std::string& alias);
     static void setMuteForAlias(const std::string& alias, bool muted);
     static bool getMuteForAlias(const std::string& alias);
+    static std::wstring SND_findFilenameFromChunkData(Mix_Chunk *chunk);
 public:
     static uint32_t GetMemUsage();
 public:
     class ChunkStorage {
     public:
-        Mix_Chunk* mChunk;
+        Mix_Chunk* chunk;
+        std::wstring fullPath;
 
-        ChunkStorage(Mix_Chunk* chunk) :
-            mChunk(chunk)
+        ChunkStorage(Mix_Chunk* chunk, std::wstring fullPath) :
+            chunk(chunk),
+            fullPath(fullPath)
         {
             // Only increment memory usage if we successfully opened something
-            if (chunk) {
+            if (chunk)
+            {
                 PGE_Sounds::memUsage += chunk->alen;
             }
         }
@@ -142,17 +149,19 @@ public:
         ~ChunkStorage()
         {
             // NOTE: This should only be destructed when it's certain the sound couldn't be playing
-            if (mChunk)
+            if (chunk)
             {
-                PGE_Sounds::memUsage -= mChunk->alen;
-                Mix_FreeChunk(mChunk);
-                mChunk = nullptr;
+                PGE_Sounds::memUsage -= chunk->alen;
+                Mix_FreeChunk(chunk);
+                fullPath = L"";
+                chunk = nullptr;
             }
         }
     };
 private:
     struct ChunkOverrideSettings {
         Mix_Chunk* chunk;
+        std::wstring fullPath;
         bool muted;
     };
     static char *current;

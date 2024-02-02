@@ -9,6 +9,9 @@
 #include <mutex>
 #include "../GlobalFuncs.h"
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer_ext.h>
+
 class ResourceFileInfo {
 public:
     bool         done;
@@ -76,6 +79,7 @@ public:
     {
         ResourceFileInfo metadata;
         std::weak_ptr<T> data;
+        std::wstring fullPath;
         bool used;
         Entry(const ResourceFileInfo& fileInfo) :
             metadata(fileInfo), data(), used(true)
@@ -135,6 +139,43 @@ public:
                 cacheEntry++;
             }
         }
+    }
+    
+    void CachedFileDataWeakPtr::releaseFile(const NormalizedPath<std::wstring>& filePath)
+    {
+        // find the file first
+        auto&& it = mCache.find(filePath);
+        // lock it
+        std::shared_ptr<T> cachePtr = it->second.data.lock();
+        // if found, erase the contents
+        for (auto&& cacheEntry = mCache.begin(); cacheEntry != mCache.end();)
+        {
+            if(cachePtr)
+            {
+                mCache.erase(cacheEntry++);
+            }
+            else
+            {
+                cacheEntry++;
+            }
+        }
+    }
+    
+    std::wstring CachedFileDataWeakPtr::getChunkFilename(Mix_Chunk *chunk)
+    {
+        for (auto&& cacheEntry = mCache.begin(); cacheEntry != mCache.end();)
+        {
+            std::shared_ptr<T> cachePtr = cacheEntry->second.data.lock();
+            if (cachePtr)
+            {
+                Mix_Chunk* memoryChunk = cachePtr->chunk;
+                if(memoryChunk == chunk)
+                {
+                    return cachePtr->fullPath;
+                }
+            }
+        }
+        return L"";
     }
 
     Entry* CachedFileDataWeakPtr::get(const NormalizedPath<std::wstring>& filePath)

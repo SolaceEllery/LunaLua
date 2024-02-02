@@ -656,6 +656,34 @@ bool LuaProxy::Audio::__getMuteForAlias(const std::string& alias)
 #endif
 }
 
+void LuaProxy::Audio::SfxClear(std::string sndFile)
+{
+#ifndef NO_SDL
+    PGE_Sounds::SND_ClearSndFromMemory(sndFile);
+#endif  
+}
+
+void LuaProxy::Audio::SfxClearChunk(Mix_Chunk *chunk)
+{
+#ifndef NO_SDL
+    PGE_Sounds::SND_ClearChunkFromMemory(chunk);
+#endif  
+}
+
+bool LuaProxy::Audio::SfxIsInCache(std::string fileName)
+{
+#ifndef NO_SDL
+    return PGE_Sounds::SND_isSndInCache(fileName);
+#endif
+}
+
+bool LuaProxy::Audio::SfxIsInCacheChunk(Mix_Chunk *chunk)
+{
+#ifndef NO_SDL
+    return PGE_Sounds::SND_isChunkInCache(chunk);
+#endif
+}
+
 // Mutex for making sure this is safely handled
 static std::mutex g_SfxPlayObjMutex;
 
