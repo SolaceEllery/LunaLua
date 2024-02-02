@@ -2227,9 +2227,12 @@ __declspec(naked) void __stdcall startInput_OrigFunc()
 void __stdcall runtimeHookDoInput()
 {
     // Make sure that inputs don't do anything when the window is in the background. This is used for running the game when unfocused.
-    if(!gMainWindowInBackground || !gDisablePlayerKeys)
+    if(!gDisablePlayerKeys)
     {
-        startInput_OrigFunc();
+        if(!gMainWindowInBackground)
+        {
+            startInput_OrigFunc();
+        }
     }
 }
 
@@ -4896,56 +4899,28 @@ void __stdcall runtimeHookUpdateBGOMomentum(int bgoId, int layerId) {
     SMBX_BGO::GetRaw(bgoId)->momentum.speedY = Layer::Get(layerId)->ySpeed;
 }
 
-static int __stdcall lavaStatic_check(short* playerIdxPtr)
-{
-    /*  LAVA SETTINGS:
-        
-        1. Kill player (Default)
-        2. Harm player (Weak lava)
-        3. Do nothing (New)
-    */
-    PlayerLavaFields* lavaInfo = Player::GetLavaFields((int)playerIdxPtr);
-    if(lavaInfo->lavaTouchingStatus == 1 && !gLavaIsWeak && !gLavaIsSafe)
-    {
-        return 1;
-    }
-    else if(lavaInfo->lavaTouchingStatus == 2 && !gLavaIsWeak && !gLavaIsSafe)
-    {
-        return 2;
-    }
-    else if (lavaInfo->lavaTouchingStatus == 3 && !gLavaIsWeak && !gLavaIsSafe)
-    {
-        return 3;
-    }
-    else
-    {
-        return 0; // Use weak lava instead
-    }
-}
-
 void __stdcall runtimeHookPlayerKillLava(short* playerIdxPtr)
 {
-    
     PlayerLavaFields* lavaInfo = Player::GetLavaFields((int)playerIdxPtr);
     
-    if(lavaInfo->lavaTouchingStatus == 1 && !gLavaIsWeak && !gLavaIsSafe)
+    if(lavaInfo->lavaTouchingStatus == 1 && !gLavaIsWeak)
     {
         native_killPlayer(playerIdxPtr);
     }
-    else if(lavaInfo->lavaTouchingStatus == 2 && !gLavaIsWeak && !gLavaIsSafe)
+    else if(lavaInfo->lavaTouchingStatus == 2 && !gLavaIsWeak)
     {
         native_harmPlayer(playerIdxPtr);
     }
-    else if (lavaInfo->lavaTouchingStatus == 3 && !gLavaIsWeak && !gLavaIsSafe)
+    else if (lavaInfo->lavaTouchingStatus == 3 && !gLavaIsWeak)
     {
         // Don't do anything, the player is invulnerable
     }
 
-    if (gLavaIsWeak && !gLavaIsSafe)
+    if (gLavaIsWeak && lavaInfo->lavaTouchingStatus == 0)
     {
         native_harmPlayer(playerIdxPtr);
     }
-    else if (!gLavaIsWeak && !gLavaIsSafe)
+    else if (!gLavaIsWeak && lavaInfo->lavaTouchingStatus == 0)
     {
         native_killPlayer(playerIdxPtr);
     }
@@ -4957,10 +4932,22 @@ int weakLavaLavaCollisions = 0; // total nunmber of lava hitspot = 1 collisions
 
 static bool __stdcall runtimeHookPlayerKillLavaSolidExitImpl(int hitSpot, int blockIdx, short* playerIdxPtr)
 {
+    /*  LAVA SETTINGS:
+        
+        0. Set if weak lava is on
+        1. Kill player (Default)
+        2. Harm player (Weak lava)
+        3. Do nothing (New)
+    */
     auto& player = *Player::Get(*playerIdxPtr);
+    PlayerMOB* player2 = Player::Get((int)*playerIdxPtr);
     auto& block = *Block::GetRaw(blockIdx);
-    if (!gLavaIsWeak && lavaStatic_check(playerIdxPtr) == 0)
+    short* realPlayerIdx = (short*)(player2 - (PlayerMOB*)GM_PLAYERS_PTR);
+    PlayerLavaFields* lavaInfo = Player::GetLavaFields((int)realPlayerIdx);
+    if(lavaInfo == nullptr)
     {
+        std::string msg = "The player idx is " + std::to_string((int)playerIdxPtr);
+        MessageBoxA(gMainWindowHwnd, msg.c_str(), "Test", 0);
         if ((!((player.MountType == 1) && (player.MountColor == 2))) &&
             ((block.BlockType > Block::MAX_ID) || (blockdef_floorslope[block.BlockType] == 0))
             )
@@ -4974,26 +4961,9 @@ static bool __stdcall runtimeHookPlayerKillLavaSolidExitImpl(int hitSpot, int bl
         native_killPlayer(playerIdxPtr);
         return false;
     }
-    else if(gLavaIsWeak && lavaStatic_check(playerIdxPtr) == 0)
+    else if(lavaInfo->lavaTouchingStatus == 0)
     {
-        // Weak lava
-        if (hitSpot == 1)
-        {
-            // Count top collisions,
-            // we only hurt the player if the number of lava collisions equals the total number of top collisions
-            // otherwise, the player would be harmed in cases where they are also standing on another block, which is not desirable!
-            weakLavaLavaCollisions += 1;
-        }
-        else
-        {
-            native_harmPlayer(playerIdxPtr);
-        }
-        return true; // Treat weak lava as solid
-    }
-    else
-    {
-        int check = lavaStatic_check(playerIdxPtr);
-        if(check == 1)
+        if (!gLavaIsWeak)
         {
             if ((!((player.MountType == 1) && (player.MountColor == 2))) &&
                 ((block.BlockType > Block::MAX_ID) || (blockdef_floorslope[block.BlockType] == 0))
@@ -5008,7 +4978,41 @@ static bool __stdcall runtimeHookPlayerKillLavaSolidExitImpl(int hitSpot, int bl
             native_killPlayer(playerIdxPtr);
             return false;
         }
-        else if(check == 2)
+        else if(gLavaIsWeak)
+        {
+            // Weak lava
+            if (hitSpot == 1)
+            {
+                // Count top collisions,
+                // we only hurt the player if the number of lava collisions equals the total number of top collisions
+                // otherwise, the player would be harmed in cases where they are also standing on another block, which is not desirable!
+                weakLavaLavaCollisions += 1;
+            }
+            else
+            {
+                native_harmPlayer(playerIdxPtr);
+            }
+            return true; // Treat weak lava as solid
+        }
+    }
+    else if(lavaInfo->lavaTouchingStatus > 0)
+    {
+        if(lavaInfo->lavaTouchingStatus == 1)
+        {
+            if ((!((player.MountType == 1) && (player.MountColor == 2))) &&
+                ((block.BlockType > Block::MAX_ID) || (blockdef_floorslope[block.BlockType] == 0))
+                )
+            {
+                // Conditions are met for the check that makes lava 'generous'
+                if ((player.momentum.y + player.momentum.height) < (block.momentum.y + 6))
+                {
+                    return false;
+                }
+            }
+            native_killPlayer(playerIdxPtr);
+            return false;
+        }
+        else if(lavaInfo->lavaTouchingStatus == 2)
         {
             if (hitSpot == 1)
             {
@@ -5023,7 +5027,7 @@ static bool __stdcall runtimeHookPlayerKillLavaSolidExitImpl(int hitSpot, int bl
             }
             return true; // Treat weak lava as solid
         }
-        else if(check == 3)
+        else if(lavaInfo->lavaTouchingStatus == 3)
         {
             if (hitSpot == 1)
             {
@@ -5038,6 +5042,21 @@ static bool __stdcall runtimeHookPlayerKillLavaSolidExitImpl(int hitSpot, int bl
             }
             return true; // Treat weak lava as solid
         }
+    }
+    else
+    {
+        if ((!((player.MountType == 1) && (player.MountColor == 2))) &&
+            ((block.BlockType > Block::MAX_ID) || (blockdef_floorslope[block.BlockType] == 0))
+            )
+        {
+            // Conditions are met for the check that makes lava 'generous'
+            if ((player.momentum.y + player.momentum.height) < (block.momentum.y + 6))
+            {
+                return false;
+            }
+        }
+        native_killPlayer(playerIdxPtr);
+        return false;
     }
 }
 
@@ -5080,8 +5099,10 @@ _declspec(naked) void __stdcall runtimeHookPlayerCountCollisionsForWeakLava(shor
 int __stdcall runtimeHookCharacterIdTranslateHook(short* idPtr);
 static void __stdcall runtimeHookPlayerBlockCollisionEndInternal(PlayerMOB* player)
 {
+    short* playerIdxShortStar = (short*)(player - (PlayerMOB*)GM_PLAYERS_PTR);
+    PlayerLavaFields* lavaInfo = Player::GetLavaFields((int)playerIdxShortStar);
     // if weak lava is enabled
-    if (gLavaIsWeak)
+    if (gLavaIsWeak && lavaInfo->lavaTouchingStatus == 0)
     {
         // detect if the player is ONLY standing on lava, by counting all blocks stood on
         if (weakLavaLavaCollisions > 0 && weakLavaLavaCollisions >= weakLavaTotalCollisions)
@@ -5093,6 +5114,24 @@ static void __stdcall runtimeHookPlayerBlockCollisionEndInternal(PlayerMOB* play
             native_harmPlayer(&playerIdx);
         }
     }
+    else if (!gLavaIsWeak && lavaInfo->lavaTouchingStatus == 2)
+    {
+        // detect if the player is ONLY standing on lava, by counting all blocks stood on
+        if (weakLavaLavaCollisions > 0 && weakLavaLavaCollisions >= weakLavaTotalCollisions)
+        {
+            // UGLY!!!!!!!! NEVER DO THIS!
+            // convert the player back to its array index
+            short playerIdx = ((int)(player - (PlayerMOB*)GM_PLAYERS_PTR));
+            // harm player
+            native_harmPlayer(&playerIdx);
+        }
+    }
+    else if(!gLavaIsWeak && lavaInfo->lavaTouchingStatus == 3)
+        // detect if the player is ONLY standing on lava, by counting all blocks stood on
+        if (weakLavaLavaCollisions > 0 && weakLavaLavaCollisions >= weakLavaTotalCollisions)
+        {
+            // don't do anything afterward
+        }
     // reset counters for next collision loop
     weakLavaLavaCollisions = 0;
     weakLavaTotalCollisions = 0;

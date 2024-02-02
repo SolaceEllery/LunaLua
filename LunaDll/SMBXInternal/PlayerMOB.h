@@ -412,7 +412,7 @@ struct ExtendedPlayerFields
 
 struct PlayerLavaFields
 {
-    int lavaTouchingStatus;
+    unsigned int lavaTouchingStatus;
 
     // Constructor
     PlayerLavaFields()

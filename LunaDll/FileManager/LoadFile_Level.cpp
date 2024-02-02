@@ -131,7 +131,7 @@ void LunaLua_loadLevelFile(LevelData &outData, std::wstring fullPath, bool isVal
     Player::ClearExtendedFields();
 
     // Along with player lava status
-    Player::ClearLavaFields();
+    Player::SetLavaFieldsToOne();
 
     // We should clear the anim array apparently though
     memset(GM_ANIM_PTR, 0, 1000*sizeof(SMBXAnimation));

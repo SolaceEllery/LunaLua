@@ -891,15 +891,18 @@ extern "C" {
 }
 
 extern "C" {
-    FFI_EXPORT(void) LunaLuaSetLavaStatus(int playerIdx, int status)
+    FFI_EXPORT(PlayerLavaFields*) LunaLuaGetPlayerLavaFieldsArray()
     {
-        PlayerLavaFields* lavaInfo = Player::GetLavaFields(playerIdx);
-        lavaInfo->lavaTouchingStatus = status;
+        return Player::GetLavaFields(0);
     }
-    FFI_EXPORT(int) LunaLuaGetLavaStatus(int playerIdx)
+
+    FFI_EXPORT(const char*) LunaLuaGetPlayerLavaFieldsStruct()
     {
-        PlayerLavaFields* lavaInfo = Player::GetLavaFields(playerIdx);
-        return lavaInfo->lavaTouchingStatus;
+        return "\
+typedef struct PlayerLavaFields_\
+{\
+    unsigned int lavaTouchingStatus;\
+} PlayerLavaFields;";
     }
 
     FFI_EXPORT(void) LunaLuaSetWeakLava(bool value)
