@@ -409,17 +409,18 @@ DEFMEM(GM_CUR_SAVE_SLOT,       WORD,  0x00B2C62A);  // 1 2 or 3
 DEFMEM(GM_SAVE_PERCENTAGE_PTR, void*, 0x00B2C644);
 
 // Cheats
-DEFMEM(GM_PLAYER_INVULN,    WORD,   0x00B2C8C0);    // 0xFFFF = invuln
-DEFMEM(GM_PLAYER_INFJUMP,   WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
-DEFMEM(GM_PLAYER_SHADOWSTAR,WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
-DEFMEM(GM_WORLD_UNLOCK,     WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
-DEFMEM(GM_CHEATED,          WORD,   0x00B2C8C4);    // 0xFFFF = cheated
-
+DEFMEM(GM_PLAYER_INVULN,       WORD,   0x00B2C8C0);    // 0xFFFF = invuln
+DEFMEM(GM_PLAYER_INFJUMP,      WORD,   0x00B2C8AC);    // 0xFFFF = infinite jumps
+DEFMEM(GM_PLAYER_SHADOWSTAR,   WORD,   0x00B2C8AA);    // 0xFFFF = shadowstar
 DEFMEM(GM_PLAYER_GRABALL,      WORD,   0x00B2C8C2);    // 0xFFFF = stickyfingers
 DEFMEM(GM_PLAYER_CAPTAINN,     WORD,   0x00B2C8B6);    // 0xFFFF = captainn
 DEFMEM(GM_PLAYER_FLAMETHROWER, WORD,   0x00B2C8B8);    // 0xFFFF = flamethrower
 DEFMEM(GM_PLAYER_SONIC,        WORD,   0x00B2C8AE);    // 0xFFFF = sonicstooslow
 DEFMEM(GM_PLAYER_FLYER,        WORD,   0x00B2C8B2);    // 0xFFFF = wingman
+
+DEFMEM(GM_WORLD_UNLOCK,        WORD,   0x00B2C8B0);    // 0xFFFF = illparkwhereiwant
+
+DEFMEM(GM_CHEATED,             WORD,   0x00B2C8C4);    // 0xFFFF = cheated
 
 // Frame counter
 DEFMEM(GM_SHOW_FPS,         WORD,   0x00B25108);    // 0xFFFF = show FPS counter

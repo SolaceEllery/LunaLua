@@ -431,8 +431,26 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     // Process F12 key for screenshot to file
     if ((virtKey == VK_F12) && plainPress && g_GLEngine.IsEnabled())
     {
-        short screenshotSoundID = 12;
-        native_playSFX(&screenshotSoundID);
+        bool canMakeSound = true;
+        std::string screenshotDirectory = gAppPathUTF8 + "\\screenshots\\";
+        std::string fullScreenshotPath = gAppPathUTF8 + "\\screenshots\\" + generateTimestampForFilename() + ".png";
+        std::string timestamp = generateTimestampForFilename();
+        
+        if(gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> screenshotEvent = std::make_shared<Event>("onScreenshotTake", true);
+            screenshotEvent->setDirectEventName("onScreenshotTake");
+            screenshotEvent->setLoopable(false);
+            gLunaLua.callEvent(screenshotEvent, screenshotDirectory, fullScreenshotPath, timestamp);
+            canMakeSound = screenshotEvent->native_cancelled();
+        }
+
+        if(canMakeSound)
+        {
+            short screenshotSoundID = 12;
+            native_playSFX(&screenshotSoundID);
+        }
+
         g_GLEngine.TriggerScreenshot([](HGLOBAL globalMem, const BITMAPINFOHEADER* header, void* pData, HWND curHwnd) {
             std::wstring screenshotPath = gAppPathWCHAR + std::wstring(L"\\screenshots");
             if (GetFileAttributesW(screenshotPath.c_str()) & INVALID_FILE_ATTRIBUTES) {
@@ -450,13 +468,44 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     // Process F11 key for GIF recorder toggle
     if ((virtKey == VK_F11) && plainPress && g_GLEngine.IsEnabled())
     {
-        short gifRecSoundID = (g_GLEngine.GifRecorderToggle() ? 24 : 12);
-        native_playSFX(&gifRecSoundID);
+        bool canMakeSound = true;
+
+        g_GLEngine.GifRecorderToggle();
+
+        if(gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> gifEvent = std::make_shared<Event>("onGIFRecord", true);
+            gifEvent->setDirectEventName("onGIFRecord");
+            gifEvent->setLoopable(false);
+            gLunaLua.callEvent(gifEvent, g_GLEngine.GifRecorderIsRunning());
+            canMakeSound = gifEvent->native_cancelled();
+        }
+
+        if(canMakeSound)
+        {
+            short gifRecSoundID = 1;
+            if(!g_GLEngine.GifRecorderIsRunning())
+            {
+                gifRecSoundID = 12;
+            }
+            else
+            {
+                gifRecSoundID = 24;
+            }
+            native_playSFX(&gifRecSoundID);
+        }
     }
 
     // Process F4 key for letterbox toggle
     if ((virtKey == VK_F4) && plainPress && g_GLEngine.IsEnabled())
     {
+        if(gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> letterboxEvent = std::make_shared<Event>("onLetterboxToggle", false);
+            letterboxEvent->setDirectEventName("onLetterboxToggle");
+            letterboxEvent->setLoopable(false);
+            gLunaLua.callEvent(letterboxEvent, !gGeneralConfig.getRendererUseLetterbox());
+        }
         gGeneralConfig.setRendererUseLetterbox(!gGeneralConfig.getRendererUseLetterbox());
         gWindowSizeHandler.Recalculate(); // Recalculate framebuffer position in window
         gGeneralConfig.save();
@@ -1658,7 +1707,7 @@ void TrySkipPatch()
     // -80: Warp - Derived BGOs (locks on doors and stuff)
     PATCH(0x912748).NOP().NOP().CALL(GetRenderBelowPriorityHook<-75>()).Apply();
     // -75: Background NPCs (vines, piranah plants, diggable sand, mother brain, things in MB jars)
-    PATCH(0x915316).NOP().NOP().CALL(GetRenderBelowPriorityHook<-70>()).Apply();
+    PATCH(0x915316).NOP().NOP().CALL(GetRenderBelowPriorityHookWithSkip<-70, 0x91D422, &gRenderPlayerFlag>()).Apply();
     // -70: Held NPCs
     PATCH(0x91D422).NOP().NOP().CALL(GetRenderBelowPriorityHook<-65>()).Apply();
     // -65: Normal Blocks
@@ -1672,11 +1721,11 @@ void TrySkipPatch()
     // -45: Normal NPCs
     PATCH(0x922D00).NOP().NOP().CALL(GetRenderBelowPriorityHook<-40>()).Apply();
     // -40: Symbol above NPCs that want to chat (hardcoded-43/44)
-    PATCH(0x923786).NOP().NOP().CALL(GetRenderBelowPriorityHook<-35>()).Apply();
+    PATCH(0x923786).NOP().NOP().CALL(GetRenderBelowPriorityHookWithSkip<-35, 0x927F21, &gRenderPlayerFlag>()).Apply();
     // -35: Player Mounts
     PATCH(0x927F21).NOP().NOP().CALL(GetRenderBelowPriorityHook<-30>()).Apply();
     // -30: Something else player mount related?
-    PATCH(0x928EA5).NOP().NOP().CALL(GetRenderBelowPriorityHook<-25>()).Apply();
+    PATCH(0x928EA5).NOP().NOP().CALL(GetRenderBelowPriorityHookWithSkip<-25, 0x928F0A, &gRenderPlayerFlag>()).Apply();
     // -25: Players
     PATCH(0x928F0A).NOP().NOP().CALL(GetRenderBelowPriorityHookWithSkip<-20, 0x929F81, &gRenderBGOFlag>()).Apply();
     // -20: Foreground BGOs

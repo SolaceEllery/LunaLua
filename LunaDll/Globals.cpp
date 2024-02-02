@@ -26,9 +26,12 @@ SMBXHUDSettings gSMBXHUDSettings = {
     WHUD_ALL, // overworldHudControlFlag
     false     // skipStarCount
 };
+
 bool gRenderBGOFlag = true;
 bool gRenderSizableFlag = true;
 bool gRenderBackgroundFlag = true;
+bool gRenderPlayerFlag = true;
+
 bool gOnStartRan = false;
 
 // Settings for glitch fixes

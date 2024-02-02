@@ -102,9 +102,12 @@ extern bool            gIsOverworld;
 extern bool            gHook_SkipTestMsgBox;
 extern bool            gAutostartRan;
 extern SMBXHUDSettings gSMBXHUDSettings;
+
 extern bool            gRenderBGOFlag;
 extern bool            gRenderSizableFlag;
 extern bool            gRenderBackgroundFlag;
+extern bool            gRenderPlayerFlag;
+
 extern bool            gOnStartRan;
 
 // Settings for glitch fixes

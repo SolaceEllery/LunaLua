@@ -184,6 +184,12 @@ extern "C" {
         CLunaFFILock ffiLock(__FUNCTION__);
         gRenderBackgroundFlag = val;
     }
+    
+    FFI_EXPORT(void) LunaLuaSetPlayerRenderFlag(bool val)
+    {
+        CLunaFFILock ffiLock(__FUNCTION__);
+        gRenderPlayerFlag = val;
+    }
 
     FFI_EXPORT(const char*) LunaLuaGetLevelCustomParams(void)
     {
