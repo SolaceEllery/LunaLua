@@ -1648,92 +1648,91 @@ _declspec(naked) void __stdcall loadLevel_OrigFunc(VB6StrPtr* filename)
 void __stdcall runtimeHookGameMenu()
 {
     GM_LEVEL_MODE = 0; // Set this to prevent multiple loops
-    // Check to see if IPC is not waiting and Test Mode isn't enabled. If so, continue.
-    if(gStartupSettings.levelTest == L"")
+    // Check to see if Test Mode is enabled. If so, start test mode.
+    if(gStartupSettings.levelTest.length() > 0)
     {
-        if(!gEpisodeLoadedOnBoot)
+        return;
+    }
+    // or, if not, and we find a episode, launch that instead.
+    if(!gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled())
+    {
+        GameAutostart autostarter;
+        std::string autostartFile = WStr2Str(getLatestConfigFile(L"autostart.ini"));
+
+        if(!gStartupSettings.epSettings.enabled && file_existsX(autostartFile))
         {
-            GameAutostart autostarter;
-            if(!gStartupSettings.waitForIPC && !TestModeIsEnabled())
+            // Try reading the autostart.ini file first if there's no settings available
+            IniProcessing autostartConfig(autostartFile);
+            if (autostartConfig.beginGroup("autostart"))
             {
-                std::string autostartFile = WStr2Str(getLatestConfigFile(L"autostart.ini"));
-
-                if(!gStartupSettings.epSettings.enabled && file_existsX(autostartFile))
+                bool doAutostart = autostartConfig.value("do-autostart", false).toBool();
+                autostartConfig.endGroup();
+                if (doAutostart)
                 {
-                    // Try reading the autostart.ini file first if there's no settings available
-                    IniProcessing autostartConfig(autostartFile);
-                    if (autostartConfig.beginGroup("autostart"))
+                    // Note: Internally this uses beginGroup and endGroup, so the group won't be open after it
+                    EpisodeMain mainEpisodeFunc;
+                    autostartConfig.beginGroup("autostart");
+
+                    std::string selectedEpisode = autostartConfig.value("episode-name", "").toString();
+                    std::wstring selectedEpisodePath = Str2WStr(autostartConfig.value("episode-wld-file", "").toString());
+                    int playerCount = autostartConfig.value("players", 1).toInt();
+                    Characters firstCharacter = static_cast<Characters>(autostartConfig.value("character-player1", 1).toInt());
+                    Characters secondCharacter = static_cast<Characters>(autostartConfig.value("character-player2", 2).toInt());
+                    int saveSlot = autostartConfig.value("save-slot", 1).toInt();
+
+                    autostarter.setSelectedEpisode(selectedEpisode);
+
+                    mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+
+                    if (autostartConfig.value("transient", false).toBool())
                     {
-                        bool doAutostart = autostartConfig.value("do-autostart", false).toBool();
-                        autostartConfig.endGroup();
-                        if (doAutostart)
-                        {
-                            // Note: Internally this uses beginGroup and endGroup, so the group won't be open after it
-                            EpisodeMain mainEpisodeFunc;
-                            autostartConfig.beginGroup("autostart");
-
-                            std::string selectedEpisode = autostartConfig.value("episode-name", "").toString();
-                            std::wstring selectedEpisodePath = Str2WStr(autostartConfig.value("episode-wld-file", "").toString());
-                            int playerCount = autostartConfig.value("players", 1).toInt();
-                            Characters firstCharacter = static_cast<Characters>(autostartConfig.value("character-player1", 1).toInt());
-                            Characters secondCharacter = static_cast<Characters>(autostartConfig.value("character-player2", 2).toInt());
-                            int saveSlot = autostartConfig.value("save-slot", 1).toInt();
-
-                            autostarter.setSelectedEpisode(selectedEpisode);
-
-                            mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
-
-                            if (autostartConfig.value("transient", false).toBool())
-                            {
-                                remove(autostartFile.c_str());
-                            }
-                            autostartConfig.endGroup();
-                        }
+                        remove(autostartFile.c_str());
                     }
                     autostartConfig.endGroup();
                 }
-                else if(gStartupSettings.epSettings.enabled && gStartupSettings.epSettings.wldPath != L"")
-                {
-                    // If there's no autostart file but the command prompt gives out a world path and some other things, we will then boot to the episode from there
-                    EpisodeMain mainEpisodeFunc;
-                    
-                    std::string selectedEpisode = "";
-                    std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
-                    int playerCount = gStartupSettings.epSettings.players;
-                    Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
-                    Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
-                    int saveSlot = gStartupSettings.epSettings.saveSlot;
-
-                    autostarter.setSelectedEpisode(selectedEpisode);
-                    
-                    mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
-                }
-                else
-                {
-                    // If there's still nothing, we don't have any settings so we shouldn't continue booting LunaDLL
-                    std::string msg = "There is no world file specified on starting LunaLua. This means that you booted LunaLoader.exe with no arguments regarding selecting a world or level. Please load a world or level starting SMBX2 by loading the X2 launcher (Or Command Prompt) instead.";
-                    MessageBoxA(gMainWindowHwnd, msg.c_str(), "Error", MB_ICONWARNING | MB_OK);
-                    _exit(0);
-                }
             }
+            autostartConfig.endGroup();
         }
-        else if(gEpisodeLoadedOnBoot)
+        else if(gStartupSettings.epSettings.enabled && gStartupSettings.epSettings.wldPath != L"")
         {
-            GameAutostart autostarter;
-            if(!gStartupSettings.waitForIPC && !TestModeIsEnabled() && gEpisodeLoadedOnBoot)
-            {
-                std::string selectedEpisode = "";
-                std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
-                int playerCount = gStartupSettings.epSettings.players;
-                Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
-                Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
-                int saveSlot = gStartupSettings.epSettings.saveSlot;
+            // If there's no autostart file but the command prompt gives out a world path and some other things, we will then boot to the episode from there
+            EpisodeMain mainEpisodeFunc;
+            
+            std::string selectedEpisode = "";
+            std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
+            int playerCount = gStartupSettings.epSettings.players;
+            Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
+            Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
+            int saveSlot = gStartupSettings.epSettings.saveSlot;
 
-                autostarter.setSelectedEpisode(selectedEpisode);
+            autostarter.setSelectedEpisode(selectedEpisode);
+            
+            mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+        }
+        else
+        {
+            // If there's still nothing, we don't have any settings so we shouldn't continue booting LunaDLL
+            std::string msg = "There is no world file specified on starting LunaLua. This means that you booted LunaLoader.exe with no arguments regarding selecting a world or level. Please load a world or level starting SMBX2 by loading the X2 launcher (Or Command Prompt) instead.";
+            MessageBoxA(gMainWindowHwnd, msg.c_str(), "Error", MB_ICONWARNING | MB_OK);
+            _exit(0);
+        }
+    }
+    else if(gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled())
+    {
+        GameAutostart autostarter;
+        if(!gStartupSettings.waitForIPC && !TestModeIsEnabled() && gEpisodeLoadedOnBoot)
+        {
+            std::string selectedEpisode = "";
+            std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
+            int playerCount = gStartupSettings.epSettings.players;
+            Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
+            Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
+            int saveSlot = gStartupSettings.epSettings.saveSlot;
 
-                EpisodeMain mainEpisodeFunc;
-                mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
-            }
+            autostarter.setSelectedEpisode(selectedEpisode);
+
+            EpisodeMain mainEpisodeFunc;
+            mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
         }
     }
 }

@@ -414,7 +414,7 @@ void MusicManager::update()
                 chanIDs = curMusicAlias.substr(substrateCount);
                 chanID = std::atoi(chanIDs.c_str()) - 1;
             }
-            else
+            else if(isSpecial)
             {
                 // restart the music regardless of section
                 stop(curMusicAlias);
@@ -422,7 +422,7 @@ void MusicManager::update()
                 setToChangeMusicAlias = false;
             }
             
-            if(!isSpecial)
+        if(!isSpecial && (isOverworld || isLevel))
             {
                 // restart the music that is currently being played
                 if(chanID == currentMusicID)

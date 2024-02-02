@@ -70,7 +70,7 @@ struct StartupSettings
     bool forceHardGL;
     bool runWhenUnfocused;
     bool sendIPCReady;
-    std::wstring levelTest = L"";
+    std::wstring levelTest;
     StartupEpisodeSettings epSettings;
 
     StartupSettings() :

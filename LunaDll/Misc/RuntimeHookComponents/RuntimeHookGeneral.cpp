@@ -886,7 +886,6 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
                     gMainWindowFocused = false;
                 }
-                gMainWindowInBackground = true;
                 break;
             case WM_HOTKEY:
                 if ((wParam == VK_SNAPSHOT) && g_GLEngine.IsEnabled())
@@ -931,7 +930,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 }
 
                 // If we have focus, return via DefWindowProcW
-                if (haveFocus && !gMainWindowInBackground)
+                if (haveFocus)
                 {
                     return DefWindowProcW(hwnd, uMsg, wParam, lParam);
                 }
@@ -1098,10 +1097,12 @@ void ParseArgs(const std::vector<std::wstring>& args)
     for (unsigned int i = 0; i < args.size(); i++)
     {
         const std::wstring& arg = args[i];
+        std::wstring levelPath;
         if ((arg.length() > 0) && (arg[0] == L'-'))
         {
             if (arg.find(L"--testLevel=") == 0)
             {
+                levelPath = arg.substr(12);
                 gStartupSettings.levelTest = arg.substr(12);
             }
         }
@@ -1112,14 +1113,15 @@ void ParseArgs(const std::vector<std::wstring>& args)
             if ((lowerArg.rfind(L".lvl") == (lowerArg.size() - 4)) ||
                 (lowerArg.rfind(L".lvlx") == (lowerArg.size() - 5)))
             {
+                levelPath = arg;
                 gStartupSettings.levelTest = arg;
             }
         }
 
-        if (gStartupSettings.levelTest.length() > 0)
+        if (levelPath.length() > 0)
         {
             STestModeSettings settings;
-            settings.levelPath = gStartupSettings.levelTest;
+            settings.levelPath = levelPath;
             settings.rawData = "";
             if (!testModeEnable(settings))
             {
