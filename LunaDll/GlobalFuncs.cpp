@@ -1258,6 +1258,10 @@ int RndValue()
 
 
 
+
+
+// **SEE Mod functions**
+
 double GetOSLanguage()
 {
     LANGID language = GetUserDefaultUILanguage();
