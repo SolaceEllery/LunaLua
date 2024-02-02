@@ -255,10 +255,10 @@ void MusicManager::play(std::string alias) //Chunk will be played once, stream w
         if((chanID >= 0)&&(chanID <max_soundeffect_count))
         {
             int realID = chanID + 1;
-            bool isCancelled = createSFXStartLuaEvent(realID, sounds[chanID].fullPath);
-            if(!isCancelled)
+            if(!PGE_Sounds::playOverrideForAlias(alias, sounds[chanID].channel))
             {
-                if(!PGE_Sounds::playOverrideForAlias(alias, sounds[chanID].channel))
+                bool isCancelled = createSFXStartLuaEvent(realID, sounds[chanID].fullPath);
+                if(!isCancelled)
                 {
                     //Play it!
                     sounds[chanID].play();
