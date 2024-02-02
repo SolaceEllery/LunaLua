@@ -410,6 +410,27 @@ struct ExtendedPlayerFields
     }
 };
 
+struct PlayerLavaFields
+{
+    int lavaTouchingStatus;
+
+    // Constructor
+    PlayerLavaFields()
+    {
+        Reset();
+    }
+
+    // Reset function
+    void Reset()
+    {
+        lavaTouchingStatus = 0;
+    }
+    void setAllStatusesToOne()
+    {
+        lavaTouchingStatus = 1;
+    }
+};
+
 namespace Player {
 
     /// Player functions ///
@@ -460,6 +481,10 @@ namespace Player {
     // ACTIONS
     void Harm(short index);
     void Kill(short index);
+    
+    PlayerLavaFields* GetLavaFields(int index);
+    void ClearLavaFields();
+    void SetLavaFieldsToOne();
 
     RECT GetScreenPosition(PlayerMOB* player);
 };

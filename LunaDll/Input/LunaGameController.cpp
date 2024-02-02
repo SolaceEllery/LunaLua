@@ -92,7 +92,7 @@ void LunaGameControllerManager::pollInputs()
     }
 
 #if !defined(BUILDING_SMBXLAUNCHER)
-    if(!gMainWindowInBackground)
+    if(!gMainWindowInBackground || !gDisablePlayerKeys)
     {
         handleInputs();
     }

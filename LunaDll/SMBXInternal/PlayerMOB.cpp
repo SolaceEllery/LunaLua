@@ -206,6 +206,34 @@ void Player::Harm(short pIndex) {
     native_harmPlayer(&pIndex);
 }
 
+static PlayerLavaFields g_playerLavaFields[201];
+
+PlayerLavaFields* Player::GetLavaFields(int index)
+{
+    if (index < 0 || index >= 201)
+    {
+        return nullptr;
+    }
+
+    return &g_playerLavaFields[index];
+}
+
+void Player::ClearLavaFields()
+{
+    for (int i = 0; i < 201; i++)
+    {
+        g_playerLavaFields[i].Reset();
+    }
+}
+
+void Player::SetLavaFieldsToOne()
+{
+    for (int i = 0; i < 201; i++)
+    {
+        g_playerLavaFields[i].Reset();
+    }
+}
+
 
 // GET SCREEN POSITION
 RECT Player::GetScreenPosition(PlayerMOB* player) {

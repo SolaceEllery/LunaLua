@@ -891,18 +891,28 @@ extern "C" {
 }
 
 extern "C" {
-    FFI_EXPORT(void) LunaLuaSetSafeLava(bool value)
+    FFI_EXPORT(void) LunaLuaSetLavaStatus(int playerIdx, int status)
     {
-        gLavaIsSafe = value;
+        PlayerLavaFields* lavaInfo = Player::GetLavaFields(playerIdx);
+        lavaInfo->lavaTouchingStatus = status;
     }
-    FFI_EXPORT(bool) LunaLuaGetSafeLava()
+    FFI_EXPORT(int) LunaLuaGetLavaStatus(int playerIdx)
     {
-        return gLavaIsSafe;
+        PlayerLavaFields* lavaInfo = Player::GetLavaFields(playerIdx);
+        return lavaInfo->lavaTouchingStatus;
     }
 
     FFI_EXPORT(void) LunaLuaSetWeakLava(bool value)
     {
         gLavaIsWeak = value;
+        if(gLavaIsWeak)
+        {
+            Player::ClearLavaFields();
+        }
+        else
+        {
+            Player::SetLavaFieldsToOne();
+        }
     }
     FFI_EXPORT(bool) LunaLuaGetWeakLava()
     {
@@ -1072,6 +1082,7 @@ extern "C" {
     {
         return gRunWhenUnfocused;
     }
+
     FFI_EXPORT(void) LunaLuaSetRightClickPasteSetting(bool enable)
     {
         // This will let the user alternatively paste content via right clicking, similar to using the command prompt. Useful for repl
@@ -1080,5 +1091,23 @@ extern "C" {
     FFI_EXPORT(bool) LunaLuaSetIsRightClickPasteSettingEnabled()
     {
         return gRightClickPaste;
+    }
+
+    FFI_EXPORT(void) LunaLuaSetDisabledPlayerKeys(bool enable)
+    {
+        gDisablePlayerKeys = enable;
+    }
+    FFI_EXPORT(bool) LunaLuaGetDisabledPlayerKeys()
+    {
+        return gDisablePlayerKeys;
+    }
+    
+    FFI_EXPORT(void) LunaLuaSetDisabledPlayerCheatMovement(bool enable)
+    {
+        gDisablePlayerMovementAboveThree = enable;
+    }
+    FFI_EXPORT(bool) LunaLuaGetDisabledPlayerCheatMovement()
+    {
+        return gDisablePlayerMovementAboveThree;
     }
 }

@@ -115,6 +115,8 @@ extern bool            gRightClickPaste;
 extern bool            gLavaIsWeak;
 extern bool            gLavaIsSafe;
 extern bool            gRunWhenUnfocused;
+extern bool            gDisablePlayerKeys;
+extern bool            gDisablePlayerMovementAboveThree;
 
 // Set to true when returning from gameover screen, read by lua to handle gameover-related stuff
 extern bool            gDidGameOver;

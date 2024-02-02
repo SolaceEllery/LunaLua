@@ -39,6 +39,8 @@ bool gRightClickPaste = false;
 bool gLavaIsWeak = false;
 bool gLavaIsSafe = false;
 bool gRunWhenUnfocused = false;
+bool gDisablePlayerKeys = false;
+bool gDisablePlayerMovementAboveThree = false;
 
 // Flag for returning from gameover screen
 bool gDidGameOver = false;
