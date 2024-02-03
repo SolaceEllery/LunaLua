@@ -32,6 +32,7 @@
 #include "../PerfTracker.h"
 
 #include "../../Misc/TestMode.h"
+#include "../../Misc/TestModeMenu.h"
 #include "../../Misc/WaitForTickEnd.h"
 #include "../../Rendering/ImageLoader.h"
 #include "../../Misc/LoadScreen.h"
@@ -1587,7 +1588,6 @@ extern void __stdcall RenderWorldHook()
     LunaLoadScreenKill();
     PerfTrackerState state(PerfTracker::PERF_DRAWING);
     Renderer::Get().StartFrameRender();
-    g_EventHandler.hookWorldRenderStart();
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
     {
         // Set camera 0 (primary framebuffer)
@@ -1597,6 +1597,7 @@ extern void __stdcall RenderWorldHook()
         cmd->mY = 0;
         g_GLEngine.QueueCmd(cmd);
     }
+    g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
     MusicManager::update();
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
@@ -4462,6 +4463,37 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
     if (!playerKillCancelled)
     {
         killPlayer_OrigFunc(playerIdxPtr);
+    }
+}
+
+__declspec(naked) void __stdcall killPlayerEnd_OrigFunc()
+{
+    __asm {
+        push ebp
+        mov ebp,esp
+        sub esp,0x08
+        push 0x9B7786
+        ret
+    }
+}
+
+void __stdcall runtimeHookPlayerKillEnd(void)
+{
+    bool playerKillEndCancelled = false;
+
+    if (gLunaLua.isValid() && (GM_WINNING == 0))
+    {
+        std::shared_ptr<Event> playerKillEndEvent = std::make_shared<Event>("onPlayerKillEnd", true);
+        playerKillEndEvent->setDirectEventName("onPlayerKillEnd");
+        playerKillEndEvent->setLoopable(false);
+        gLunaLua.callEvent(playerKillEndEvent);
+
+        playerKillEndCancelled = playerKillEndEvent->native_cancelled();
+    }
+
+    if (!playerKillEndCancelled)
+    {
+        killPlayerEnd_OrigFunc();
     }
 }
 

@@ -1746,8 +1746,6 @@ void TrySkipPatch()
     //PATCH(0x90075F).NOP().NOP().CALL(GetRenderBelowPriorityHook<-50>()).Apply();
     //-25: Players (To keep consistent with levels)
     //PATCH(0x902BE5).NOP().NOP().CALL(GetRenderBelowPriorityHook<-25>()).Apply();
-    //5: Hud (Handle Priority 5 from WorldOverlayHUDBitBltHook)
-    //PATCH(0x902CF0).CALL(GetRenderBelowPriorityHook<100>()).Apply();
 
     // Change Mode Hook
     // Runs when the game starts or the game mode changes.
@@ -2174,6 +2172,12 @@ void TrySkipPatch()
 
     // Hook for onPlayerKill
     PATCH(0x9B66D0).JMP(runtimeHookPlayerKill).NOP_PAD_TO_SIZE<6>().Apply();
+
+    // Hook for onPlayerKillEnd
+    //PATCH(0x8C23C6).CALL(runtimeHookPlayerKillEnd).Apply();
+    //PATCH(0x996F03).bytes(
+        //0x66, 0x3D, 0x7F, 0xFF //cmp ax, FFFF
+    //).Apply();
 
     // Hooks for lava-related calls to onPlayerKill
     PATCH(0x9A394D).CALL(runtimeHookPlayerCountCollisionsForWeakLava).JMP(0x9A3A36).NOP_PAD_TO_SIZE<14>().Apply();

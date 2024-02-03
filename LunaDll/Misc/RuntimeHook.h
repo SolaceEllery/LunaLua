@@ -620,6 +620,7 @@ void __stdcall runtimeHookLevelPauseCheck(void);
 
 void __stdcall runtimeHookPlayerHarm(void);
 void __stdcall runtimeHookPlayerKill(short* playerIdxPtr);
+void __stdcall runtimeHookPlayerKillEnd(void);
 
 void __stdcall runtimeHookWarpEnter(void);
 void __stdcall runtimeHookWarpInstant(void);
