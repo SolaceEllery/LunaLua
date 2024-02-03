@@ -658,24 +658,15 @@ Mix_Chunk *PGE_Sounds::SND_OpenSnd(const char *sndFile)
 
 bool PGE_Sounds::SND_isSndInCache(std::string fileName)
 {
-    // get the cacheEntry
+    const char* finalFile = "";
     CachedFileDataWeakPtr<ChunkStorage>::Entry* cacheEntry = g_chunkCache.get(Str2WStr(fileName));
-    if(cacheEntry == nullptr)
-    {
-        return false;
-    }
-
     std::shared_ptr<ChunkStorage> cachePtr = cacheEntry->data.lock();
-
-    if(cachePtr) // if found, do these
+    if (cachePtr)
     {
-        if(cachePtr->mFullPath == fileName.c_str())
+        const char* fileMemory = cachePtr->mFullPath;
+        if(fileName.c_str() == fileMemory)
         {
             return true;
-        }
-        else
-        {
-            return false;
         }
     }
     else
