@@ -172,6 +172,7 @@ public:
                 if(chunk == memoryChunk)
                 {
                     finalFile = cachePtr->mFullPath;
+                    return finalFile;
                 }
                 cacheEntry++;
             }
