@@ -1733,6 +1733,21 @@ void TrySkipPatch()
     // Handle Priority 5 from LevelHUDHook
     //   5: HUD
     PATCH(0x939977).NOP().NOP().CALL(GetRenderBelowPriorityHook<100>()).Apply();
+    
+    // World rendering layering hooks
+
+    //-85: Tiles
+    //PATCH(0x900124).NOP().NOP().CALL(GetRenderBelowPriorityHook<-85>()).Apply(); //.NOP().NOP()
+    //-70: Sceneries
+    //PATCH(0x9003AA).NOP().NOP().CALL(GetRenderBelowPriorityHook<-70>()).Apply();
+    //-60: Paths
+    //PATCH(0x9005AA).NOP().NOP().CALL(GetRenderBelowPriorityHook<-60>()).Apply();
+    //-50: Levels
+    //PATCH(0x90075F).NOP().NOP().CALL(GetRenderBelowPriorityHook<-50>()).Apply();
+    //-25: Players (To keep consistent with levels)
+    //PATCH(0x902BE5).NOP().NOP().CALL(GetRenderBelowPriorityHook<-25>()).Apply();
+    //5: Hud (Handle Priority 5 from WorldOverlayHUDBitBltHook)
+    //PATCH(0x902CF0).CALL(GetRenderBelowPriorityHook<100>()).Apply();
 
     // Change Mode Hook
     // Runs when the game starts or the game mode changes.
@@ -1779,8 +1794,6 @@ void TrySkipPatch()
     PATCH(0xA10136).JMP(runtimeHookNPCTerminalVelocityRaw).NOP_PAD_TO_SIZE<58>().Apply();
 
     PATCH(0x8BDE80).JMP(runtimeHookLegacyTitleScreenMouseDown).NOP_PAD_TO_SIZE<6>().Apply();
-
-    PATCH(0xA74910).JMP(runtimeHookDoInput).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xA75079).JMP(runtimeHookCheckInputRaw).NOP_PAD_TO_SIZE<7>().Apply();
 
     // Hooks for per-npc noblockcollision

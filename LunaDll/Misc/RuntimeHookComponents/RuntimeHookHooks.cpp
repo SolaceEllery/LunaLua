@@ -843,10 +843,14 @@ static __declspec(naked) void updateInput_Orig()
 
 extern void __stdcall runtimeHookUpdateInput()
 {
-    gLunaGameControllerManager.pollInputs();
-    gEscPressedRegistered = gEscPressed;
-    gEscPressed = false;
-    updateInput_Orig();
+    // If player keys are disabled, the following won't happen
+    if(!gDisablePlayerKeys)
+    {
+        gLunaGameControllerManager.pollInputs();
+        gEscPressedRegistered = gEscPressed;
+        gEscPressed = false;
+        updateInput_Orig();
+    }
 }
 
 extern void __stdcall WindowInactiveHook()
@@ -1583,6 +1587,7 @@ extern void __stdcall RenderWorldHook()
     LunaLoadScreenKill();
     PerfTrackerState state(PerfTracker::PERF_DRAWING);
     Renderer::Get().StartFrameRender();
+    g_EventHandler.hookWorldRenderStart();
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
     {
         // Set camera 0 (primary framebuffer)
@@ -1592,7 +1597,6 @@ extern void __stdcall RenderWorldHook()
         cmd->mY = 0;
         g_GLEngine.QueueCmd(cmd);
     }
-    g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
     MusicManager::update();
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
@@ -2199,26 +2203,6 @@ __declspec(naked) void __stdcall legacyMouseMove_OrigFunc()
 void __stdcall runtimeHookLegacyTitleScreenMouseMove()
 {
     legacyMouseMove_OrigFunc();
-}
-
-__declspec(naked) void __stdcall startInput_OrigFunc()
-{
-    __asm {
-        push ebp
-        mov ebp, esp
-        sub esp, 0x8
-        push 0xA74916
-        ret
-    }
-}
-
-void __stdcall runtimeHookDoInput()
-{
-    // Make sure that inputs don't do anything when the window is in the background. This is used for running the game when unfocused.
-    if(!gDisablePlayerKeys)
-    {
-        startInput_OrigFunc();
-    }
 }
 
 static void __stdcall runtimeHookCheckInput(int playerNum, int playerIdx, KeyMap* keymap)

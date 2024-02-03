@@ -52,6 +52,8 @@ EpisodeMain::EpisodeMain()
 
 EpisodeMain::~EpisodeMain() {}
 
+static EpisodeList g_episodeList[32767];
+
 // The big one. This will load an episode anywhere in the engine. This is also used when booting the engine.
 void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound)
 {
@@ -230,8 +232,9 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
         }
         else
         {
+            GM_EP_LIST_COUNT = 100;
             int additionalEpIdx = 0;
-            additionalEpIdx = episodeMainFunc.WriteEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData, false);
+            int error = episodeMainFunc.WriteEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData, false);
             GM_CUR_MENULEVEL = additionalEpIdx;
         }
     }
@@ -619,6 +622,10 @@ int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB
             newIdx = GM_EP_LIST_COUNT - 1;
         }
     }
+    else
+    {
+        newIdx = 0;
+    }
     EpisodeListItem* item = EpisodeListItem::GetRaw(newIdx);
     item->episodeName = worldNameVB6;
     item->episodePath = worldPathVB6;
@@ -638,4 +645,12 @@ int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB
     item->padding_16 = 0;
 
     return newIdx;
+}
+
+void EpisodeMain::PopulateEpisodeList()
+{
+    For(i, 1, 32767)
+    {
+        
+    }
 }

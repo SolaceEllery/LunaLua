@@ -389,15 +389,15 @@ void MusicManager::update()
 {
     if(setToChangeMusicAlias)
     {
+        bool isSpecial = (curMusicAlias == "smusic" || curMusicAlias == "stmusic" || curMusicAlias == "tmusic");
+        bool isLevel = (curMusicAlias.substr(0, 5) == "music");
+        bool isOverworld = (curMusicAlias.substr(0, 6) == "wmusic");
+
         if (!seizedSections[curSection])
         {
             int substrateCount = 0;
             std::string chanIDs = "";
             int chanID = 0;
-
-            bool isSpecial = (curMusicAlias == "smusic" || curMusicAlias == "stmusic" || curMusicAlias == "tmusic");
-            bool isLevel = (curMusicAlias.substr(0, 5) == "music");
-            bool isOverworld = (curMusicAlias.substr(0, 6) == "wmusic");
 
             if(isLevel)
             {
@@ -422,7 +422,7 @@ void MusicManager::update()
                 setToChangeMusicAlias = false;
             }
             
-        if(!isSpecial && (isOverworld || isLevel))
+            if(!isSpecial && (isOverworld || isLevel))
             {
                 // restart the music that is currently being played
                 if(chanID == currentMusicID)
