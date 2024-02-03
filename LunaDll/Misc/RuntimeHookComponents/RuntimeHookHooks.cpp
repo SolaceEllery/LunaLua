@@ -2166,11 +2166,7 @@ __declspec(naked) void __stdcall legacyMouseUp_OrigFunc()
 
 void __stdcall runtimeHookLegacyTitleScreenMouseUp()
 {
-    // Make sure that the mouse from the legacy title screen doesn't do anything when the window is in the background. This is used for running the game when unfocused.
-    if(!gMainWindowInBackground)
-    {
-        legacyMouseUp_OrigFunc();
-    }
+    legacyMouseUp_OrigFunc();
 }
 
 __declspec(naked) void __stdcall legacyMouseDown_OrigFunc()
@@ -2186,11 +2182,7 @@ __declspec(naked) void __stdcall legacyMouseDown_OrigFunc()
 
 void __stdcall runtimeHookLegacyTitleScreenMouseDown()
 {
-    // Make sure that the mouse from the legacy title screen doesn't do anything when the window is in the background. This is used for running the game when unfocused.
-    if(!gMainWindowInBackground)
-    {
-        legacyMouseDown_OrigFunc();
-    }
+    legacyMouseDown_OrigFunc();
 }
 
 __declspec(naked) void __stdcall legacyMouseMove_OrigFunc()
@@ -2206,11 +2198,7 @@ __declspec(naked) void __stdcall legacyMouseMove_OrigFunc()
 
 void __stdcall runtimeHookLegacyTitleScreenMouseMove()
 {
-    // Make sure that the mouse from the legacy title screen doesn't do anything when the window is in the background. This is used for running the game when unfocused.
-    if(!gMainWindowInBackground)
-    {
-        legacyMouseMove_OrigFunc();
-    }
+    legacyMouseMove_OrigFunc();
 }
 
 __declspec(naked) void __stdcall startInput_OrigFunc()
@@ -2229,10 +2217,7 @@ void __stdcall runtimeHookDoInput()
     // Make sure that inputs don't do anything when the window is in the background. This is used for running the game when unfocused.
     if(!gDisablePlayerKeys)
     {
-        if(!gMainWindowInBackground)
-        {
-            startInput_OrigFunc();
-        }
+        startInput_OrigFunc();
     }
 }
 

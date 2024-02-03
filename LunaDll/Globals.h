@@ -93,7 +93,6 @@ extern HINSTANCE	gHInstance;
 /// Global main window state
 extern HWND gMainWindowHwnd;
 extern bool gMainWindowFocused;
-extern bool gMainWindowInBackground;
 
 /// Global settings
 extern bool            gLunaEnabled;

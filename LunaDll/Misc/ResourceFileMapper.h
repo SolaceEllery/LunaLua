@@ -79,7 +79,6 @@ public:
     {
         ResourceFileInfo metadata;
         std::weak_ptr<T> data;
-        std::wstring fullPath;
         bool used;
         Entry(const ResourceFileInfo& fileInfo) :
             metadata(fileInfo), data(), used(true)
@@ -161,21 +160,27 @@ public:
         }
     }
     
-    std::wstring CachedFileDataWeakPtr::getChunkFilename(Mix_Chunk *chunk)
+    const char* CachedFileDataWeakPtr::getChunkFilename(Mix_Chunk *chunk)
     {
+        const char* finalFile = "";
         for (auto&& cacheEntry = mCache.begin(); cacheEntry != mCache.end();)
         {
             std::shared_ptr<T> cachePtr = cacheEntry->second.data.lock();
             if (cachePtr)
             {
-                Mix_Chunk* memoryChunk = cachePtr->chunk;
-                if(memoryChunk == chunk)
+                Mix_Chunk* memoryChunk = cachePtr->mChunk;
+                if(chunk == memoryChunk)
                 {
-                    return cachePtr->fullPath;
+                    finalFile = cachePtr->mFullPath;
                 }
+                cacheEntry++;
+            }
+            else
+            {
+                cacheEntry++;
             }
         }
-        return L"";
+        return finalFile;
     }
 
     Entry* CachedFileDataWeakPtr::get(const NormalizedPath<std::wstring>& filePath)

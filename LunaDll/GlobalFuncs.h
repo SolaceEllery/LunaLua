@@ -310,7 +310,7 @@ bool CheckCollision(Momentum momentumA, Momentum momentumB);
 int RndValue();
 
 // SFX functions
-bool createSFXStartLuaEvent(int id, std::string path);
+bool createSFXStartLuaEvent(int id, const char* path);
 
 
 

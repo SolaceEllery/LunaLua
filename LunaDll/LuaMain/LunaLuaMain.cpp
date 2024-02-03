@@ -981,9 +981,10 @@ void CLunaLua::bindAll()
                 
                 // SEE Mod-related SFX functions
                 def("SfxClearFromCache", (void(*)(Mix_Chunk*))&LuaProxy::Audio::SfxClearChunk),
-                def("SfxClearFromCache", (void(*)(const std::string&))&LuaProxy::Audio::SfxClear),
+                def("SfxClearFromCache", (void(*)(std::string))&LuaProxy::Audio::SfxClear),
                 def("SfxIsInCache", (bool(*)(Mix_Chunk*))&LuaProxy::Audio::SfxIsInCacheChunk),
-                def("SfxIsInCache", (bool(*)(std::string))&LuaProxy::Audio::SfxIsInCache)
+                def("SfxIsInCache", (bool(*)(std::string))&LuaProxy::Audio::SfxIsInCache),
+                def("SfxGetFilenameFromChunk", (std::string(*)(Mix_Chunk*))&LuaProxy::Audio::SfxGetFilenameFromChunk)
             ],
             /*************************Audio*end*************************/
 

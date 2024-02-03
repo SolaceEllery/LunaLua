@@ -653,11 +653,11 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
     }
 
     // Send lua onRawKeyPress/Release events
-    if (!repeated && !gMainWindowInBackground) {
+    if (!repeated) {
         SendLuaRawKeyEvent(vkey, keyDown);
     }
     // If window is focused, and key is down, run keypress handling
-    if (haveFocus && !gMainWindowInBackground) {
+    if (haveFocus) {
         if (keyDown) {
             ProcessRawKeyPress(vkey, scanCode, repeated);
         }
@@ -914,7 +914,6 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
                 // Our main window gained focus? Keep track of that.
                 gMainWindowFocused = true;
-                gMainWindowInBackground = false;
                 break;
             case WM_KILLFOCUS:
                 // Unregister VK_SNAPSHOT hotkey handling when out of focus
@@ -925,7 +924,6 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
                     gMainWindowFocused = false;
                 }
-                gMainWindowInBackground = true;
                 break;
             case WM_DESTROY:
                 // Our main window was destroyed? Clear hwnd and mark as unfocused
@@ -973,10 +971,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 
                 // Process the raw input
                 bool mainWindowFocus = haveFocus && gMainWindowFocused;
-                if(!gMainWindowInBackground)
-                {
-                    ProcessRawInput(hwnd, reinterpret_cast<HRAWINPUT>(lParam), mainWindowFocus);
-                }
+                ProcessRawInput(hwnd, reinterpret_cast<HRAWINPUT>(lParam), mainWindowFocus);
 
                 // If we have focus, return via DefWindowProcW
                 if (haveFocus)

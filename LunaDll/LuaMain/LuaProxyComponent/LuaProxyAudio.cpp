@@ -673,7 +673,7 @@ void LuaProxy::Audio::SfxClearChunk(Mix_Chunk *chunk)
 bool LuaProxy::Audio::SfxIsInCache(std::string fileName)
 {
 #ifndef NO_SDL
-    return PGE_Sounds::SND_isSndInCache(fileName);
+    return PGE_Sounds::SND_isSndInCache(fileName.c_str());
 #endif
 }
 
@@ -682,6 +682,13 @@ bool LuaProxy::Audio::SfxIsInCacheChunk(Mix_Chunk *chunk)
 #ifndef NO_SDL
     return PGE_Sounds::SND_isChunkInCache(chunk);
 #endif
+}
+
+std::string LuaProxy::Audio::SfxGetFilenameFromChunk(Mix_Chunk *chunk)
+{
+    const char* filenameChar = PGE_Sounds::SND_findFilenameFromChunkData(chunk);
+    std::string filenameS = filenameChar;
+    return filenameS;
 }
 
 // Mutex for making sure this is safely handled

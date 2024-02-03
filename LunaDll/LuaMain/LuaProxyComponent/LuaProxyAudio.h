@@ -101,6 +101,7 @@ namespace LuaProxy
         void SfxClearChunk(Mix_Chunk *chunk);
         bool SfxIsInCache(std::string fileName);
         bool SfxIsInCacheChunk(Mix_Chunk *chunk);
+        std::string SfxGetFilenameFromChunk(Mix_Chunk *chunk);
         int GetMixedSfxVolume();
         int SetMixedSfxVolume(int vlm);
 

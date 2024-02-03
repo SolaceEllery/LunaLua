@@ -1136,7 +1136,7 @@ void HandleEventsWhileLoading()
     }
 }
 
-bool createSFXStartLuaEvent(int id, std::string path)
+bool createSFXStartLuaEvent(int id, const char* path)
 {
     bool isCancelled = false;
 
