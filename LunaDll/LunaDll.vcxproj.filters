@@ -718,6 +718,9 @@
     <ClInclude Include="SMBXInternal\Reconstructed\EpisodeMain.h">
       <Filter>SMBXInternal\Reconstructed</Filter>
     </ClInclude>
+    <ClInclude Include="SMBXInternal\Reconstructed\PlayerInput.h">
+      <Filter>SMBXInternal\Reconstructed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LuaMain\LuaHelper.cpp">
@@ -1379,9 +1382,6 @@
     <ClCompile Include="libs\luabind-deboostified\src$filename">
       <Filter>libs\luabind-deboostified</Filter>
     </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\WindowSizeHandler.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -1465,6 +1465,12 @@
     </ClCompile>
     <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp">
       <Filter>SMBXInternal\Reconstructed</Filter>
+    </ClCompile>
+    <ClCompile Include="SMBXInternal\Reconstructed\PlayerInput.cpp">
+      <Filter>SMBXInternal\Reconstructed</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp">
+      <Filter>LuaMain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

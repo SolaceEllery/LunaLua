@@ -33,6 +33,8 @@
 #include <luabind/detail/call_function.hpp>
 #include "../../LuaMain/LuaHelper.h"
 
+#include "../../SMBXInternal/Reconstructed/PlayerInput.h"
+
 #ifndef NO_SDL
 bool episodeStarted = false;
 #endif
@@ -389,9 +391,12 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     bool altPressed = (altPressedDraft & 0x80) != 0;
     bool plainPress = (!repeated) && (!altPressed) && (!ctrlPressed);
     
-    // Notify game controller manager
+    // Notify game controller manager and player input overhaul system
     if (!repeated)
     {
+        PlayerInput playerInputFunc;
+        playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx);
+
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
     }
 

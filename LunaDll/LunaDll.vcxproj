@@ -306,6 +306,7 @@
     <ClInclude Include="SdlMusic\MusicManager.h" />
     <ClInclude Include="SdlMusic\SdlMusPlayer.h" />
     <ClInclude Include="SMBXInternal\Reconstructed\EpisodeMain.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\PlayerInput.h" />
     <ClInclude Include="SMBXInternal\Reconstructed\ReconstructedDefines.h" />
     <ClInclude Include="SMBXInternal\Reconstructed\Util\NpcToCoins.h" />
     <ClInclude Include="SMBXInternal\Scenery.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="libs\Utils\strings.cpp" />
     <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyFileFormats.cpp" />
     <ClCompile Include="LuaMain\LuaProxyFFIGraphics.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp" />
     <ClCompile Include="LuaMain\LunaPathValidator.cpp" />
     <ClCompile Include="Misc\CollisionMatrix.cpp" />
     <ClCompile Include="Misc\Gameover.cpp" />
@@ -545,6 +547,7 @@
     <ClCompile Include="SdlMusic\MusicManager.cpp" />
     <ClCompile Include="SdlMusic\SdlMusPlayer.cpp" />
     <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\PlayerInput.cpp" />
     <ClCompile Include="SMBXInternal\Reconstructed\Util\NpcToCoins.cpp" />
     <ClCompile Include="SMBXInternal\SMBXEvents.cpp" />
     <ClCompile Include="SMBXInternal\Sound.cpp" />
