@@ -346,10 +346,10 @@ extern "C" {
         native_hideLayer(&::Layer::Get(layerIndex)->ptLayerName, &noSmokeNative);
     }
 
-    FFI_EXPORT(unsigned char*) LunaLuaGetKeyStateArray()
+    FFI_EXPORT(unsigned char*) LunaLuaGetKeyStateArray(int keyboardID)
     {
         CLunaFFILock ffiLock(__FUNCTION__);
-        return gKeyState;
+        return reinterpret_cast<unsigned char*>(gKeyState[keyboardID]);
     }
 
     typedef struct

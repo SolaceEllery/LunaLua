@@ -64,7 +64,7 @@ int gJumpTapped;
 int gLastRunPress;
 int gRunTapped;
 
-BYTE gKeyState[256] = { 0 };
+unsigned char* gKeyState[9][256] = { 0 };
 
 HDC	ghMemDC;			// General use screen-compatible DC
 HBITMAP	ghGeneralDIB;	// General use screen-sized DIB

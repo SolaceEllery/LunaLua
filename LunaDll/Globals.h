@@ -142,7 +142,7 @@ extern int		gJumpTapped;
 extern int		gLastRunPress;
 extern int		gRunTapped;
 
-extern BYTE     gKeyState[256];
+extern unsigned char* gKeyState[9][256];
 
 extern HDC		ghMemDC;		// General-use screen-compatible DC
 extern HBITMAP	ghGeneralDIB;	// General-use screen-sized DIB
