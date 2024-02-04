@@ -8,6 +8,13 @@
 #include "AsmPatch.h"
 #include "../GlobalFuncs.h"
 
+#include <lua.hpp>
+#include <luabind/luabind.hpp>
+#include <luabind/function.hpp>
+#include <luabind/class.hpp>
+#include <luabind/detail/call_function.hpp>
+#include "../../LuaMain/LuaHelper.h"
+
 struct SMBX_Warp;
 
 /************************************************************************/
@@ -32,6 +39,50 @@ extern bool episodeStarted;
 void SetupThunRTMainHook();
 void ParseArgs(const std::vector<std::wstring>& args);
 void TrySkipPatch();
+
+/************************************************************************/
+/* Keyboard Main Functions                                              */
+/************************************************************************/
+extern void GetRawInputDevices();
+extern bool HID_RegisterKeyboards();
+extern void HID_UnregisterKeyboards();
+extern bool HID_RefreshKeyboards();
+extern int GetKeyboardCount();
+extern UINT nDevices;
+extern luabind::object GetKeyboardInfoFromIdx(int index, lua_State *L);
+struct keyboardDevices
+{
+    const char* deviceName;
+    int keyboardMode;
+    int functionKeys;
+    int indicators;
+    int totalKeys;
+    int keyboardType;
+    int keyboardSubtype;
+    int index;
+    int keyboardID;
+
+    // Constructor
+    keyboardDevices()
+    {
+        Reset();
+    }
+
+    // Reset function
+    void Reset()
+    {
+        deviceName = "";
+        keyboardMode = 0;
+        functionKeys = 0;
+        indicators = 0;
+        totalKeys = 0;
+        keyboardType = 0;
+        keyboardSubtype = 0;
+        index = 0;
+        keyboardID = 0;
+    }
+};
+extern keyboardDevices keyboardDeviceList[9];
 
 /************************************************************************/
 /* Global Patch Variables                                               */

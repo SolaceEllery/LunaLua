@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <windowsx.h>
+#include <iostream>
 #include <dwmapi.h>
 #include "../../Main.h"
 #include "../RuntimeHook.h"
@@ -24,6 +25,13 @@
 #include "../NpcIdExtender.h"
 
 #include "../../Misc/LoadScreen.h"
+
+#include <lua.hpp>
+#include <luabind/luabind.hpp>
+#include <luabind/function.hpp>
+#include <luabind/class.hpp>
+#include <luabind/detail/call_function.hpp>
+#include "../../LuaMain/LuaHelper.h"
 
 #ifndef NO_SDL
 bool episodeStarted = false;
@@ -368,7 +376,7 @@ static void ProcessPasteKeystroke()
     }
 }
 
-static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeated)
+static void ProcessRawKeyPress_Func(uint32_t virtKey, uint32_t scanCode, bool repeated, int keyboardID)
 {
     static WCHAR unicodeData[32] = { 0 };
     bool ctrlPressed = (gKeyState[VK_CONTROL] & 0x80) != 0;
@@ -393,11 +401,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         if (unicodeRet > 0)
         {
             std::string charStr = WStr2Str(std::wstring(unicodeData, unicodeRet));
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr, keyboardID);
         }
         else
         {
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, keyboardID);
         }
     }
 
@@ -504,7 +512,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
             std::shared_ptr<Event> letterboxEvent = std::make_shared<Event>("onLetterboxToggle", false);
             letterboxEvent->setDirectEventName("onLetterboxToggle");
             letterboxEvent->setLoopable(false);
-            gLunaLua.callEvent(letterboxEvent, !gGeneralConfig.getRendererUseLetterbox());
+            gLunaLua.callEvent(letterboxEvent, !gGeneralConfig.getRendererUseLetterbox(), inFullscreen());
         }
         gGeneralConfig.setRendererUseLetterbox(!gGeneralConfig.getRendererUseLetterbox());
         gWindowSizeHandler.Recalculate(); // Recalculate framebuffer position in window
@@ -512,20 +520,44 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     }
 }
 
-static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown)
+static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeated, int keyboardID, HANDLE hDevice)
+{
+    int hDeviceInt = (int)hDevice;
+    if(keyboardID == hDeviceInt)
+    {
+        ProcessRawKeyPress_Func(virtKey, scanCode, repeated, keyboardID);
+    }
+}
+
+static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardID)
 {
     if (gLunaLua.isValid()) {
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyPress" : "onKeyboardKeyRelease", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
         if (cKey != 0) {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111));
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardID);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey));
+            std::string blank = "";
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), blank, keyboardID);
         }
     }
 }
 
-static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
+static int GetKeyboardToPressKeysWith(HANDLE hDevice)
+{
+    int finalKey = -1;
+    int hDeviceInt = (int)hDevice;
+    For(i, 0, 9)
+    {
+        if(keyboardDeviceList[i].keyboardID == hDeviceInt)
+        {
+            finalKey = keyboardDeviceList[i].keyboardID;
+        }
+    }
+    return finalKey;
+}
+
+static void ProcessRawInput_Func(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus, int keyboardID)
 {
     // Buffer memory 
     static std::vector<BYTE> rawBuffer(sizeof(RAWINPUT));
@@ -654,13 +686,38 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
 
     // Send lua onRawKeyPress/Release events
     if (!repeated) {
-        SendLuaRawKeyEvent(vkey, keyDown);
+        SendLuaRawKeyEvent(vkey, keyDown, keyboardID);
     }
     // If window is focused, and key is down, run keypress handling
     if (haveFocus) {
         if (keyDown) {
-            ProcessRawKeyPress(vkey, scanCode, repeated);
+            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardID, rawInput.header.hDevice);
         }
+    }
+}
+
+static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
+{
+    // Buffer memory 
+    static std::vector<BYTE> rawBuffer(sizeof(RAWINPUT));
+
+    // Read raw input structure
+    UINT dwSize;
+    GetRawInputData(hRawInput, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
+    if (GetRawInputData(hRawInput, RID_INPUT, rawBuffer.data(), &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+    {
+        // Unexpected size
+        return;
+    }
+    const RAWINPUT& rawInput = *reinterpret_cast<const RAWINPUT*>(rawBuffer.data());
+
+    HANDLE hDevice = rawInput.header.hDevice;
+    int hDeviceInt = (int)hDevice;
+    int keyboardID = GetKeyboardToPressKeysWith(hDevice);
+
+    if(hDeviceInt == keyboardID)
+    {
+        ProcessRawInput_Func(hwnd, hRawInput, haveFocus, keyboardID);
     }
 }
 
@@ -968,7 +1025,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             case WM_INPUT:
             {
                 bool haveFocus = (wParam == RIM_INPUT);
-                
+
                 // Process the raw input
                 bool mainWindowFocus = haveFocus && gMainWindowFocused;
                 ProcessRawInput(hwnd, reinterpret_cast<HRAWINPUT>(lParam), mainWindowFocus);
@@ -1043,6 +1100,202 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     return CallWindowProcW(gMainWindowProc, hwnd, uMsg, wParam, lParam);
 }
 
+UINT nDevices = 0;
+keyboardDevices keyboardDeviceList[9];
+
+static luabind::object getKeyboardDeviceThings(int index, lua_State *L)
+{
+    int realIndex = index - 1;
+    if(index < 0 && index > nDevices || std::to_string(keyboardDeviceList[index].index).length() == 0)
+    {
+        luabind::object outData = luabind::newtable(L);
+        outData["invalid"] = "keyboard";
+        return outData;
+    }
+    else
+    {
+        luabind::object outData = luabind::newtable(L);
+        outData["index"] = keyboardDeviceList[realIndex].index;
+        outData["deviceName"] = keyboardDeviceList[realIndex].deviceName;
+        outData["keyboardMode"] = keyboardDeviceList[realIndex].keyboardMode;
+        outData["functionKeys"] = keyboardDeviceList[realIndex].functionKeys;
+        outData["indicators"] = keyboardDeviceList[realIndex].indicators;
+        outData["totalKeys"] = keyboardDeviceList[realIndex].totalKeys;
+        outData["keyboardType"] = keyboardDeviceList[realIndex].keyboardType;
+        outData["keyboardSubtype"] = keyboardDeviceList[realIndex].keyboardSubtype;
+        outData["keyboardID"] = keyboardDeviceList[realIndex].keyboardID;
+
+        return outData;
+    }
+}
+
+luabind::object GetKeyboardInfoFromIdx(int index, lua_State *L)
+{
+    return getKeyboardDeviceThings(index, L);
+}
+
+void GetRawInputDevices()
+{
+    For(i, 0, 9)
+    {
+        keyboardDeviceList[i].Reset();
+    }
+
+    std::string error = "";
+
+    GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST));
+    if(nDevices <= 0)
+    {
+        nDevices = 0;
+        error = "If you get this error, that means that a keyboard cannot be found for the engine. Please connect a keyboard to play SMBX2.";
+        MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
+    }
+
+    PRAWINPUTDEVICELIST pRawInputDeviceList = NULL;
+    pRawInputDeviceList = new RAWINPUTDEVICELIST[sizeof(RAWINPUTDEVICELIST) * nDevices];
+
+    if(pRawInputDeviceList == NULL)
+    {
+        error = "If you get this error, that means that the memory cannot be allocated to generate the keyboard list for the engine. If you see this, contact Spencer Everly.";
+        MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
+    }
+
+    int nResult = 0;
+    nResult = GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST));
+    int keyboardCount = 0;
+
+    for (UINT i = 0; i < nDevices; i++)
+    {
+        // Get character count for device name
+        UINT nBufferSize = 0;
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, NULL, &nBufferSize);
+
+        if(nResult < 0)
+        {
+            continue;
+        }
+
+        // Allocate memory for device name
+        WCHAR* wcDeviceName = new WCHAR[nBufferSize + 1];
+
+        if (wcDeviceName == NULL)
+        {
+            continue;
+        }
+
+        // Get name
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, wcDeviceName, &nBufferSize);
+        if(nResult < 0)
+        {
+            continue;
+        }
+
+        // Set device info & buffer size
+        RID_DEVICE_INFO rdiDeviceInfo;
+        rdiDeviceInfo.cbSize = sizeof(RID_DEVICE_INFO);
+        nBufferSize = rdiDeviceInfo.cbSize;
+
+        // Get device info
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdiDeviceInfo, &nBufferSize);
+        
+        if(nResult < 0)
+        {
+            continue;
+        }
+        
+        // Did we get the entire buffer?
+        if (nResult < 0)
+        {
+            continue;
+        }
+
+        std::wstring deviceName = (std::wstring)wcDeviceName;
+        std::string deviceNameFinal = WStr2Str(deviceName);
+
+        if (rdiDeviceInfo.dwType == RIM_TYPEKEYBOARD && deviceNameFinal.length() > 0 && rdiDeviceInfo.keyboard.dwNumberOfKeysTotal > 0 && (int)pRawInputDeviceList[i].hDevice > 0)
+        {
+            keyboardCount = keyboardCount + 1;
+            keyboardDeviceList[keyboardCount].index = keyboardCount + 1;
+            keyboardDeviceList[keyboardCount].deviceName = deviceNameFinal.c_str();
+            keyboardDeviceList[keyboardCount].keyboardMode = rdiDeviceInfo.keyboard.dwKeyboardMode;
+            keyboardDeviceList[keyboardCount].functionKeys = rdiDeviceInfo.keyboard.dwNumberOfFunctionKeys;
+            keyboardDeviceList[keyboardCount].indicators = rdiDeviceInfo.keyboard.dwNumberOfIndicators;
+            keyboardDeviceList[keyboardCount].totalKeys = rdiDeviceInfo.keyboard.dwNumberOfKeysTotal;
+            keyboardDeviceList[keyboardCount].keyboardType = rdiDeviceInfo.keyboard.dwType;
+            keyboardDeviceList[keyboardCount].keyboardSubtype = rdiDeviceInfo.keyboard.dwSubType;
+            keyboardDeviceList[keyboardCount].keyboardID = (int)pRawInputDeviceList[i].hDevice;
+            continue;
+        }
+        else
+        {
+            continue;
+        }
+    }
+
+    nDevices = keyboardCount;
+    
+    // If we have more than 10 keyboards inserted, let the player know
+    if(nDevices > 9)
+    {
+        nDevices = 10;
+        error = "Unfortunately, only 10 keyboards can be connected at maximum for the engine. Please disconnect an extra keyboard, then refresh the keyboard status again.";
+        MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
+    }
+
+    // Critical errors, in case
+    if(nDevices == (UINT)-1)
+    {
+        
+        if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+        {
+            error = "An error has occured while getting keyboard information. The error code is " + std::to_string(GetLastError()) + ". Please check out https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes for a complete list of error codes to see what went wrong.";
+            MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
+        }
+        free(pRawInputDeviceList);
+    }
+}
+
+int GetKeyboardCount()
+{
+    return (int)nDevices;
+}
+
+bool HID_RegisterKeyboards()
+{
+    bool success = false;
+    RAWINPUTDEVICE rid[9];
+    For(i, 0, 9)
+    {
+        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+        rid[i].dwFlags = RIDEV_INPUTSINK;
+        rid[i].hwndTarget = gMainWindowHwnd;
+    }
+    success = RegisterRawInputDevices(rid, nDevices, sizeof(rid));
+    return success;
+}
+
+void HID_UnregisterKeyboards()
+{
+    RAWINPUTDEVICE rid[9];
+    For(i, 0, 9)
+    {
+        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+        rid[i].dwFlags = RIDEV_REMOVE;
+        rid[i].hwndTarget = gMainWindowHwnd;
+    }
+    bool success = RegisterRawInputDevices(rid, nDevices, sizeof(RAWINPUTDEVICE));
+}
+
+bool HID_RefreshKeyboards()
+{
+    HID_UnregisterKeyboards();
+    bool success = HID_RegisterKeyboards();
+    GetRawInputDevices();
+    return success;
+}
+
 LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (nCode < 0){
@@ -1085,7 +1338,7 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Override window proc
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
-                // Register for the raw input API for keyboard
+                // Register for the raw input API for the keyboard
                 RAWINPUTDEVICE rid;
                 rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
                 rid.usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD

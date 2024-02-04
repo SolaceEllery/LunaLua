@@ -1295,6 +1295,20 @@ void CreateADirectory(std::string directory)
     CreateDirectory(LFinalPath, NULL);
 }
 
+bool inFullscreen()
+{
+    if (gMainWindowHwnd != NULL)
+    {
+        WINDOWPLACEMENT wndpl;
+        wndpl.length = sizeof(WINDOWPLACEMENT);
+        if (GetWindowPlacement(gMainWindowHwnd, &wndpl))
+        {
+            return (wndpl.showCmd == SW_MAXIMIZE);
+        }
+    }
+    return false;
+}
+
 void doGitClone(std::string urlTemp, std::string pathTemp)
 {
     git_repository *repo = NULL;

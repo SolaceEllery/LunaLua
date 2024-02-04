@@ -270,6 +270,9 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
     LunaImage::releaseCachedImages(m_type == LUNALUA_WORLD);
     PGE_Sounds::releaseCached(m_type == LUNALUA_WORLD);
     CachedReadFile::releaseCached(m_type == LUNALUA_WORLD);
+
+    // Automatically refresh keyboards if haven't refreshed yet
+    HID_RefreshKeyboards();
 }
 
 //Setup default constants
@@ -723,9 +726,22 @@ void CLunaLua::bindAll()
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
                 def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
                 def("getEpisodeList", &LuaProxy::Misc::getEpisodeList),
-                //SEE Mod
+
+                //**SEE Mod**
+                
+                // Misc.getOSLanguage() - Gets the operating system language from the system.
                 def("getOSLanguage", &GetOSLanguage),
+                // Misc.getFileSize(file) - Gets the filesize of any file specified.
                 def("getFileSize", (double(*)(std::string))&GetFileSize)
+            ],
+            
+            namespace_("Keyboard")[
+                // Keyboard.refresh() - Refreshes the keyboard state, in case if you plug in another keyboard or disconnect one.
+                def("refresh", (bool(*)())&HID_RefreshKeyboards),
+                // Keyboard.count() - Returns the number of keyboards connected.
+                def("count", (int(*)())&GetKeyboardCount),
+                // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return nil.
+                def("get", (luabind::object(*)(int, lua_State*))&GetKeyboardInfoFromIdx)
             ],
 
             namespace_("FileFormats")[

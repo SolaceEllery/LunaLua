@@ -176,13 +176,15 @@ enum NPCTransformationCause {
     NPC_TFCAUSE_SWITCH = 7,
 };
 
-
+// **SMBX GM Base constants**
 #define GM_BASE             0x00B25000
 #define GM_END              0x00B2E000
 
+// **SMBX File starting point constants**
 #define GM_FILE_START       0x00400000
 #define FN_OFFSET2ADDR(offs) (void*)(GM_FILE_START + (DWORD)offs)
 
+// **Player key constants**
 #define GM_PLAYER_KEY_UP    0
 #define GM_PLAYER_KEY_DOWN  1
 #define GM_PLAYER_KEY_LEFT  2
@@ -194,8 +196,11 @@ enum NPCTransformationCause {
 #define GM_PLAYER_KEY_SEL   8
 #define GM_PLAYER_KEY_STR   9
 
-#define GM_MAX_PLAYERS       200
-#define GM_MAX_CHARACTERS    5
+// **Character constants**
+#define GM_MAX_PLAYERS                 200
+#define GM_MAX_CHARACTERS              5
+#define GM_MAX_CHARACTERS_X2           16
+#define GM_MAX_CONTROLLABLE_PLAYERS    2
 
 #define DEFMEM(name, type, addr) static auto& name = *(type*)(addr); \
     static constexpr std::uintptr_t name ## _ADDR = addr; \
@@ -1550,5 +1555,3 @@ _O_Pub_Obj_Inf31_Event0x6                    .text 00B23F40 000000A7 0000000C 00
 #define For(A, From, To) for(int A = From; A <= To; ++A)
 
 #endif
-
-

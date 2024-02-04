@@ -649,7 +649,7 @@ int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB
 
 void EpisodeMain::PopulateEpisodeList()
 {
-    For(i, 1, 32767)
+    For(i, 0, 32766)
     {
         
     }

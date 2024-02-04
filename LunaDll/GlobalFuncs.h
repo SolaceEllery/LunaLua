@@ -328,6 +328,9 @@ double GetFileSize(std::string file);
 //Create a directory
 void CreateADirectory(std::string file);
 
+// Detects if in fullscreen or not
+bool inFullscreen();
+
 //Git Stuff
 void doGitClone(std::string urlTemp, std::string pathTemp);
 //void doGitPull(std::string pathTemp);

@@ -5,7 +5,7 @@
 
 #pragma warning(disable: 4800)
 
-
+NewSMBXInputKeyboard g_playerInputs[199];
 
 LuaProxy::InputConfig::InputConfig(unsigned short index) : m_index(index)
 {}
