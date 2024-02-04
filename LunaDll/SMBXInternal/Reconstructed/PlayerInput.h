@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#define GM_MAX_PLAYER_INPUTS = 11
+
 extern bool gPlayerInputOverhaulToggled;
 
 struct NewSMBXInputKeyboard
@@ -46,8 +48,8 @@ struct NewSMBXInputKeyboard
         int down[2] = {0, 40}; //VK_DOWN
         int left[2] = {0, 37}; //VK_LEFT
         int right[2] = {0, 39}; //VK_RIGHT
-        int jump[2] = {0, 90}; //VK_Z
-        int run[2] = {0, 88}; //VK_X
+        int jump[2] = {0, 88}; //VK_X (VK_Z is the default)
+        int run[2] = {0, 90}; //VK_Z (VK_X is the default)
         int dropitem[2] = {0, 16}; //VK_SHIFT
         int pause[2] = {0, 27}; //VK_ESCAPE
         int altjump[2] = {0, 65}; //VK_A
@@ -139,7 +141,13 @@ class PlayerInput {
         PlayerInput();
         ~PlayerInput();
 
+        void SetControllerControls(int type, int playerIdx, int controllerButton, int controllerID);
+        void SetKeyboardControls(int type, int playerIdx, int virtKey, int keyboardIdx);
+
         void GetKeyboardInput(int virtKey, int keyboardIdx);
+        
+        void SetKeyboardIdx(int playerIdx, int keyboardIdx);
+        void SetControllerIdx(int playerIdx, int controllerIdx);
 
         bool Toggle(bool enable);
         void Update();

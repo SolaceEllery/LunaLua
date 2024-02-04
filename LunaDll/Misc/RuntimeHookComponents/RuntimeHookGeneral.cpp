@@ -398,7 +398,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     if (!repeated)
     {
         PlayerInput playerInputFunc;
-        playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx);
+        playerInputFunc.GetKeyboardInput((int)virtKey, keyboardIdx);
 
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
     }
