@@ -189,6 +189,60 @@ void PlayerInput::SetKeyboardIdx(int playerIdx, int keyboardIdx)
     g_playerKeyboardInputs[playerIdx].special[1] = keyboardIdx;
 }
 
+bool PlayerInput::IsPressing(int type, int playerIdx)
+{
+    PlayerMOB* p = Player::Get(playerIdx);
+    PlayerInput playerInputFunc;
+    if(type == 1)
+    {
+        return p->keymap.upKeyState;
+    }
+    else if(type == 2)
+    {
+        return p->keymap.downKeyState;
+    }
+    else if(type == 3)
+    {
+        return p->keymap.leftKeyState;
+    }
+    else if(type == 4)
+    {
+        return p->keymap.rightKeyState;
+    }
+    else if(type == 5)
+    {
+        return p->keymap.jumpKeyState;
+    }
+    else if(type == 6)
+    {
+        return p->keymap.runKeyState;
+    }
+    else if(type == 7)
+    {
+        return p->keymap.dropItemKeyState;
+    }
+    else if(type == 8)
+    {
+        return p->keymap.pauseKeyState;
+    }
+    else if(type == 9)
+    {
+        return p->keymap.altRunKeyState;
+    }
+    else if(type == 10)
+    {
+        return p->keymap.altJumpKeyState;
+    }
+    else if(type == 11)
+    {
+        return playerSpecialKeyPressed[playerIdx];
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void PlayerInput::GetKeyboardInput(int virtKey, int keyboardIdx)
 {
     PlayerInput playerInputFunc;

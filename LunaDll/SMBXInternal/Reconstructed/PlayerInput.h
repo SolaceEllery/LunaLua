@@ -149,6 +149,8 @@ class PlayerInput {
         void SetKeyboardIdx(int playerIdx, int keyboardIdx);
         void SetControllerIdx(int playerIdx, int controllerIdx);
 
+        bool IsPressing(int type, int playerIdx);
+
         bool Toggle(bool enable);
         void Update();
 };

@@ -35,6 +35,13 @@ extern "C" {
         PlayerInput playerInputFunc;
         playerInputFunc.SetControllerControls(type, playerIdx, controllerIdx, controllerID);
     }
+
+    FFI_EXPORT(void) LunaLuaIsPlayerPressing(int type, int playerIdx)
+    {
+        PlayerInput playerInputFunc;
+        playerInputFunc.IsPressing(type, playerIdx);
+
+    }
     
     //Controller/Keyboard Changing
     FFI_EXPORT(void) LunaLuaChangePlayerKeyboard(int playerIdx, int keyboardIdx)
