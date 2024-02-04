@@ -2,23 +2,24 @@
 #ifndef PlayerInput_hhh
 #define PlayerInput_hhh
 
+#include <string>
+#include <vector>
+
 extern bool gPlayerInputOverhaulToggled;
-extern NewSMBXInputKeyboard* g_playerKeyboardInputs[199];
-extern NewSMBXInputController* g_playerControllerInputs[199];
 
 struct NewSMBXInputKeyboard
 {
-    unsigned char* up[1];
-    unsigned char* down[1];
-    unsigned char* left[1];
-    unsigned char* right[1];
-    unsigned char* jump[1];
-    unsigned char* run[1];
-    unsigned char* dropitem[1];
-    unsigned char* pause[1];
-    unsigned char* altjump[1];
-    unsigned char* altrun[1];
-    unsigned char* special[1];
+    int up[2];
+    int down[2];
+    int left[2];
+    int right[2];
+    int jump[2];
+    int run[2];
+    int dropitem[2];
+    int pause[2];
+    int altjump[2];
+    int altrun[2];
+    int special[2];
     
     bool upPressing;
     bool downPressing;
@@ -41,17 +42,17 @@ struct NewSMBXInputKeyboard
     // Reset function
     void Reset()
     {
-        unsigned char* up[1] = {0, 38}; //VK_UP
-        unsigned char* down[1] = {0, 40}; //VK_DOWN
-        unsigned char* left[1] = {0, 37}; //VK_LEFT
-        unsigned char* right[1] = {0, 39}; //VK_RIGHT
-        unsigned char* jump[1] = {0, 90}; //VK_Z
-        unsigned char* run[1] = {0, 88}; //VK_X
-        unsigned char* dropitem[1] = {0, 16}; //VK_SHIFT
-        unsigned char* pause[1] = {0, 27}; //VK_ESCAPE
-        unsigned char* altjump[1] = {0, 65}; //VK_A
-        unsigned char* altrun[1] = {0, 83}; //VK_S
-        unsigned char* special[1] = {0, 68}; //VK_D
+        int up[2] = {0, 38}; //VK_UP
+        int down[2] = {0, 40}; //VK_DOWN
+        int left[2] = {0, 37}; //VK_LEFT
+        int right[2] = {0, 39}; //VK_RIGHT
+        int jump[2] = {0, 90}; //VK_Z
+        int run[2] = {0, 88}; //VK_X
+        int dropitem[2] = {0, 16}; //VK_SHIFT
+        int pause[2] = {0, 27}; //VK_ESCAPE
+        int altjump[2] = {0, 65}; //VK_A
+        int altrun[2] = {0, 83}; //VK_S
+        int special[2] = {0, 68}; //VK_D
 
         bool upPressing = false;
         bool downPressing = false;
@@ -69,17 +70,17 @@ struct NewSMBXInputKeyboard
 
 struct NewSMBXInputController
 {
-    unsigned char* up[1];
-    unsigned char* down[1];
-    unsigned char* left[1];
-    unsigned char* right[1];
-    unsigned char* jump[1];
-    unsigned char* run[1];
-    unsigned char* dropitem[1];
-    unsigned char* pause[1];
-    unsigned char* altjump[1];
-    unsigned char* altrun[1];
-    unsigned char* special[1];
+    int up[2];
+    int down[2];
+    int left[2];
+    int right[2];
+    int jump[2];
+    int run[2];
+    int dropitem[2];
+    int pause[2];
+    int altjump[2];
+    int altrun[2];
+    int special[2];
 
     bool upPressing;
     bool downPressing;
@@ -103,17 +104,17 @@ struct NewSMBXInputController
     void Reset()
     {
         // Lua, or the launcher will fill the list up instead
-        unsigned char* up[1] = {0, 0};
-        unsigned char* down[1] = {0, 0};
-        unsigned char* left[1] = {0, 0};
-        unsigned char* right[1] = {0, 0};
-        unsigned char* jump[1] = {0, 0};
-        unsigned char* run[1] = {0, 0};
-        unsigned char* dropitem[1] = {0, 0};
-        unsigned char* pause[1] = {0, 0};
-        unsigned char* altjump[1] = {0, 0};
-        unsigned char* altrun[1] = {0, 0};
-        unsigned char* special[1] = {0, 0};
+        int up[2] = {0, 0};
+        int down[2] = {0, 0};
+        int left[2] = {0, 0};
+        int right[2] = {0, 0};
+        int jump[2] = {0, 0};
+        int run[2] = {0, 0};
+        int dropitem[2] = {0, 0};
+        int pause[2] = {0, 0};
+        int altjump[2] = {0, 0};
+        int altrun[2] = {0, 0};
+        int special[2] = {0, 0};
 
         bool upPressing = false;
         bool downPressing = false;
@@ -129,14 +130,18 @@ struct NewSMBXInputController
     }
 };
 
+//0 = 1, 199 = 200
+extern NewSMBXInputKeyboard g_playerKeyboardInputs[199];
+extern NewSMBXInputController g_playerControllerInputs[199];
+
 class PlayerInput {
     public:
         PlayerInput();
         ~PlayerInput();
 
-        int GetKeyboardInput(uint32_t virtKey, int keyboardIdx);
+        void GetKeyboardInput(int virtKey, int keyboardIdx);
 
-        void Toggle(bool enable);
+        bool Toggle(bool enable);
         void Update();
 };
 
