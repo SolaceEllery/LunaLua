@@ -236,4 +236,4 @@ extern bool gEpisodeLoadedOnBoot;
 extern int gUnfocusTimer;
 extern int gFocusTimer;
 
-extern unsigned char* playerSpecialKeyPressed[199];
+extern bool playerSpecialKeyPressed[199];
