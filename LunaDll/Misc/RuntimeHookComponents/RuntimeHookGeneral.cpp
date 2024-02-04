@@ -411,7 +411,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         }
         else
         {
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, nullptr, keyboardID);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, "", keyboardID);
         }
     }
 
