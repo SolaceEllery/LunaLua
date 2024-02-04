@@ -845,12 +845,15 @@ static __declspec(naked) void updateInput_Orig()
 extern void __stdcall runtimeHookUpdateInput()
 {
     // If player keys are disabled, the following won't happen
-    if(!gDisablePlayerKeys)
+    if (gMainWindowFocused)
     {
-        gLunaGameControllerManager.pollInputs();
-        gEscPressedRegistered = gEscPressed;
-        gEscPressed = false;
-        updateInput_Orig();
+        if(!gDisablePlayerKeys)
+        {
+            gLunaGameControllerManager.pollInputs();
+            gEscPressedRegistered = gEscPressed;
+            gEscPressed = false;
+            updateInput_Orig();
+        }
     }
 }
 
@@ -3038,7 +3041,7 @@ _declspec(naked) void __stdcall runtimeHookStoreCustomMusicPathWrapper(void)
 
 void __stdcall runtimeHookCheckWindowFocus()
 {
-    if (!gMainWindowFocused && !LunaLoadScreenIsActive())
+    if (!gMainWindowFocused && !LunaLoadScreenIsActive() && !gRunWhenUnfocused)
     {
         if(gUnfocusTimer > 0)
         {

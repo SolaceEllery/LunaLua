@@ -1382,6 +1382,9 @@
     <ClCompile Include="libs\luabind-deboostified\src$filename">
       <Filter>libs\luabind-deboostified</Filter>
     </ClCompile>
+    <ClCompile Include="libs\luabind-deboostified\src$filename">
+      <Filter>libs\luabind-deboostified</Filter>
+    </ClCompile>
     <ClCompile Include="Rendering\WindowSizeHandler.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -1471,6 +1474,9 @@
     </ClCompile>
     <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp">
       <Filter>LuaMain</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\AsmPatch.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

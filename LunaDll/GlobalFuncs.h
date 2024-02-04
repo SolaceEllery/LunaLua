@@ -272,6 +272,7 @@ void ShowAndFocusWindow(HWND hWindow);
 
 // Handle WIN32 events when loading
 void HandleEventsWhileLoading();
+void HandleEventsWhileLoadscreenOnly();
 
 // Float/double manipulation
 #ifdef __clang__

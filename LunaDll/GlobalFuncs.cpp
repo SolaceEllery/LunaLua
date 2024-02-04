@@ -37,6 +37,7 @@
 
 #pragma comment (lib,"urlmon.lib")
 #include <libgit2/include/git2.h>
+#include "Misc/LoadScreen.h"
 
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator)
 {
@@ -1128,9 +1129,9 @@ void HandleEventsWhileLoading()
     static DWORD lastTime = 0;
     DWORD thisTime = GetTickCount();
     DWORD elapsedTime = thisTime - lastTime;
-    if (elapsedTime > 100)
+    if (elapsedTime > 30)
     {
-        // Run if >100ms has elapsed since last event handling
+        // Run if >30ms has elapsed since last event handling
         native_rtcDoEvents();
         lastTime = thisTime;
     }
@@ -1150,6 +1151,14 @@ bool createSFXStartLuaEvent(int id, const char* path)
     }
 
     return isCancelled;
+}
+
+void HandleEventsWhileLoadscreenOnly()
+{
+    if (LunaLoadScreenIsActive() && !LunaLoadScreenIsCurrentThread())
+    {
+        HandleEventsWhileLoading();
+    }
 }
 
 std::string GetEditorPlacedItem()
