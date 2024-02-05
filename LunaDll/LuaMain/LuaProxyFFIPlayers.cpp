@@ -7,7 +7,8 @@ extern "C" {
 
     FFI_EXPORT(void) LunaLuaTogglePlayerKeyOverhaul(bool value)
     {
-        gPlayerInputOverhaulToggled = value;
+        PlayerInput playerInputFunc;
+        playerInputFunc.Toggle(value);
     }
     FFI_EXPORT(bool) LunaLuaIsPlayerKeyOverhaulOn()
     {
@@ -36,11 +37,10 @@ extern "C" {
         playerInputFunc.SetControllerControls(type, playerIdx, controllerIdx, controllerID);
     }
 
-    FFI_EXPORT(void) LunaLuaIsPlayerPressing(int type, int playerIdx)
+    FFI_EXPORT(bool) LunaLuaIsPlayerPressing(int type, int playerIdx)
     {
         PlayerInput playerInputFunc;
-        playerInputFunc.IsPressing(type, playerIdx);
-
+        return playerInputFunc.IsPressing(type, playerIdx);
     }
     
     //Controller/Keyboard Changing

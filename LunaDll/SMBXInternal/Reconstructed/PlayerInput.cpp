@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <windows.h>
 
 #include "../../SMBXInternal/PlayerMOB.h"
 #include "../../Defines.h"
@@ -195,43 +196,43 @@ bool PlayerInput::IsPressing(int type, int playerIdx)
     PlayerInput playerInputFunc;
     if(type == 1)
     {
-        return p->keymap.upKeyState;
+        return COMBOOL(p->keymap.upKeyState);
     }
     else if(type == 2)
     {
-        return p->keymap.downKeyState;
+        return COMBOOL(p->keymap.downKeyState);
     }
     else if(type == 3)
     {
-        return p->keymap.leftKeyState;
+        return COMBOOL(p->keymap.leftKeyState);
     }
     else if(type == 4)
     {
-        return p->keymap.rightKeyState;
+        return COMBOOL(p->keymap.rightKeyState);
     }
     else if(type == 5)
     {
-        return p->keymap.jumpKeyState;
+        return COMBOOL(p->keymap.jumpKeyState);
     }
     else if(type == 6)
     {
-        return p->keymap.runKeyState;
+        return COMBOOL(p->keymap.runKeyState);
     }
     else if(type == 7)
     {
-        return p->keymap.dropItemKeyState;
+        return COMBOOL(p->keymap.dropItemKeyState);
     }
     else if(type == 8)
     {
-        return p->keymap.pauseKeyState;
+        return COMBOOL(p->keymap.pauseKeyState);
     }
     else if(type == 9)
     {
-        return p->keymap.altRunKeyState;
+        return COMBOOL(p->keymap.altRunKeyState);
     }
     else if(type == 10)
     {
-        return p->keymap.altJumpKeyState;
+        return COMBOOL(p->keymap.altJumpKeyState);
     }
     else if(type == 11)
     {
@@ -248,97 +249,97 @@ void PlayerInput::GetKeyboardInput(int virtKey, int keyboardIdx)
     PlayerInput playerInputFunc;
     if(gPlayerInputOverhaulToggled)
     {
-        For(i, 1, GM_MAX_PLAYERS)
+        For(i, 1, GM_PLAYERS_COUNT)
         {
             PlayerMOB* p = Player::Get(i);
             if(virtKey == g_playerKeyboardInputs[i].up[1] && keyboardIdx == g_playerKeyboardInputs[i].up[0])
             {
-                p->keymap.upKeyState = true;
+                p->keymap.upKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].up[1]))
             {
-                p->keymap.upKeyState = false;
+                p->keymap.upKeyState = COMBOOL(false);
             }
             
             if(virtKey == g_playerKeyboardInputs[i].down[1] && keyboardIdx == g_playerKeyboardInputs[i].down[0])
             {
-                p->keymap.downKeyState = true;
+                p->keymap.downKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].down[1]))
             {
-                p->keymap.downKeyState = false;
+                p->keymap.downKeyState = COMBOOL(false);
             }
             
             if(virtKey == g_playerKeyboardInputs[i].left[1] && keyboardIdx == g_playerKeyboardInputs[i].left[0])
             {
-                p->keymap.leftKeyState = true;
+                p->keymap.leftKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].left[1]))
             {
-                p->keymap.leftKeyState = false;
+                p->keymap.leftKeyState = COMBOOL(false);
             }
             
             if(virtKey == g_playerKeyboardInputs[i].right[1] && keyboardIdx == g_playerKeyboardInputs[i].right[0])
             {
-                p->keymap.rightKeyState = true;
+                p->keymap.rightKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].right[1]))
             {
-                p->keymap.rightKeyState = false;
+                p->keymap.rightKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].jump[1] && keyboardIdx == g_playerKeyboardInputs[i].jump[0])
             {
-                p->keymap.jumpKeyState = true;
+                p->keymap.jumpKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].jump[1]))
             {
-                p->keymap.jumpKeyState = false;
+                p->keymap.jumpKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].altjump[1] && keyboardIdx == g_playerKeyboardInputs[i].altjump[0])
             {
-                p->keymap.altJumpKeyState = true;
+                p->keymap.altJumpKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].altjump[1]))
             {
-                p->keymap.altJumpKeyState = false;
+                p->keymap.altJumpKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].run[1] && keyboardIdx == g_playerKeyboardInputs[i].run[0])
             {
-                p->keymap.runKeyState = true;
+                p->keymap.runKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].run[1]))
             {
-                p->keymap.runKeyState = false;
+                p->keymap.runKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].altrun[1] && keyboardIdx == g_playerKeyboardInputs[i].altrun[0])
             {
-                p->keymap.altRunKeyState = true;
+                p->keymap.altRunKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].altrun[1]))
             {
-                p->keymap.altRunKeyState = false;
+                p->keymap.altRunKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].dropitem[1] && keyboardIdx == g_playerKeyboardInputs[i].dropitem[0])
             {
-                p->keymap.dropItemKeyState = true;
+                p->keymap.dropItemKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].dropitem[1]))
             {
-                p->keymap.dropItemKeyState = false;
+                p->keymap.dropItemKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].pause[1] && keyboardIdx == g_playerKeyboardInputs[i].pause[0])
             {
-                p->keymap.pauseKeyState = true;
+                p->keymap.pauseKeyState = COMBOOL(true);
             }
             else if(!(virtKey == g_playerKeyboardInputs[i].pause[1]))
             {
-                p->keymap.pauseKeyState = false;
+                p->keymap.pauseKeyState = COMBOOL(false);
             }
 
             if(virtKey == g_playerKeyboardInputs[i].special[1] && keyboardIdx == g_playerKeyboardInputs[i].special[0])
@@ -358,7 +359,7 @@ void PlayerInput::Update()
     PlayerInput playerInputFunc;
     if(gPlayerInputOverhaulToggled)
     {
-        For(i, 1, GM_MAX_PLAYERS)
+        For(i, 1, GM_PLAYERS_COUNT)
         {
             
         }

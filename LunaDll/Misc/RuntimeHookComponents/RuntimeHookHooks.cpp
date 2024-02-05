@@ -45,6 +45,7 @@
 #include "../../Misc/VB6RNG.h"
 
 #include "../../SMBXInternal/Reconstructed/EpisodeMain.h"
+#include "../../SMBXInternal/Reconstructed/PlayerInput.h"
 #include "../../SMBXInternal/Overworld.h"
 
 void CheckIPCQuitRequest();
@@ -1528,6 +1529,8 @@ extern void __stdcall RenderLevelHook()
     short oldRenderDoneCameraUpdate = g_renderDoneCameraUpdate;
     g_renderDoneCameraUpdate = 0;
     RenderLevelReal();
+    PlayerInput playerInputFunc;
+    playerInputFunc.Update();
     MusicManager::update();
     g_renderDoneCameraUpdate = oldRenderDoneCameraUpdate;
 
@@ -1602,6 +1605,8 @@ extern void __stdcall RenderWorldHook()
     }
     g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
+    PlayerInput playerInputFunc;
+    playerInputFunc.Update();
     MusicManager::update();
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
     {

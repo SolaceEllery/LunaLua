@@ -739,9 +739,9 @@ void CLunaLua::bindAll()
                 // Keyboard.refresh() - Refreshes the keyboard state, in case if you plug in another keyboard or disconnect one.
                 def("refresh", (bool(*)())&HID_RefreshKeyboards),
                 // Keyboard.count() - Returns the number of keyboards connected.
-                def("count", (int(*)())&GetKeyboardCount),
+                def("count", (int(*)())&HID_GetKeyboardCount),
                 // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return nil.
-                def("get", (luabind::object(*)(int, lua_State*))&GetKeyboardInfoFromIdx)
+                def("get", (luabind::object(*)(int, lua_State*))&HID_GetKeyboardInfoFromIdx)
             ],
 
             namespace_("FileFormats")[

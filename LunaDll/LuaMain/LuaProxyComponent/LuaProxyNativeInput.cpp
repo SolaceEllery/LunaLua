@@ -35,7 +35,8 @@ short LuaProxy::InputConfig::up(lua_State* L)
         return 0;
     if (inputType(L) == 0)
         return SMBXNativeKeyboard::Get(m_index)->up;
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        return SMBXNativeJoystick::Get(m_index)->up;
     return 0;
 }
 
@@ -45,7 +46,8 @@ short LuaProxy::InputConfig::down(lua_State* L)
         return 0;
     if (inputType(L) == 0)
         return SMBXNativeKeyboard::Get(m_index)->down;
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        return SMBXNativeJoystick::Get(m_index)->down;
     return 0;
 }
 
@@ -55,7 +57,8 @@ short LuaProxy::InputConfig::left(lua_State* L)
         return 0;
     if (inputType(L) == 0)
         return SMBXNativeKeyboard::Get(m_index)->left;
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        return SMBXNativeJoystick::Get(m_index)->left;
     return 0;
 }
 
@@ -65,7 +68,8 @@ short LuaProxy::InputConfig::right(lua_State* L)
         return 0;
     if (inputType(L) == 0)
         return SMBXNativeKeyboard::Get(m_index)->right;
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        return SMBXNativeJoystick::Get(m_index)->right;
     return 0;
 }
 
@@ -134,11 +138,10 @@ void LuaProxy::InputConfig::setUp(unsigned short keycode, lua_State* L)
 {
     if (!isValid_throw(L))
         return;
-    if (inputType(L) == 0){
+    if (inputType(L) == 0)
         SMBXNativeKeyboard::Get(m_index)->up = keycode;
-        return;
-    }
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        SMBXNativeJoystick::Get(m_index)->up = keycode;
 }
 
 
@@ -146,33 +149,30 @@ void LuaProxy::InputConfig::setDown(unsigned short keycode, lua_State* L)
 {
     if (!isValid_throw(L))
         return;
-    if (inputType(L) == 0){
+        if (inputType(L) == 0)
         SMBXNativeKeyboard::Get(m_index)->down = keycode;
-        return;
-    }
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        SMBXNativeJoystick::Get(m_index)->down = keycode;
 }
 
 void LuaProxy::InputConfig::setLeft(unsigned short keycode, lua_State* L)
 {
     if (!isValid_throw(L))
         return;
-    if (inputType(L) == 0){
+    if (inputType(L) == 0)
         SMBXNativeKeyboard::Get(m_index)->left = keycode;
-        return;
-    }
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        SMBXNativeJoystick::Get(m_index)->left = keycode;
 }
 
 void LuaProxy::InputConfig::setRight(unsigned short keycode, lua_State* L)
 {
     if (!isValid_throw(L))
         return;
-    if (inputType(L) == 0){
+    if (inputType(L) == 0)
         SMBXNativeKeyboard::Get(m_index)->right = keycode;
-        return;
-    }
-    luaL_error(L, "You cannot modify or get movement controls from an joystick. Please check type with .inputType!");
+    else
+        SMBXNativeJoystick::Get(m_index)->right = keycode;
 }
 
 void LuaProxy::InputConfig::setRun(unsigned short keycode, lua_State* L)

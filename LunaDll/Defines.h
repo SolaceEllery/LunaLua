@@ -91,7 +91,8 @@ struct Bounds
     double unk2;
 };
 
-struct KeyMap{
+struct KeyMap
+{
     short    upKeyState; //Up
     short    downKeyState; //Down
     short    leftKeyState; //Left

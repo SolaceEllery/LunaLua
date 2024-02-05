@@ -43,13 +43,15 @@ void TrySkipPatch();
 /************************************************************************/
 /* Keyboard Main Functions                                              */
 /************************************************************************/
-extern void GetRawInputDevices();
+extern void HID_GetAllRawKeyboards();
 extern bool HID_RegisterKeyboards();
 extern void HID_UnregisterKeyboards();
 extern bool HID_RefreshKeyboards();
-extern int GetKeyboardCount();
+extern void HID_SetupKeyboards();
+extern int HID_GetKeyboardCount();
+extern luabind::object HID_GetKeyboardInfoFromIdx(int index, lua_State *L);
+
 extern UINT nDevices;
-extern luabind::object GetKeyboardInfoFromIdx(int index, lua_State *L);
 struct keyboardDevices
 {
     const char* deviceName;
