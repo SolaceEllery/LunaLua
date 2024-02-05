@@ -54,4 +54,9 @@ extern "C" {
         PlayerInput playerInputFunc;
         playerInputFunc.SetControllerIdx(playerIdx, controllerIdx);
     }
+    FFI_EXPORT(void) LunaLuaResetAllPlayerInputs()
+    {
+        PlayerInput playerInputFunc;
+        playerInputFunc.ResetAllInputs();
+    }
 }

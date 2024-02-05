@@ -1601,10 +1601,6 @@ void CLunaLua::doEvents()
 
     triggerOnStart();
 
-    // Test code for player input recode
-    PlayerInput playerInputFunc;
-    playerInputFunc.ResetAllInputs();
-
     // If an error happened in onStart then return.
     if (!isValid())
         return;

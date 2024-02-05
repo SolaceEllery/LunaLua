@@ -61,13 +61,13 @@ struct NewSMBXInputKeyboard
         down[1] = VK_DOWN;
         left[1] = VK_LEFT;
         right[1] = VK_RIGHT;
-        jump[1] = 0x58; //VK_Z is the default
-        run[1] = 0x5A; //VK_X is the default
+        jump[1] = 0x58; //VK_X, VK_Z is the default config for 1.3
+        run[1] = 0x5A; //VK_Z, VK_X is the default config for 1.3
         dropitem[1] = VK_SHIFT;
         pause[1] = VK_ESCAPE;
-        altjump[1] = 0x41;
-        altrun[1] = 0x53;
-        special[1] = 0x44;
+        altjump[1] = 0x41; //VK_A
+        altrun[1] = 0x53; //VK_S
+        special[1] = 0x44; //VK_D
 
         upPressing = false;
         downPressing = false;

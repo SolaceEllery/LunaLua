@@ -35,6 +35,7 @@ using std::max;
 #include "Misc/AsmPatch.h"
 #include "Misc/LoadScreen.h"
 #include "../LunaLoader/LunaLoaderPatch.h"
+#include "SMBXInternal/Reconstructed/PlayerInput.h"
 
 static bool LevelCustomSounds = false;
 
