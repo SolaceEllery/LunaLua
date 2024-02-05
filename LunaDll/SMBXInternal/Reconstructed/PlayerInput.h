@@ -12,17 +12,17 @@ extern bool gPlayerInputOverhaulToggled;
 
 struct NewSMBXInputKeyboard
 {
-    int up[2];
-    int down[2];
-    int left[2];
-    int right[2];
-    int jump[2];
-    int run[2];
-    int dropitem[2];
-    int pause[2];
-    int altjump[2];
-    int altrun[2];
-    int special[2];
+    int up[1];
+    int down[1];
+    int left[1];
+    int right[1];
+    int jump[1];
+    int run[1];
+    int dropitem[1];
+    int pause[1];
+    int altjump[1];
+    int altrun[1];
+    int special[1];
     
     bool upPressing;
     bool downPressing;
@@ -85,17 +85,17 @@ struct NewSMBXInputKeyboard
 
 struct NewSMBXInputController
 {
-    int up[2];
-    int down[2];
-    int left[2];
-    int right[2];
-    int jump[2];
-    int run[2];
-    int dropitem[2];
-    int pause[2];
-    int altjump[2];
-    int altrun[2];
-    int special[2];
+    int up[1];
+    int down[1];
+    int left[1];
+    int right[1];
+    int jump[1];
+    int run[1];
+    int dropitem[1];
+    int pause[1];
+    int altjump[1];
+    int altrun[1];
+    int special[1];
 
     bool upPressing;
     bool downPressing;
