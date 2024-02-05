@@ -418,11 +418,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         if (unicodeRet > 0)
         {
             std::string charStr = WStr2Str(std::wstring(unicodeData, unicodeRet));
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr, keyboardIdx);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr, keyboardIdx + 1);
         }
         else
         {
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, "", keyboardIdx);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, "", keyboardIdx + 1);
         }
     }
 
