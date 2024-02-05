@@ -23,7 +23,6 @@
 #include "../../Input/MouseHandler.h"
 
 #include "../NpcIdExtender.h"
-
 #include "../../Misc/LoadScreen.h"
 
 #include <lua.hpp>
@@ -34,6 +33,7 @@
 #include "../../LuaMain/LuaHelper.h"
 
 #include "../../SMBXInternal/Reconstructed/PlayerInput.h"
+#include "../TestModeMenu.h"
 
 #ifndef NO_SDL
 bool episodeStarted = false;
@@ -403,6 +403,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx + 1);
 
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
+        
+        if(TestModeIsEnabled() && gDisablePlayerKeys && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
+        {
+            testModePauseMenu(true, false);
+        }
     }
 
     // Notify Lua code
@@ -1096,19 +1101,10 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             }
             case WM_INPUT_DEVICE_CHANGE:
             {
-                HANDLE hDevice = (HANDLE)Message.lParam;
-                RID_DEVICE_INFO deviceInfo;
-                deviceInfo.cbSize = sizeof(RID_DEVICE_INFO);
-                uint32_t dwSize = sizeof(RID_DEVICE_INFO);
-                GetRawInputDeviceInfo(hDevice,RIDI_DEVICEINFO,&deviceInfo,&dwSize);
-
                 if(wParam == GIDC_ARRIVAL || wParam == GIDC_REMOVAL)
                 {
-                    if(deviceInfo.dwType == RIM_TYPEKEYBOARD)
-                    {
-                        //Refresh all keyboards, if any has been connected or disconnected
-                        HID_RefreshKeyboards();
-                    }
+                    //Refresh all devices, if any has been connected or disconnected
+                    HID_RefreshDevices(false);
                 }
                 break;
             }
@@ -1175,13 +1171,17 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     return CallWindowProcW(gMainWindowProc, hwnd, uMsg, wParam, lParam);
 }
 
-UINT nDevices = 0;
+// -------------
+// **KEYBOARDS**
+// -------------
+
+UINT numberOfKeyboards = 0;
 keyboardDevices keyboardDeviceList[9];
 
 static luabind::object getKeyboardDeviceThings(int index, lua_State *L)
 {
     int realIndex = index - 1;
-    if(index < 1 && index > nDevices || std::to_string(keyboardDeviceList[index].index).length() == 0)
+    if(index < 1 && index > numberOfKeyboards || std::to_string(keyboardDeviceList[index].index).length() == 0)
     {
         luabind::object outData = luabind::newtable(L);
         outData["invalid"] = "keyboard";
@@ -1218,16 +1218,16 @@ void HID_GetAllRawKeyboards()
 
     std::string error = "";
 
-    GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST));
-    if(nDevices <= 0)
+    GetRawInputDeviceList(NULL, &numberOfKeyboards, sizeof(RAWINPUTDEVICELIST));
+    if(numberOfKeyboards <= 0)
     {
-        nDevices = 0;
+        numberOfKeyboards = 0;
         error = "If you get this error, that means that a keyboard cannot be found for the engine. Please connect a keyboard to play SMBX2.";
         MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
     }
 
     PRAWINPUTDEVICELIST pRawInputDeviceList = NULL;
-    pRawInputDeviceList = new RAWINPUTDEVICELIST[sizeof(RAWINPUTDEVICELIST) * nDevices];
+    pRawInputDeviceList = new RAWINPUTDEVICELIST[sizeof(RAWINPUTDEVICELIST) * numberOfKeyboards];
 
     if(pRawInputDeviceList == NULL)
     {
@@ -1236,10 +1236,10 @@ void HID_GetAllRawKeyboards()
     }
 
     int nResult = 0;
-    nResult = GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST));
+    nResult = GetRawInputDeviceList(pRawInputDeviceList, &numberOfKeyboards, sizeof(RAWINPUTDEVICELIST));
     int keyboardCount = -1;
 
-    for (UINT i = 0; i < nDevices; i++)
+    for (UINT i = 0; i < numberOfKeyboards; i++)
     {
         // Get character count for device name
         UINT nBufferSize = 0;
@@ -1306,18 +1306,18 @@ void HID_GetAllRawKeyboards()
         }
     }
 
-    nDevices = keyboardCount;
+    numberOfKeyboards = keyboardCount;
     
     // If we have more than 10 keyboards inserted, let the player know
-    if(nDevices > 9)
+    if(numberOfKeyboards > 9)
     {
-        nDevices = 10;
-        error = "Unfortunately, only 10 keyboards can be connected at maximum for the engine. Please disconnect an extra keyboard, then refresh the keyboard status again.";
+        numberOfKeyboards = 10;
+        error = "Unfortunately, only 10 keyboards can be connected at maximum for the engine. Please disconnect an extra keyboard, then refresh the device status again.";
         MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
     }
 
     // Critical errors, in case
-    if(nDevices == (UINT)-1)
+    if(numberOfKeyboards == (UINT)-1)
     {
         
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
@@ -1331,58 +1331,275 @@ void HID_GetAllRawKeyboards()
 
 int HID_GetKeyboardCount()
 {
-    return (int)nDevices;
+    return (int)numberOfKeyboards;
 }
 
-bool HID_RegisterKeyboards()
+// ----------
+// **MOUSES**
+// ----------
+
+UINT numberOfMouses = 0;
+mouseDevices mouseDeviceList[9];
+
+static luabind::object getMouseDeviceThings(int index, lua_State *L)
+{
+    int realIndex = index - 1;
+    if(index < 1 && index > numberOfKeyboards || std::to_string(keyboardDeviceList[index].index).length() == 0)
+    {
+        luabind::object outData = luabind::newtable(L);
+        outData["invalid"] = "mouse";
+        return outData;
+    }
+    else
+    {
+        luabind::object outData = luabind::newtable(L);
+        outData["index"] = mouseDeviceList[realIndex].index;
+        outData["deviceName"] = mouseDeviceList[realIndex].deviceName;
+        outData["mouseBitfield"] = mouseDeviceList[realIndex].mouseBitfield;
+        outData["buttonCount"] = mouseDeviceList[realIndex].buttonCount;
+        outData["sampleRate"] = mouseDeviceList[realIndex].sampleRate;
+        outData["hasAHorizontalWheel"] = mouseDeviceList[realIndex].hasAHorizontalWheel;
+        outData["mouseID"] = mouseDeviceList[realIndex].mouseID;
+
+        return outData;
+    }
+}
+
+luabind::object HID_GetMouseInfoFromIdx(int index, lua_State *L)
+{
+    return getMouseDeviceThings(index, L);
+}
+
+
+void HID_GetAllRawMouses()
+{
+    For(i, 0, 9)
+    {
+        mouseDeviceList[i].Reset();
+    }
+
+    std::string error = "";
+
+    GetRawInputDeviceList(NULL, &numberOfMouses, sizeof(RAWINPUTDEVICELIST));
+
+    PRAWINPUTDEVICELIST pRawInputDeviceList = NULL;
+    pRawInputDeviceList = new RAWINPUTDEVICELIST[sizeof(RAWINPUTDEVICELIST) * numberOfMouses];
+
+    if(pRawInputDeviceList == NULL)
+    {
+        error = "If you get this error, that means that the memory cannot be allocated to generate the mouse list for the engine. If you see this, contact Spencer Everly.";
+        MessageBoxA(NULL, error.c_str(), "Mouse Error", NULL);
+    }
+
+    int nResult = 0;
+    nResult = GetRawInputDeviceList(pRawInputDeviceList, &numberOfMouses, sizeof(RAWINPUTDEVICELIST));
+    int mouseCount = -1;
+
+    for (UINT i = 0; i < numberOfMouses; i++)
+    {
+        // Get character count for device name
+        UINT nBufferSize = 0;
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, NULL, &nBufferSize);
+
+        if(nResult < 0)
+        {
+            continue;
+        }
+
+        // Allocate memory for device name
+        WCHAR* wcDeviceName = new WCHAR[nBufferSize + 1];
+
+        if (wcDeviceName == NULL)
+        {
+            continue;
+        }
+
+        // Get name
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICENAME, wcDeviceName, &nBufferSize);
+        if(nResult < 0)
+        {
+            continue;
+        }
+
+        // Set device info & buffer size
+        RID_DEVICE_INFO rdiDeviceInfo;
+        rdiDeviceInfo.cbSize = sizeof(RID_DEVICE_INFO);
+        nBufferSize = rdiDeviceInfo.cbSize;
+
+        // Get device info
+        nResult = GetRawInputDeviceInfo(pRawInputDeviceList[i].hDevice, RIDI_DEVICEINFO, &rdiDeviceInfo, &nBufferSize);
+        
+        if(nResult < 0)
+        {
+            continue;
+        }
+        
+        // Did we get the entire buffer?
+        if (nResult < 0)
+        {
+            continue;
+        }
+
+        std::wstring deviceName = (std::wstring)wcDeviceName;
+        std::string deviceNameFinal = WStr2Str(deviceName);
+
+        if (rdiDeviceInfo.dwType == RIM_TYPEMOUSE && deviceNameFinal.length() > 0 && rdiDeviceInfo.mouse.dwNumberOfButtons > 0 && (int)pRawInputDeviceList[i].hDevice > 0)
+        {
+            mouseCount = mouseCount + 1;
+            mouseDeviceList[mouseCount].index = mouseCount;
+            mouseDeviceList[mouseCount].deviceName = deviceNameFinal.c_str();
+            mouseDeviceList[mouseCount].mouseBitfield = rdiDeviceInfo.mouse.dwId;
+            mouseDeviceList[mouseCount].buttonCount = rdiDeviceInfo.mouse.dwNumberOfButtons;
+            mouseDeviceList[mouseCount].sampleRate = rdiDeviceInfo.mouse.dwSampleRate;
+            mouseDeviceList[mouseCount].hasAHorizontalWheel = rdiDeviceInfo.mouse.fHasHorizontalWheel;
+            mouseDeviceList[mouseCount].mouseID = (int)pRawInputDeviceList[i].hDevice;
+        }
+        else
+        {
+            continue;
+        }
+    }
+
+    numberOfMouses = mouseCount;
+    
+    // If we have more than 10 keyboards inserted, let the player know
+    if(numberOfMouses > 9)
+    {
+        numberOfMouses = 10;
+        error = "Unfortunately, only 10 mice can be connected at maximum for the engine. Please disconnect an extra mouse, then refresh the device status again.";
+        MessageBoxA(NULL, error.c_str(), "Mouse Error", NULL);
+    }
+
+    // Critical errors, in case
+    if(numberOfMouses == (UINT)-1)
+    {
+        
+        if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+        {
+            error = "An error has occured while getting mouse information. The error code is " + std::to_string(GetLastError()) + ". Please check out https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes for a complete list of error codes to see what went wrong.";
+            MessageBoxA(NULL, error.c_str(), "Mouse Error", NULL);
+        }
+        free(pRawInputDeviceList);
+    }
+}
+
+int HID_GetMouseCount()
+{
+    return (int)numberOfMouses;
+}
+
+void HID_CreateCursor(int idx)
+{
+    int x = GetSystemMetrics(SM_CXICON);
+    int y = GetSystemMetrics(SM_CYICON);
+    BYTE* aAnd = new BYTE [x * y];
+    BYTE* aXor = new BYTE [x * y];
+    mouseDeviceList[idx].mouse = CreateCursor((HINSTANCE)NULL, gMouseHandler.GetX(), gMouseHandler.GetY(), x, y, aAnd, aXor);
+}
+
+void HID_DestroyCursor(int idx)
+{
+    DestroyCursor(mouseDeviceList[idx].mouse);
+}
+
+void HID_SetupMouses()
+{
+    mouseDeviceList[0].mouse = GetCursor();
+    if(HID_GetMouseCount() > 1)
+    {
+        For(i, 2, HID_GetMouseCount())
+        {
+            HID_CreateCursor(i);
+        }
+    }
+}
+
+void HID_CloseMouses()
+{
+    if(HID_GetMouseCount() > 1)
+    {
+        For(i, 1, HID_GetMouseCount() - 1)
+        {
+            HID_DestroyCursor(i);
+        }
+    }
+}
+
+// -----------
+// **DEVICES**
+// -----------
+
+bool HID_RegisterDevices()
 {
     bool success = false;
+    int numKey = 0;
+
+    // Set up the keyboard system
+    if(numberOfKeyboards == 0)
+    {
+        numKey = numberOfKeyboards;
+    }
+    else
+    {
+        numKey = numberOfKeyboards - 1;
+    }
     RAWINPUTDEVICE rid[9];
-    For(i, 0, 9)
+    DWORD flags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY; // Make keyboard inputs happen, and recieve device connect/disconnect messages
+    For(i, 0, numKey)
     {
         rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
         rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
         rid[i].dwFlags = RIDEV_INPUTSINK;
         rid[i].hwndTarget = gMainWindowHwnd;
     }
-    success = RegisterRawInputDevices(rid, nDevices, sizeof(rid));
+
+    //Register all keyboards
+    success = RegisterRawInputDevices(rid, numKey, sizeof(rid));
     return success;
 }
 
-void HID_UnregisterKeyboards()
+void HID_UnregisterDevices()
 {
+    int numKey = 0;
+    if(numberOfKeyboards == 0)
+    {
+        numKey = numberOfKeyboards;
+    }
+    else
+    {
+        numKey = numberOfKeyboards - 1;
+    }
     RAWINPUTDEVICE rid[9];
-    For(i, 0, 9)
+    For(i, 0, numKey)
     {
         rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
         rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
         rid[i].dwFlags = RIDEV_REMOVE;
-        rid[i].hwndTarget = gMainWindowHwnd;
+        rid[i].hwndTarget = NULL;
     }
-    bool success = RegisterRawInputDevices(rid, nDevices, sizeof(RAWINPUTDEVICE));
+
+    bool success = RegisterRawInputDevices(rid, numberOfKeyboards, sizeof(rid));
 }
 
-bool HID_RefreshKeyboards()
+bool HID_RefreshDevices(bool isFirstRun)
 {
-    HID_UnregisterKeyboards();
-    bool success = HID_RegisterKeyboards();
-    HID_GetAllRawKeyboards();
-    HID_SetupKeyboards();
-    return success;
-}
-
-void HID_SetupKeyboards()
-{
-    RAWINPUTDEVICE rid[9];
-    For(i, 0, 9)
+    if(!isFirstRun)
     {
-        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-        rid[i].dwFlags = RIDEV_DEVNOTIFY;
-        rid[i].hwndTarget = gMainWindowHwnd;
+        HID_UnregisterDevices();
     }
-    bool success = RegisterRawInputDevices(rid, nDevices, sizeof(RAWINPUTDEVICE));
+    HID_GetAllRawKeyboards();
+    HID_GetAllRawMouses();
+    HID_RegisterDevices();
+    return true;
 }
+
+void HID_QuitDevices()
+{
+    HID_CloseMouses();
+    HID_UnregisterDevices();
+}
+
+//----
 
 LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -1426,9 +1643,8 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Override window proc
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
-                // Register for the raw input API for the keyboard, as well as register for input connection detection
-                HID_RegisterKeyboards();
-                HID_SetupKeyboards();
+                // Register for the raw input API for keyboards and mouses, as well as register for input connection detection
+                HID_RefreshDevices(true);
 
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);

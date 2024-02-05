@@ -33,6 +33,16 @@ private:
     int mClientX, mClientY;
     bool mInClientArea;
 
+    // Mouse sizes and other things
+    int mClientWidth;
+    int mClientHeight;
+    int mClientBaseSize;
+    int mClientSize;
+    int mClientColor;
+    int mClientType;
+    
+    bool mMouseInfoGotten;
+
     // Mouse position in framebuffer coordinates
     double mFramebufferX, mFramebufferY;
 
@@ -45,7 +55,9 @@ public:
         mClientX(0), mClientY(0),
         mInClientArea(false),
         mFramebufferX(NAN), mFramebufferY(NAN),
-        mButtonState(0)
+        mButtonState(0), mClientWidth(0), mClientHeight(0),
+        mClientBaseSize(0), mClientSize(0), mClientColor(0),
+        mClientType(0), mMouseInfoGotten(false)
     {
     }
 
@@ -54,6 +66,15 @@ public:
     void OnMouseLeave();
     void OnMouseButtonEvent(ButtonEnum button, ButtonEvtEnum state);
     void OnMouseWheelEvent(WheelEnum wheel, int delta);
+
+    // Mouse sizes
+    int getSizeRaw();
+    int getBaseSizeRaw();
+
+    // Mouse width/height
+    void getMouseInfo();
+    int getWidth();
+    int getHeight();
 
     // Recalculate FB coordinates
     void Recalculate();

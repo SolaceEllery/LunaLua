@@ -41,17 +41,13 @@ void ParseArgs(const std::vector<std::wstring>& args);
 void TrySkipPatch();
 
 /************************************************************************/
-/* Keyboard Main Functions                                              */
+/* Keyboard/Mouse Main Functions                                        */
 /************************************************************************/
 extern void HID_GetAllRawKeyboards();
-extern bool HID_RegisterKeyboards();
-extern void HID_UnregisterKeyboards();
-extern bool HID_RefreshKeyboards();
-extern void HID_SetupKeyboards();
 extern int HID_GetKeyboardCount();
 extern luabind::object HID_GetKeyboardInfoFromIdx(int index, lua_State *L);
 
-extern UINT nDevices;
+extern UINT numberOfKeyboards;
 struct keyboardDevices
 {
     const char* deviceName;
@@ -85,6 +81,63 @@ struct keyboardDevices
     }
 };
 extern keyboardDevices keyboardDeviceList[9];
+
+
+
+
+extern UINT numberOfMouses;
+struct mouseDevices
+{
+    int index;
+    const char* deviceName;
+    int mouseBitfield;
+    int buttonCount;
+    int sampleRate;
+    bool hasAHorizontalWheel;
+    int mouseID;
+    HCURSOR mouse;
+
+    // Constructor
+    mouseDevices()
+    {
+        Reset();
+    }
+
+    // Reset function
+    void Reset()
+    {
+        index = 0;
+        deviceName = "";
+        mouseBitfield = 0;
+        buttonCount = 0;
+        sampleRate = 0;
+        hasAHorizontalWheel = false;
+        mouseID = 0;
+        mouse = NULL;
+    }
+};
+extern mouseDevices mouseDeviceList[9];
+luabind::object HID_GetMouseInfoFromIdx(int index, lua_State *L);
+
+extern void HID_GetAllRawMouses();
+extern int HID_GetMouseCount();
+extern void HID_CreateCursor(int idx);
+extern void HID_DestroyCursor(int idx);
+extern void HID_SetupMouses();
+extern void HID_CloseMouses();
+
+
+
+
+
+extern bool HID_RegisterDevices();
+extern void HID_UnregisterDevices();
+extern bool HID_RefreshDevices(bool isFirstRun);
+extern void HID_QuitDevices();
+
+
+
+
 
 /************************************************************************/
 /* Global Patch Variables                                               */

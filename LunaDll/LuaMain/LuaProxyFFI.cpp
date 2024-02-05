@@ -1119,4 +1119,21 @@ extern "C" {
     {
         return gDisablePlayerMovementAboveThree;
     }
+    
+    FFI_EXPORT(int) LunaLuaGetMouseSize()
+    {
+        return gMouseHandler.getSizeRaw();
+    }
+    FFI_EXPORT(int) LunaLuaGetMouseBaseSize()
+    {
+        return gMouseHandler.getBaseSizeRaw();
+    }
+    FFI_EXPORT(int) LunaLuaGetMouseWidth()
+    {
+        return gMouseHandler.getWidth();
+    }
+    FFI_EXPORT(int) LunaLuaGetMouseHeight()
+    {
+        return gMouseHandler.getHeight();
+    }
 }

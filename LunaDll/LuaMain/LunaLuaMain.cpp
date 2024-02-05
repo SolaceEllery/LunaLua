@@ -273,7 +273,10 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
     CachedReadFile::releaseCached(m_type == LUNALUA_WORLD);
 
     // Automatically refresh keyboards if haven't refreshed yet
-    HID_RefreshKeyboards();
+    HID_RefreshDevices(false);
+    
+    // Get the mouse information if haven't yet
+    gMouseHandler.getMouseInfo();
 }
 
 //Setup default constants
@@ -737,12 +740,17 @@ void CLunaLua::bindAll()
             ],
             
             namespace_("Keyboard")[
-                // Keyboard.refresh() - Refreshes the keyboard state, in case if you plug in another keyboard or disconnect one.
-                def("refresh", (bool(*)())&HID_RefreshKeyboards),
                 // Keyboard.count() - Returns the number of keyboards connected.
                 def("count", (int(*)())&HID_GetKeyboardCount),
-                // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return nil.
+                // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return an invalid table.
                 def("get", (luabind::object(*)(int, lua_State*))&HID_GetKeyboardInfoFromIdx)
+            ],
+            
+            namespace_("Mouse")[
+                // Mouse.count() - Returns the number of mouses connected.
+                def("count", (int(*)())&HID_GetMouseCount),
+                // Mouse.get(index) - Returns mouse information that's on the idx specified. Note that invalid mouses and anything higher than 10 will return an invalid table.
+                def("get", (luabind::object(*)(int, lua_State*))&HID_GetMouseInfoFromIdx)
             ],
 
             namespace_("FileFormats")[
