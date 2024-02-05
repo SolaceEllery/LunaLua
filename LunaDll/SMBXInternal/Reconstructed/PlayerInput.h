@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <windows.h>
 
 #define GM_MAX_PLAYER_INPUTS = 11
 
@@ -44,17 +45,17 @@ struct NewSMBXInputKeyboard
     // Reset function
     void Reset()
     {
-        int up[2] = {0, 38}; //VK_UP
-        int down[2] = {0, 40}; //VK_DOWN
-        int left[2] = {0, 37}; //VK_LEFT
-        int right[2] = {0, 39}; //VK_RIGHT
-        int jump[2] = {0, 88}; //VK_X (VK_Z is the default)
-        int run[2] = {0, 90}; //VK_Z (VK_X is the default)
-        int dropitem[2] = {0, 16}; //VK_SHIFT
-        int pause[2] = {0, 27}; //VK_ESCAPE
-        int altjump[2] = {0, 65}; //VK_A
-        int altrun[2] = {0, 83}; //VK_S
-        int special[2] = {0, 68}; //VK_D
+        int up[2] = {0, VK_UP};
+        int down[2] = {0, VK_DOWN};
+        int left[2] = {0, VK_LEFT};
+        int right[2] = {0, VK_RIGHT};
+        int jump[2] = {0, 0x58}; //VK_Z is the default
+        int run[2] = {0, 0x5A}; //VK_X is the default
+        int dropitem[2] = {0, VK_SHIFT};
+        int pause[2] = {0, VK_ESCAPE};
+        int altjump[2] = {0, 0x41};
+        int altrun[2] = {0, 0x53};
+        int special[2] = {0, 0x44};
 
         bool upPressing = false;
         bool downPressing = false;
