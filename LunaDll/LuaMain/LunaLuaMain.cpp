@@ -274,10 +274,6 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
 
     // Automatically refresh keyboards if haven't refreshed yet
     HID_RefreshKeyboards();
-    
-    // Test code for player input recode
-    PlayerInput playerInputFunc;
-    playerInputFunc.ResetAllInputs();
 }
 
 //Setup default constants
@@ -1604,6 +1600,10 @@ void CLunaLua::doEvents()
     MusicManager::setCurrentSection(Player::Get(1)->CurrentSection);
 
     triggerOnStart();
+
+    // Test code for player input recode
+    PlayerInput playerInputFunc;
+    playerInputFunc.ResetAllInputs();
 
     // If an error happened in onStart then return.
     if (!isValid())
