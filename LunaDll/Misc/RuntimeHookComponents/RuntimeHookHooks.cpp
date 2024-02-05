@@ -845,11 +845,11 @@ static __declspec(naked) void updateInput_Orig()
 
 extern void __stdcall runtimeHookUpdateInput()
 {
-    // If player keys are disabled, the following won't happen
     if (gMainWindowFocused)
     {
         if(!gDisablePlayerKeys)
         {
+            // If player keys are disabled, the following won't happen
             gLunaGameControllerManager.pollInputs();
             gEscPressedRegistered = gEscPressed;
             gEscPressed = false;

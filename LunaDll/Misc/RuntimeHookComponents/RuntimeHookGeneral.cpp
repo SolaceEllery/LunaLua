@@ -400,7 +400,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     if (!repeated)
     {
         PlayerInput playerInputFunc;
-        playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx);
+        playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx + 1);
 
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
     }
@@ -558,9 +558,9 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyPress" : "onKeyboardKeyRelease", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
         if (cKey != 0) {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx+ 1);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx + 1);
         }
     }
 }
@@ -571,7 +571,7 @@ static int GetKeyboardIDListing(int id)
     {
         if(keyboardDeviceList[i].keyboardID == id)
         {
-            return i;
+            return i - 1;
         }
     }
     return -1;
@@ -692,11 +692,11 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     // Send lua onRawKeyPress/Release events
     if (!repeated)
     {
-        SendLuaRawKeyEvent(vkey, keyDown, keyboardIdx);
+        SendLuaRawKeyEvent(vkey, keyDown, keyboardIdx + 1);
     }
     else if (repeated)
     {
-        SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx);
+        SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx + 1);
     }
     // If window is focused, and key is down, run keypress handling
     if (haveFocus)
@@ -757,7 +757,7 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
     }
     else
     {
-        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 1, keyDown, haveFocus);
+        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
     }
 }
 

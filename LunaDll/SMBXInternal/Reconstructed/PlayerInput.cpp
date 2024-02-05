@@ -365,3 +365,12 @@ void PlayerInput::Update()
         }
     }
 }
+
+void PlayerInput::ResetAllInputs()
+{
+    For(i, 0, 199)
+    {
+        g_playerKeyboardInputs[i].Reset();
+        g_playerControllerInputs[i].Reset();
+    }
+}

@@ -45,29 +45,41 @@ struct NewSMBXInputKeyboard
     // Reset function
     void Reset()
     {
-        int up[2] = {0, VK_UP};
-        int down[2] = {0, VK_DOWN};
-        int left[2] = {0, VK_LEFT};
-        int right[2] = {0, VK_RIGHT};
-        int jump[2] = {0, 0x58}; //VK_Z is the default
-        int run[2] = {0, 0x5A}; //VK_X is the default
-        int dropitem[2] = {0, VK_SHIFT};
-        int pause[2] = {0, VK_ESCAPE};
-        int altjump[2] = {0, 0x41};
-        int altrun[2] = {0, 0x53};
-        int special[2] = {0, 0x44};
+        up[0] = 1;
+        down[0] = 1;
+        left[0] = 1;
+        right[0] = 1;
+        jump[0] = 1;
+        run[0] = 1;
+        dropitem[0] = 1;
+        pause[0] = 1;
+        altjump[0] = 1;
+        altrun[0] = 1;
+        special[0] = 1;
 
-        bool upPressing = false;
-        bool downPressing = false;
-        bool leftPressing = false;
-        bool rightPressing = false;
-        bool jumpPressing = false;
-        bool runPressing = false;
-        bool dropitemPressing = false;
-        bool pausePressing = false;
-        bool altjumpPressing = false;
-        bool altrunPressing = false;
-        bool specialPressing = false;
+        up[1] = VK_UP;
+        down[1] = VK_DOWN;
+        left[1] = VK_LEFT;
+        right[1] = VK_RIGHT;
+        jump[1] = 0x58; //VK_Z is the default
+        run[1] = 0x5A; //VK_X is the default
+        dropitem[1] = VK_SHIFT;
+        pause[1] = VK_ESCAPE;
+        altjump[1] = 0x41;
+        altrun[1] = 0x53;
+        special[1] = 0x44;
+
+        upPressing = false;
+        downPressing = false;
+        leftPressing = false;
+        rightPressing = false;
+        jumpPressing = false;
+        runPressing = false;
+        dropitemPressing = false;
+        pausePressing = false;
+        altjumpPressing = false;
+        altrunPressing = false;
+        specialPressing = false;
     }
 };
 
@@ -106,30 +118,42 @@ struct NewSMBXInputController
     // Reset function
     void Reset()
     {
-        // Lua, or the launcher will fill the list up instead
-        int up[2] = {0, 0};
-        int down[2] = {0, 0};
-        int left[2] = {0, 0};
-        int right[2] = {0, 0};
-        int jump[2] = {0, 0};
-        int run[2] = {0, 0};
-        int dropitem[2] = {0, 0};
-        int pause[2] = {0, 0};
-        int altjump[2] = {0, 0};
-        int altrun[2] = {0, 0};
-        int special[2] = {0, 0};
+        // Lua, or the launcher, will fill the list up instead
+        up[0] = 1;
+        down[0] = 1;
+        left[0] = 1;
+        right[0] = 1;
+        jump[0] = 1;
+        run[0] = 1;
+        dropitem[0] = 1;
+        pause[0] = 1;
+        altjump[0] = 1;
+        altrun[0] = 1;
+        special[0] = 1;
 
-        bool upPressing = false;
-        bool downPressing = false;
-        bool leftPressing = false;
-        bool rightPressing = false;
-        bool jumpPressing = false;
-        bool runPressing = false;
-        bool dropitemPressing = false;
-        bool pausePressing = false;
-        bool altjumpPressing = false;
-        bool altrunPressing = false;
-        bool specialPressing = false;
+        up[1] = 0;
+        down[1] = 0;
+        left[1] = 0;
+        right[1] = 0;
+        jump[1] = 0;
+        run[1] = 0;
+        dropitem[1] = 0;
+        pause[1] = 0;
+        altjump[1] = 0;
+        altrun[1] = 0;
+        special[1] = 0;
+
+        upPressing = false;
+        downPressing = false;
+        leftPressing = false;
+        rightPressing = false;
+        jumpPressing = false;
+        runPressing = false;
+        dropitemPressing = false;
+        pausePressing = false;
+        altjumpPressing = false;
+        altrunPressing = false;
+        specialPressing = false;
     }
 };
 
@@ -154,6 +178,7 @@ class PlayerInput {
 
         bool Toggle(bool enable);
         void Update();
+        void ResetAllInputs();
 };
 
 #endif

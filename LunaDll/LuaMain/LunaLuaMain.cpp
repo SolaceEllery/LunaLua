@@ -34,6 +34,7 @@
 
 #include <libgit2/include/git2.h>
 #include "../FileManager/SMBXFileManager.h"
+#include "../SMBXInternal/Reconstructed/PlayerInput.h"
 
 /*static*/ DWORD CLunaFFILock::currentLockTlsIdx = TlsAlloc();
 
@@ -273,6 +274,10 @@ void CLunaLua::init(LuaLunaType type, std::wstring codePath, std::wstring levelP
 
     // Automatically refresh keyboards if haven't refreshed yet
     HID_RefreshKeyboards();
+    
+    // Test code for player input recode
+    PlayerInput playerInputFunc;
+    playerInputFunc.ResetAllInputs();
 }
 
 //Setup default constants
