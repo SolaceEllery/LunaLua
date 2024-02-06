@@ -159,7 +159,7 @@ extern void __stdcall InitHook();
 //Force Termination when SMBX runs the end code.
 //Without this code, there is a chance of "zombie"-processes.
 extern void __stdcall forceTermination();
-extern int __stdcall LoadWorld();     //The World Load Code
+extern void __stdcall LoadWorldHook(void);     //The World Load Code
 extern DWORD __stdcall WorldLoop();       //The World Loop Code
 extern void* __stdcall WorldRender();     //The World Render Code
 extern int __stdcall LoadIntro();       // Load Intro Code (Autostart)
@@ -442,13 +442,13 @@ void __stdcall runtimeHookNPCWaterSplashAnimRaw(short* effectID, Momentum* coor,
 void __stdcall runtimeHookNPCTerminalVelocityRaw(void);
 
 void __stdcall runtimeHookNPCHarmlessGrabRaw(void);
+
 void __stdcall runtimeHookNPCHarmlessThrownRaw(void);
 
 void __stdcall runtimeHookLegacyTitleScreenMouseUp(void);
 void __stdcall runtimeHookLegacyTitleScreenMouseDown(void);
 void __stdcall runtimeHookLegacyTitleScreenMouseMove(void);
 
-void __stdcall runtimeHookDoInput(void);
 void __stdcall runtimeHookCheckInputRaw(void);
 
 void __stdcall runtimeHookSetHDCRaw(void);
