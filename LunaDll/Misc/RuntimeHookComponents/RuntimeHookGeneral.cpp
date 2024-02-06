@@ -1505,6 +1505,39 @@ void HID_QuitDevices()
 
 //----
 
+static void Episode_SetEpisodeIni(std::wstring pathToEpisodeIni)
+{
+    IniProcessing episodeConfig(WStr2Str(pathToEpisodeIni));
+    if (episodeConfig.beginGroup("boot-settings"))
+    {
+        gStartupSettings.episodeBootImage = Str2WStr(episodeConfig.value("boot-image", "").toString());
+
+        int tempInt = 0;
+        bool bootSoundIsNotANumber = (episodeConfig.value("boot-sound", 1).toInt() == NULL);
+
+        if (!bootSoundIsNotANumber)
+        {
+            gStartupSettings.episodeBootSoundID = episodeConfig.value("boot-sound", 1).toInt();
+        }
+        else
+        {
+            gStartupSettings.episodeBootSoundID = -1;
+            gStartupSettings.episodeBootSoundCustom = Str2WStr(episodeConfig.value("boot-sound", "").toString());
+        }
+    }
+    gStartupSettings.usingCustomSplash = true;
+    episodeConfig.endGroup();
+}
+
+static void Episode_ReadEpisodeIni()
+{
+    std::wstring episodeIniFile = gStartupSettings.episodeDirectory + L"episode.ini";
+    if(fileExists(episodeIniFile))
+    {
+        Episode_SetEpisodeIni(episodeIniFile);
+    }
+}
+
 LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (nCode < 0){
@@ -1555,6 +1588,9 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);
+                
+                // Now read the episode.ini at this point
+                
             }
         }
         break;
@@ -1680,6 +1716,8 @@ void ParseArgs(const std::vector<std::wstring>& args)
         if (wldPath.length() > 0)
         {
             gStartupSettings.epSettings.wldPath = wldPath;
+            std::string tempEpPath = splitFilenameFromPath(WStr2Str(wldPath));
+            gStartupSettings.episodeDirectory = Str2WStr(tempEpPath);
             gStartupSettings.epSettings.enabled = true;
             gStartupSettings.patch = true;
         }

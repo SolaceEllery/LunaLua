@@ -70,14 +70,21 @@ struct StartupSettings
     bool forceHardGL;
     bool runWhenUnfocused;
     bool sendIPCReady;
+    bool noBootSound = false;
     std::wstring levelTest;
     StartupEpisodeSettings epSettings;
+    bool usingCustomSplash;
+    std::wstring episodeDirectory;
+    std::wstring episodeBootImage;
+    std::wstring episodeBootSoundCustom;
+    int episodeBootSoundID;
 
     StartupSettings() :
         patch(false), game(false), lvlEditor(false), frameskip(false), noSound(false), debugger(false),
         logger(false), newLauncher(false), console(false), waitForIPC(false), currentlyWaitingForIPC(false),
         oldLvlLoader(false), softwareGL(false), forceHardGL(false), runWhenUnfocused(false), sendIPCReady(false),
-        epSettings(), levelTest(L"")
+        noBootSound(false), epSettings(), levelTest(L""), usingCustomSplash(false), episodeDirectory(L""),
+        episodeBootImage(L""), episodeBootSoundCustom(L""), episodeBootSoundID(29)
     {
     }
 };

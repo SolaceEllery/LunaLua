@@ -2725,8 +2725,27 @@ static void drawReplacementSplashScreen(void)
     frmGetHDC(mainFrm, &frmHDC);
     if (!frmHDC) return;
 
-    // Load splash image
     std::shared_ptr<LunaImage> splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+
+    // Load splash image
+    if(!gStartupSettings.usingCustomSplash)
+    {
+        splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+    }
+    else
+    {
+        if(gStartupSettings.episodeBootImage != L"")
+        {
+            std::wstring customImage = gStartupSettings.episodeDirectory + gStartupSettings.episodeBootImage;
+            const wchar_t * customImageWCHAR = customImage.c_str();
+            splashReplacement = LunaImage::fromFile(customImageWCHAR);
+        }
+        else
+        {
+            splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+        }
+    }
+
     if (!splashReplacement) return;
 
     // Get image as HBITMAP

@@ -7,6 +7,8 @@
 #include <math.h>
 #include <IniProcessor/ini_processing.h>
 
+#include "SdlMusPlayer.h"
+
 
 ChunkEntry::ChunkEntry()
 {
@@ -258,10 +260,31 @@ void MusicManager::play(std::string alias) //Chunk will be played once, stream w
             if(!PGE_Sounds::playOverrideForAlias(alias, sounds[chanID].channel))
             {
                 bool isCancelled = createSFXStartLuaEvent(realID, sounds[chanID].fullPath.c_str());
+                if(!gEpisodeLoadedOnBoot && gStartupSettings.noBootSound)
+                {
+                    isCancelled = true;
+                    if(gStartupSettings.episodeBootSoundID > 0)
+                    {
+                        int customSoundID = gStartupSettings.episodeBootSoundID - 1;
+                        sounds[customSoundID].play();
+                    }
+                    else if(gStartupSettings.episodeBootSoundID == -1)
+                    {
+                        const char* sfxCustom = WStr2Str(gStartupSettings.episodeBootSoundCustom).c_str();
+                        PGE_Sounds::SND_PlaySnd(sfxCustom);
+                    }
+                }
+                else if(!gEpisodeLoadedOnBoot && !gStartupSettings.noBootSound)
+                {
+                    isCancelled = true;
+                }
                 if(!isCancelled)
                 {
-                    //Play it!
-                    sounds[chanID].play();
+                    if(gEpisodeLoadedOnBoot)
+                    {
+                        //Play it!
+                        sounds[chanID].play();
+                    }
                 }
             }
         }
