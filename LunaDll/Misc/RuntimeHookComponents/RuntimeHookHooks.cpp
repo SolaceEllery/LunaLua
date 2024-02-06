@@ -191,7 +191,8 @@ extern int __stdcall LoadWorld()
 
     if (!GM_CREDITS_MODE)
     {
-        for (int i = 1; i <= min(GM_PLAYERS_COUNT, (WORD)4); i++) {
+        for (int i = 1; i <= min(GM_PLAYERS_COUNT, (WORD)4); i++)
+        {
             // store player characters at the time of level load,
             // these are used to restore the character if the episode has to be reloaded, or another episode was launched
             gPlayerStoredCharacters[i-1] = Player::Get(i)->Identity;
@@ -211,7 +212,9 @@ extern int __stdcall LoadWorld()
         ".att_syntax\n": "=r" (plValue));
     //".intel_syntax prefix" :: [plValue] "g" (plValue) : "edx");
     return GM_PLAYERS_COUNT;
+#endif
 }
+
 
 __declspec(naked) void __stdcall LoadWorldHook(void)
 {
