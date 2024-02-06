@@ -81,7 +81,7 @@ struct keyboardDevices
     }
 };
 extern keyboardDevices keyboardDeviceList[9];
-
+extern keyboardDevices keyboardDevice;
 
 
 
@@ -95,7 +95,6 @@ struct mouseDevices
     int sampleRate;
     bool hasAHorizontalWheel;
     int mouseID;
-    HCURSOR mouse;
 
     // Constructor
     mouseDevices()
@@ -113,7 +112,6 @@ struct mouseDevices
         sampleRate = 0;
         hasAHorizontalWheel = false;
         mouseID = 0;
-        mouse = NULL;
     }
 };
 extern mouseDevices mouseDeviceList[9];
@@ -121,10 +119,6 @@ luabind::object HID_GetMouseInfoFromIdx(int index, lua_State *L);
 
 extern void HID_GetAllRawMouses();
 extern int HID_GetMouseCount();
-extern void HID_CreateCursor(int idx);
-extern void HID_DestroyCursor(int idx);
-extern void HID_SetupMouses();
-extern void HID_CloseMouses();
 
 
 
@@ -132,7 +126,7 @@ extern void HID_CloseMouses();
 
 extern bool HID_RegisterDevices();
 extern void HID_UnregisterDevices();
-extern bool HID_RefreshDevices(bool isFirstRun);
+extern void HID_RefreshDevices();
 extern void HID_QuitDevices();
 
 

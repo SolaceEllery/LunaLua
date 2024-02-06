@@ -61,7 +61,6 @@ public:
     {
     }
 
-    // Event handlers
     void OnMouseMove(int x, int y, unsigned char buttonState);
     void OnMouseLeave();
     void OnMouseButtonEvent(ButtonEnum button, ButtonEvtEnum state);

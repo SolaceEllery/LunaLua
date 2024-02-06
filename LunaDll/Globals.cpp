@@ -153,5 +153,3 @@ Characters gPlayerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTE
 
 int gUnfocusTimer = 2;
 int gFocusTimer = 2;
-
-bool playerSpecialKeyPressed[199] = { false };

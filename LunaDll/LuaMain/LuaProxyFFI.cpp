@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <Psapi.h>
 #include <filesystem>
+#include <atlstr.h>
 
 #include "../Globals.h"
 #include "../GlobalFuncs.h"
@@ -31,6 +32,8 @@
 #include "../Rendering/GL/GLEngine.h"
 #include "../Rendering/GL/GLEngineProxy.h"
 #include "../Misc/CollisionMatrix.h"
+
+#include "../Misc/MonitorSystem.h"
 
 #define FFI_EXPORT(sig) __declspec(dllexport) sig __cdecl
 
@@ -929,211 +932,135 @@ typedef struct PlayerLavaFields_\
     }
 }
 
-extern "C" {
-    //SEE Mod FFI functions start here
 
-    FFI_EXPORT(void) LunaLuaSetWindowPosition(int x, int y)
-    {
-        // Main bit for setting window position
-        SetWindowPos(gMainWindowHwnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-    }
+//****SEE Mod FFI functions start here****
+extern "C" {
+    // Toggles the runWhenUnfocused setting.
     FFI_EXPORT(void) LunaLuaToggleWindowFocus(bool enable)
     {
         // Setting the focus to the window
-        if ((enable == true) && (gMainWindowFocused || gStartupSettings.runWhenUnfocused)) {
-            gStartupSettings.runWhenUnfocused = true;
-        } else if ((enable == false) && (gMainWindowFocused || gStartupSettings.runWhenUnfocused)) {
-            gStartupSettings.runWhenUnfocused = false;
-        }
+        gRunWhenUnfocused = enable;
     }
+    // Gets if runWhenUnfocused is on.
     FFI_EXPORT(bool) LunaLuaIsSetToRunWhenUnfocused()
     {
         // Checks to see if the setting to run when unfocused is true or not
-        return (bool)gStartupSettings.runWhenUnfocused;
+        return gRunWhenUnfocused;
     }
-    FFI_EXPORT(void) LunaLuaCenterWindow()
-    {
-        // This will center the window to the screen that it detects. Useful for auto-moving the window for misc reasons
-        RECT rectClient, rectWindow;
-        HWND hWnd = gMainWindowHwnd;
-        GetClientRect(hWnd, &rectClient);
-        GetWindowRect(hWnd, &rectWindow);
-        int posx, posy;
-        posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2,
-        posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2,
-
-        // When getting everything set, center the window!
-        SetWindowPos(hWnd, NULL, posx, posy, 800, 600, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-    }
-    FFI_EXPORT(double) LunaLuaGetXWindowPosition()
-    {
-        // Get the window position and return it
-        RECT rect;
-        GetWindowRect(gMainWindowHwnd, &rect);
-        int x = rect.left;
-        int y = rect.top;
-        return (double)x;
-    }
-    FFI_EXPORT(double) LunaLuaGetYWindowPosition()
-    {
-        // Get the window position and return it
-        RECT rect;
-        GetWindowRect(gMainWindowHwnd, &rect);
-        int x = rect.left;
-        int y = rect.top;
-        return (double)y;
-    }
-    FFI_EXPORT(double) LunaLuaGetXWindowPositionCenter()
-    {
-        // Get the window position and return it
-        RECT rectClient, rectWindow;
-        GetClientRect(gMainWindowHwnd, &rectClient);
-        GetWindowRect(gMainWindowHwnd, &rectWindow);
-        int posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2;
-        int posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2;
-        return (double)posx;
-    }
-    FFI_EXPORT(double) LunaLuaGetYWindowPositionCenter()
-    {
-        // Get the window position and return it
-        RECT rectClient, rectWindow;
-        GetClientRect(gMainWindowHwnd, &rectClient);
-        GetWindowRect(gMainWindowHwnd, &rectWindow);
-        int posx = GetSystemMetrics(SM_CXSCREEN) / 2 - (rectWindow.right - rectWindow.left) / 2;
-        int posy = GetSystemMetrics(SM_CYSCREEN) / 2 - (rectWindow.bottom - rectWindow.top) / 2;
-        return (double)posy;
-    }
+    // Returns if the game is focused or not.
     FFI_EXPORT(bool) LunaLuaIsFocused()
     {
-        if (gMainWindowFocused) {
-            return (bool)true;
-        } else {
-            return (bool)false;
-        }
+        return gMainWindowFocused;
     }
-    FFI_EXPORT(double) LunaLuaGetScreenResolutionWidth()
-    {
-        // Get the width of the current screen from the monitor and return it
-        HMONITOR monitor = MonitorFromWindow(gMainWindowHwnd, MONITOR_DEFAULTTONEAREST);
-        MONITORINFO info;
-        info.cbSize = sizeof(MONITORINFO);
-        GetMonitorInfo(monitor, &info);
-        int monitor_width = info.rcMonitor.right - info.rcMonitor.left;
-        int monitor_height = info.rcMonitor.bottom - info.rcMonitor.top;
-        return (double)monitor_width;
-    }
-    FFI_EXPORT(double) LunaLuaGetScreenResolutionHeight()
-    {
-        // Get the height of the current screen from the monitor and return it
-        HMONITOR monitor = MonitorFromWindow(gMainWindowHwnd, MONITOR_DEFAULTTONEAREST);
-        MONITORINFO info;
-        info.cbSize = sizeof(MONITORINFO);
-        GetMonitorInfo(monitor, &info);
-        int monitor_width = info.rcMonitor.right - info.rcMonitor.left;
-        int monitor_height = info.rcMonitor.bottom - info.rcMonitor.top;
-        return (double)monitor_height;
-    }
+    // Sets a test mode level to a new level. Usually used for SMAS++ to keep a level on a specific one while cross-level testing.
     FFI_EXPORT(void) LunaLuaTestModeEditLevel(const char* filename)
     {
         std::string fullName = filename;
         testModeSetupNewLevel(fullName);
     }
+    // Checks to see if the game is on SMAS++.
     FFI_EXPORT(bool) LunaLuaInSMASPlusPlus()
     {
         EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
-        const std::wstring firstLevel1 = Str2WStr(GM_FULLDIR + "SMB1 - W-1, L-1.lvlx");
-        const std::wstring firstLevel2 = Str2WStr(GM_FULLDIR + "SMBLL - W-1, L-1.lvlx");
-        const std::wstring firstLevel3 = Str2WStr(GM_FULLDIR + "SMB2 - W-1, L-1.lvlx");
-        const std::wstring firstLevel4 = Str2WStr(GM_FULLDIR + "SMB3 - W-1, L-1.lvlx");
-        const std::wstring firstLevel5 = Str2WStr(GM_FULLDIR + "SMW - W-1, L-YI1.lvlx");
-        const std::wstring firstLevel6 = Str2WStr(GM_FULLDIR + "SMBS - W-1, L-1.lvlx");
-        const std::wstring worldFilename = Str2WStr(GM_FULLDIR + "__World Map.wld");
-        if( ep->episodeName == "Super Mario All-Stars++"
-            && fileExists(firstLevel1)
-            && fileExists(firstLevel2)
-            && fileExists(firstLevel3)
-            && fileExists(firstLevel4)
-            && fileExists(firstLevel5)
-            && fileExists(firstLevel6)
-            && fileExists(worldFilename)
-        ) {
-            return (bool)true;
-        } else {
-            return (bool)false;
+        std::wstring firstLevel1 = Str2WStr(GM_FULLDIR + "SMB1 - W-1, L-1.lvlx");
+        std::wstring firstLevel2 = Str2WStr(GM_FULLDIR + "SMBLL - W-1, L-1.lvlx");
+        std::wstring firstLevel3 = Str2WStr(GM_FULLDIR + "SMB2 - W-1, L-1.lvlx");
+        std::wstring firstLevel4 = Str2WStr(GM_FULLDIR + "SMB3 - W-1, L-1.lvlx");
+        std::wstring firstLevel5 = Str2WStr(GM_FULLDIR + "SMW - W-1, L-YI1.lvlx");
+        std::wstring firstLevel6 = Str2WStr(GM_FULLDIR + "SMBS - W-1, L-1.lvlx");
+        std::wstring worldFilename = Str2WStr(GM_FULLDIR + "__World Map.wld");
+        if(GM_WORLD_NAME == "Super Mario All-Stars++" && fileExists(firstLevel1) && fileExists(firstLevel2) && fileExists(firstLevel3) && fileExists(firstLevel4) && fileExists(firstLevel5) && fileExists(firstLevel6) && fileExists(worldFilename))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
+    // Sets the episode name to something different.
     FFI_EXPORT(void) LunaLuaSetEpisodeName(const char* name)
     {
         std::string fullName = name;
-        EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
-        ep->episodeName = fullName;
+        GM_WORLD_NAME = fullName;
     }
+    // This is used for enabling certain events and things when on an SEE Mod-oriented episode. This may be removed in the future though.
     FFI_EXPORT(void) LunaLuaSetSEEModFeatureBool(bool enable)
     {
-        //This is used for enabling certain events and things when on an SEE Mod-oriented episode.
-        if(enable) {
-            canUseSEEModFeatures = true;
-        }
-        else if(!enable)
-        {
-            canUseSEEModFeatures = false;
-        }
+        canUseSEEModFeatures = enable;
     }
+    // Gets if the episode is using SEE Mod features.
     FFI_EXPORT(bool) LunaLuaGetSEEModFeatureBool()
     {
-        return (bool)canUseSEEModFeatures;
+        return canUseSEEModFeatures;
     }
+    // Toggle the runWhenUnfocused setting on or off.
     FFI_EXPORT(void) LunaLuaRunWhenUnfocused(bool value)
     {
         gRunWhenUnfocused = value;
     }
+    // Returns if runWhenUnfocused is on or off.
     FFI_EXPORT(bool) LunaLuaIsRunningWhenUnfocused(bool value)
     {
         return gRunWhenUnfocused;
     }
-
+    // Toggles right-click pasting.
     FFI_EXPORT(void) LunaLuaSetRightClickPasteSetting(bool enable)
     {
         // This will let the user alternatively paste content via right clicking, similar to using the command prompt. Useful for repl
         gRightClickPaste = enable;
     }
+    // Checks to see if right click pasting is on or not.
     FFI_EXPORT(bool) LunaLuaSetIsRightClickPasteSettingEnabled()
     {
         return gRightClickPaste;
     }
-
+    // Disables the player keys if on.
     FFI_EXPORT(void) LunaLuaSetDisabledPlayerKeys(bool enable)
     {
         gDisablePlayerKeys = enable;
     }
+    // Checks if the player keys are disabled.
     FFI_EXPORT(bool) LunaLuaGetDisabledPlayerKeys()
     {
         return gDisablePlayerKeys;
     }
-    
+    // Disables similar-control movement from players above 2.
     FFI_EXPORT(void) LunaLuaSetDisabledPlayerCheatMovement(bool enable)
     {
         gDisablePlayerMovementAboveThree = enable;
     }
+    // Returns if similar-control movement from players above 2 is on or not.
     FFI_EXPORT(bool) LunaLuaGetDisabledPlayerCheatMovement()
     {
         return gDisablePlayerMovementAboveThree;
     }
-    
+    // Gets the mouse size from the Windows Registry.
     FFI_EXPORT(int) LunaLuaGetMouseSize()
     {
         return gMouseHandler.getSizeRaw();
     }
+    // Gets the mouse base size from the Windows Registry.
     FFI_EXPORT(int) LunaLuaGetMouseBaseSize()
     {
         return gMouseHandler.getBaseSizeRaw();
     }
+    // Gets the mouse width. This is estimated though, and won't be accurate.
     FFI_EXPORT(int) LunaLuaGetMouseWidth()
     {
         return gMouseHandler.getWidth();
     }
+    // Gets the mouse height. This is estimated though, and won't be accurate.
     FFI_EXPORT(int) LunaLuaGetMouseHeight()
     {
         return gMouseHandler.getHeight();
+    }
+    // Gets the current window title.
+    FFI_EXPORT(const char*) LunaLuaGetWindowTitle()
+    {
+        LPWSTR title;
+        int error = GetWindowTextW(gMainWindowHwnd, title, 9999);
+        std::string titleFinal = CW2A(title);
+        return titleFinal.c_str();
     }
 }

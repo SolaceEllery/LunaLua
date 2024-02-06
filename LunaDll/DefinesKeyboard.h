@@ -1,7 +1,11 @@
 #ifndef DefinesKeyboard_hhhh
 #define DefinesKeyboard_hhhh
 
+// Uncomment to also include other Windows.h functions. They're already defined though, so idk why you would need to uncomment it.
+//#define includeWindowsHFunctions
+
 // **Keyboard constants**
+#ifdef includeWindowsHFunctions
 #define VK_LBUTTON         1
 #define VK_RBUTTON         2
 #define VK_CANCEL          3
@@ -53,6 +57,9 @@
 #define VK_INSERT          45
 #define VK_DELETE          46
 #define VK_HELP            47
+#endif
+
+// Numbers
 #define VK_ZERO            48
 #define VK_ONE             49
 #define VK_TWO             50
@@ -77,6 +84,7 @@
 #define VK_8               56
 #define VK_9               57
 
+#ifdef includeWindowsHFunctions
 #define VK_RESERVED6       58
 #define VK_RESERVED7       59
 #define VK_RESERVED8       60
@@ -85,6 +93,9 @@
 #define VK_RESERVED10      62
 #define VK_RESERVED11      63
 #define VK_RESERVED12      64
+#endif
+
+// Letters
 #define VK_A               65
 #define VK_B               66
 #define VK_C               67
@@ -114,6 +125,8 @@
 #define VK_Y               89
 #define VK_Z               90
 
+// Everything else
+#ifdef includeWindowsHFunctions
 #define VK_LWIN            91
 #define VK_RWIN            92
 #define VK_APPS            93
@@ -295,5 +308,6 @@
 #define VK_NONAME               253
 #define VK_PA1                  254
 #define VK_OEM_CLEAR            255
+#endif
 
 #endif

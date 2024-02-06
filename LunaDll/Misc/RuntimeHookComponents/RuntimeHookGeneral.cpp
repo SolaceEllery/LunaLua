@@ -35,6 +35,10 @@
 #include "../../SMBXInternal/Reconstructed/PlayerInput.h"
 #include "../TestModeMenu.h"
 
+#include "../../Defines.h"
+#include "../../DefinesKeyboard.h"
+#include "../../Misc/MonitorSystem.h"
+
 #ifndef NO_SDL
 bool episodeStarted = false;
 #endif
@@ -381,27 +385,17 @@ static void ProcessPasteKeystroke()
     }
 }
 
-#define VK_V 86
-
-static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeated, int keyboardID, int keyboardIdx)
+static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeated, int keyboardIdx)
 {
-    int virtKeyInt = (int)virtKey;
-
     static WCHAR unicodeData[32] = { 0 };
 
-    BYTE ctrlPressedDraft = gKeyState[keyboardIdx][VK_CONTROL];
-    BYTE altPressedDraft = gKeyState[keyboardIdx][VK_MENU];
-
-    bool ctrlPressed = ((ctrlPressedDraft) & 0x80) != 0;
-    bool altPressed = (altPressedDraft & 0x80) != 0;
+    bool ctrlPressed = (gKeyState[keyboardIdx][VK_CONTROL] & 0x80) != 0;
+    bool altPressed = (gKeyState[keyboardIdx][VK_MENU] & 0x80) != 0;
     bool plainPress = (!repeated) && (!altPressed) && (!ctrlPressed);
     
     // Notify game controller manager and player input overhaul system
     if (!repeated)
     {
-        PlayerInput playerInputFunc;
-        playerInputFunc.GetKeyboardInput(virtKey, keyboardIdx + 1);
-
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
         
         if(TestModeIsEnabled() && gDisablePlayerKeys && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
@@ -411,11 +405,8 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     }
 
     // Notify Lua code
-    // But don't pass keystrokes with ctrl or alt as a keypress
-    if (gLunaLua.isValid() &&
-        (!ctrlPressed || (virtKey == VK_LCONTROL) || (virtKey == VK_RCONTROL)) &&
-        (!altPressed || (virtKey == VK_LMENU) || (virtKey == VK_RMENU))
-        ) {
+    if (gLunaLua.isValid() && !ctrlPressed && !altPressed)
+    {
         std::shared_ptr<Event> keyboardPressEvent = std::make_shared<Event>("onKeyboardPress", false);
 
         int unicodeRet = ToUnicode(virtKey, scanCode, gKeyState[keyboardIdx], unicodeData, 32, 0);
@@ -423,11 +414,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         if (unicodeRet > 0)
         {
             std::string charStr = WStr2Str(std::wstring(unicodeData, unicodeRet));
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr, keyboardIdx + 1);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr);
         }
         else
         {
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, "", keyboardIdx + 1);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated);
         }
     }
 
@@ -549,9 +540,9 @@ static void SendLuaRawKeyEventRepeated(uint32_t virtKey, bool isDown, int keyboa
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyDown" : "onKeyboardKeyUp", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
         if (cKey != 0) {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx + 1);
         }
     }
 }
@@ -563,7 +554,7 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyPress" : "onKeyboardKeyRelease", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
         if (cKey != 0) {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx+ 1);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
         } else {
             gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx + 1);
         }
@@ -594,19 +585,6 @@ static int GetKeyboardToPressKeysWith(HANDLE hDevice)
         }
     }
     return finalKey;
-}
-
-static bool isKeyGlobal(uint16_t key)
-{
-    // SHIFT, CTRL, ESC, and MENU keys should be global
-    if(key == 0x10 || key == 0x1A || key == 0x1B || key == 0x27)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
 }
 
 static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t prefixFlag, int keyboardID, int keyboardIdx, bool keyDown, bool haveFocus)
@@ -699,7 +677,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     {
         SendLuaRawKeyEvent(vkey, keyDown, keyboardIdx + 1);
     }
-    else if (repeated)
+    else
     {
         SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx + 1);
     }
@@ -708,7 +686,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     {
         if (keyDown)
         {
-            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardID, keyboardIdx);
+            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardIdx);
         }
     }
 }
@@ -755,15 +733,13 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
     int keyboardID = GetKeyboardToPressKeysWith(hDevice);
     int keyboardIdx = GetKeyboardIDListing(keyboardID);
     int hDeviceInt = (int)hDevice;
-
-    if(hDeviceInt == keyboardID)
-    {
-        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
-    }
-    else
-    {
-        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
-    }
+    
+    ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
+    
+    //if(hDeviceInt == keyboardID)
+    //{
+        //ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
+    //}
 }
 
 static int UpdateWindowSizeForDPI(int currentDpi, int newDpi, SIZE* pSize)
@@ -1104,7 +1080,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 if(wParam == GIDC_ARRIVAL || wParam == GIDC_REMOVAL)
                 {
                     //Refresh all devices, if any has been connected or disconnected
-                    HID_RefreshDevices(false);
+                    HID_RefreshDevices();
                 }
                 break;
             }
@@ -1177,6 +1153,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 UINT numberOfKeyboards = 0;
 keyboardDevices keyboardDeviceList[9];
+keyboardDevices keyboardDevice;
 
 static luabind::object getKeyboardDeviceThings(int index, lua_State *L)
 {
@@ -1344,7 +1321,7 @@ mouseDevices mouseDeviceList[9];
 static luabind::object getMouseDeviceThings(int index, lua_State *L)
 {
     int realIndex = index - 1;
-    if(index < 1 && index > numberOfKeyboards || std::to_string(keyboardDeviceList[index].index).length() == 0)
+    if(index < 1 && index > numberOfKeyboards || std::to_string(mouseDeviceList[index].index).length() == 0)
     {
         luabind::object outData = luabind::newtable(L);
         outData["invalid"] = "mouse";
@@ -1369,7 +1346,6 @@ luabind::object HID_GetMouseInfoFromIdx(int index, lua_State *L)
 {
     return getMouseDeviceThings(index, L);
 }
-
 
 void HID_GetAllRawMouses()
 {
@@ -1488,114 +1464,42 @@ int HID_GetMouseCount()
     return (int)numberOfMouses;
 }
 
-void HID_CreateCursor(int idx)
-{
-    int x = GetSystemMetrics(SM_CXICON);
-    int y = GetSystemMetrics(SM_CYICON);
-    BYTE* aAnd = new BYTE [x * y];
-    BYTE* aXor = new BYTE [x * y];
-    mouseDeviceList[idx].mouse = CreateCursor((HINSTANCE)NULL, gMouseHandler.GetX(), gMouseHandler.GetY(), x, y, aAnd, aXor);
-}
-
-void HID_DestroyCursor(int idx)
-{
-    DestroyCursor(mouseDeviceList[idx].mouse);
-}
-
-void HID_SetupMouses()
-{
-    mouseDeviceList[0].mouse = GetCursor();
-    if(HID_GetMouseCount() > 1)
-    {
-        For(i, 2, HID_GetMouseCount())
-        {
-            HID_CreateCursor(i);
-        }
-    }
-}
-
-void HID_CloseMouses()
-{
-    if(HID_GetMouseCount() > 1)
-    {
-        For(i, 1, HID_GetMouseCount() - 1)
-        {
-            HID_DestroyCursor(i);
-        }
-    }
-}
-
 // -----------
 // **DEVICES**
 // -----------
 
 bool HID_RegisterDevices()
 {
-    bool success = false;
-    int numKey = 0;
-
     // Set up the keyboard system
-    if(numberOfKeyboards == 0)
-    {
-        numKey = numberOfKeyboards;
-    }
-    else
-    {
-        numKey = numberOfKeyboards - 1;
-    }
-    RAWINPUTDEVICE rid[9];
-    DWORD flags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY; // Make keyboard inputs happen, and recieve device connect/disconnect messages
-    For(i, 0, numKey)
-    {
-        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-        rid[i].dwFlags = RIDEV_INPUTSINK;
-        rid[i].hwndTarget = gMainWindowHwnd;
-    }
+    RAWINPUTDEVICE rid;
+    rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+    rid.usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+    rid.dwFlags = RIDEV_INPUTSINK;
+    rid.hwndTarget = gMainWindowHwnd;
 
     //Register all keyboards
-    success = RegisterRawInputDevices(rid, numKey, sizeof(rid));
-    return success;
+    return RegisterRawInputDevices(&rid, 1, sizeof(rid));
 }
 
 void HID_UnregisterDevices()
 {
-    int numKey = 0;
-    if(numberOfKeyboards == 0)
-    {
-        numKey = numberOfKeyboards;
-    }
-    else
-    {
-        numKey = numberOfKeyboards - 1;
-    }
-    RAWINPUTDEVICE rid[9];
-    For(i, 0, numKey)
-    {
-        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-        rid[i].dwFlags = RIDEV_REMOVE;
-        rid[i].hwndTarget = NULL;
-    }
+    RAWINPUTDEVICE rid;
+    rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+    rid.usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+    rid.dwFlags = RIDEV_REMOVE;
+    rid.hwndTarget = NULL;
 
-    bool success = RegisterRawInputDevices(rid, numberOfKeyboards, sizeof(rid));
+    RegisterRawInputDevices(&rid, 1, sizeof(rid));
 }
 
-bool HID_RefreshDevices(bool isFirstRun)
+void HID_RefreshDevices()
 {
-    if(!isFirstRun)
-    {
-        HID_UnregisterDevices();
-    }
     HID_GetAllRawKeyboards();
     HID_GetAllRawMouses();
-    HID_RegisterDevices();
-    return true;
 }
 
 void HID_QuitDevices()
 {
-    HID_CloseMouses();
     HID_UnregisterDevices();
 }
 
@@ -1644,7 +1548,10 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
                 // Register for the raw input API for keyboards and mouses, as well as register for input connection detection
-                HID_RefreshDevices(true);
+                HID_RegisterDevices();
+                
+                // Setup the monitors for the many SEE Mod functions
+                MonitorSystem::SetupMonitors();
 
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);

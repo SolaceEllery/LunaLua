@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include "Misc/VB6StrPtr.h"
 
+#include "DefinesKeyboard.h"
+
 extern const char* LUNALUA_VERSION;
 extern const char* GAME_ENGINE;
 

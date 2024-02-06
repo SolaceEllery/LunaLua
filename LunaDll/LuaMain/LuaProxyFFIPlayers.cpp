@@ -4,56 +4,61 @@
 #define FFI_EXPORT(sig) __declspec(dllexport) sig __cdecl
 
 extern "C" {
-
+    // Toggles the player key overhaul on or off
     FFI_EXPORT(void) LunaLuaTogglePlayerKeyOverhaul(bool value)
     {
         PlayerInput playerInputFunc;
         playerInputFunc.Toggle(value);
     }
+
+    // Is the overhaul on?
     FFI_EXPORT(bool) LunaLuaIsPlayerKeyOverhaulOn()
     {
         return gPlayerInputOverhaulToggled;
     }
 
-    //Special Key functions
-    FFI_EXPORT(bool) LunaLuaIsPlayerPressingSpecialKey(int playerIdx)
-    {
-        return playerSpecialKeyPressed[playerIdx - 1];
-    }
-    FFI_EXPORT(void) LunaLuaSetPlayerPressingSpecialKey(int playerIdx, bool value)
-    {
-        playerSpecialKeyPressed[playerIdx - 1] = value;
-    }
-    
-    //Input Configuration
-    FFI_EXPORT(void) LunaLuaChangePlayerKeysKeyboard(int type, int playerIdx, int virtKey, int keyboardIdx)
+    // Input configuration (Keyboard)
+    FFI_EXPORT(void) LunaLuaChangePlayerKeysKeyboard(int type, int playerIdx, int virtKey)
     {
         PlayerInput playerInputFunc;
-        playerInputFunc.SetKeyboardControls(type, playerIdx, virtKey, keyboardIdx);
-    }
-    FFI_EXPORT(void) LunaLuaChangePlayerKeysController(int type, int playerIdx, int controllerIdx, int controllerID)
-    {
-        PlayerInput playerInputFunc;
-        playerInputFunc.SetControllerControls(type, playerIdx, controllerIdx, controllerID);
+        playerInputFunc.SetKeyboardControls(type, playerIdx, virtKey);
     }
 
-    FFI_EXPORT(bool) LunaLuaIsPlayerPressing(int type, int playerIdx)
+    // Input configuration (Controller)
+    FFI_EXPORT(void) LunaLuaChangePlayerKeysController(int type, int playerIdx, int controllerIdx)
     {
         PlayerInput playerInputFunc;
-        return playerInputFunc.IsPressing(type, playerIdx);
+        playerInputFunc.SetControllerControls(type, playerIdx, controllerIdx);
     }
-    
-    //Controller/Keyboard Changing
+
+    // Input keyboard idx changing
     FFI_EXPORT(void) LunaLuaChangePlayerKeyboard(int playerIdx, int keyboardIdx)
     {
         PlayerInput playerInputFunc;
         playerInputFunc.SetKeyboardIdx(playerIdx, keyboardIdx);
     }
+
+    // Input controller idx changing
     FFI_EXPORT(void) LunaLuaChangePlayerController(int playerIdx, int controllerIdx)
     {
         PlayerInput playerInputFunc;
         playerInputFunc.SetControllerIdx(playerIdx, controllerIdx);
     }
+
+    // Is the player pressing a key?
+    FFI_EXPORT(bool) LunaLuaIsPlayerPressing(int type, int playerIdx)
+    {
+        PlayerInput playerInputFunc;
+        return playerInputFunc.IsPressing(type, playerIdx);
+    }
+    // Set a players key with this
+    FFI_EXPORT(void) LunaLuaSetPlayerPressing(int type, int playerIdx, bool value)
+    {
+        PlayerInput playerInputFunc;
+        playerInputFunc.SetPressing(type, playerIdx, value);
+    }
+
+    // Reset all inputs
     FFI_EXPORT(void) LunaLuaResetAllPlayerInputs()
     {
         PlayerInput playerInputFunc;
