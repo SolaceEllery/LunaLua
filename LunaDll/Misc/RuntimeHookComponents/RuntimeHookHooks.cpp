@@ -5346,6 +5346,17 @@ _declspec(naked) void __stdcall runtimeHookFixLinkFairyClowncar3()
     }
 }
 
+void __stdcall runtimeHookMushBugEvent()
+{
+    if (gLunaLua.isValid())
+    {
+        std::shared_ptr<Event> mushBugEvent = std::make_shared<Event>("onMushroomBugFix", false);
+        mushBugEvent->setDirectEventName("onMushroomBugFix");
+        mushBugEvent->setLoopable(false);
+        gLunaLua.callEvent(mushBugEvent);
+    }
+}
+
 
 // close the game
 // don't bother with preserving cpu state or anything, since we'll never return from here...

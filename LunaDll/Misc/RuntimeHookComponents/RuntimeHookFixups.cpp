@@ -390,6 +390,7 @@ void fixup_Credits()
 void fixup_Mushbug()
 {
     PATCH(0xA2D08B)
+        .CALL(runtimeHookMushBugEvent) // Extra line, which calls a Lua event when the mushBugFix is executed
         .JE(0xA2D1BF)                                    // je 0xa2d1bf
         .bytes(0x66, 0x3d, 0x05, 0x00)                   // cmp ax, 5
         .bytes(0x0f, 0x95, 0xc2)                         // setne dl

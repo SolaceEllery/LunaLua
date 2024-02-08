@@ -485,6 +485,8 @@ void __stdcall runtimeHookFixLinkFairyClowncar1();
 void __stdcall runtimeHookFixLinkFairyClowncar2();
 void __stdcall runtimeHookFixLinkFairyClowncar3();
 
+void __stdcall runtimeHookMushBugEvent();
+
 // hooks for closing the game instaed of returning to titlescreen
 void __stdcall runtimeHookCloseGame();
 
