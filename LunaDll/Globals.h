@@ -70,21 +70,39 @@ struct StartupSettings
     bool forceHardGL;
     bool runWhenUnfocused;
     bool sendIPCReady;
-    bool noBootSound = false;
+    bool noBootSound;
     std::wstring levelTest;
     StartupEpisodeSettings epSettings;
-    bool usingCustomSplash;
-    std::wstring episodeDirectory;
-    std::wstring episodeBootImage;
-    std::wstring episodeBootSoundCustom;
-    int episodeBootSoundID;
 
     StartupSettings() :
         patch(false), game(false), lvlEditor(false), frameskip(false), noSound(false), debugger(false),
         logger(false), newLauncher(false), console(false), waitForIPC(false), currentlyWaitingForIPC(false),
         oldLvlLoader(false), softwareGL(false), forceHardGL(false), runWhenUnfocused(false), sendIPCReady(false),
-        noBootSound(false), epSettings(), levelTest(L""), usingCustomSplash(false), episodeDirectory(L""),
-        episodeBootImage(L""), episodeBootSoundCustom(L""), episodeBootSoundID(29)
+        noBootSound(false), epSettings(), levelTest(L"")
+    {
+    }
+};
+
+struct EpisodeSettings
+{
+    std::wstring episodeDirectory;
+    
+    bool usingCustomSplash;
+    std::wstring episodeBootImage;
+
+    std::wstring episodeBootSoundCustom;
+    int episodeBootSoundID;
+    int episodeBootSoundDelay;
+    
+    bool useLegacyBootScreen;
+    bool displayOriginalCredits;
+    bool hideAllCreditLines;
+    
+    EpisodeSettings() :
+        episodeDirectory(L""),
+        usingCustomSplash(false), episodeBootImage(L""),
+        episodeBootSoundCustom(L""), episodeBootSoundID(29), episodeBootSoundDelay(0),
+        useLegacyBootScreen(false), displayOriginalCredits(false), hideAllCreditLines(false)
     {
     }
 };
@@ -129,8 +147,11 @@ extern bool            gDisablePlayerMovementAboveThree;
 
 // Set to true when returning from gameover screen, read by lua to handle gameover-related stuff
 extern bool            gDidGameOver;
+// Flag for booting an episode
+extern bool            gDidBootScreen;
 
 extern StartupSettings gStartupSettings;
+extern EpisodeSettings gEpisodeSettings;
 
 /// General use globals - These are all defined in Globals.cpp ///
 extern int		gFrames;
@@ -239,6 +260,7 @@ extern bool canUseSEEModFeatures;
 // Episode loading
 extern Characters gPlayerStoredCharacters[];
 extern bool gEpisodeLoadedOnBoot;
+extern bool gEngineStarted;
 
 extern int gUnfocusTimer;
 extern int gFocusTimer;

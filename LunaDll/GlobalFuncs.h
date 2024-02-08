@@ -313,6 +313,9 @@ int RndValue();
 // SFX functions
 bool createSFXStartLuaEvent(int id, const char* path);
 
+void makeMessageBoxS(std::string message, std::string textTitle);
+void makeMessageBoxWS(std::wstring message, std::wstring textTitle);
+
 
 
 // **SEE Mod functions**

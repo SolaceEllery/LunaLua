@@ -19,6 +19,7 @@
 
 #include "TestModeMenu.h"
 #include "TestMode.h"
+#include "../Main.h"
 
 using json = nlohmann::json;
 
@@ -365,6 +366,15 @@ json IPCTestLevel(const json& params)
     if (!params.is_object()) throw IPCInvalidParams();
     json::const_iterator filenameIt = params.find("filename");
     if ((filenameIt == params.cend()) || (!filenameIt.value().is_string())) throw IPCInvalidParams();
+
+    std::string levelPathS = filenameIt.value();
+    std::string levelPathNoFileS = splitFilenameFromPath(levelPathS);
+    std::string levelPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(levelPathNoFileS);
+    std::wstring tempPath = Str2WStr(levelPathNoFileResolvedS);
+    gEpisodeSettings.episodeDirectory = tempPath;
+
+    // Read the episode ini again just in case
+    ReadEpisodeIni();
 
     // Default to the last settings for characters, if not changed by IPC
     // command

@@ -189,6 +189,8 @@ public:
 
     inline int GetMainFBWidth() { return mMainFBWidth; }
     inline int GetMainFBHeight() { return mMainFBHeight; }
+    
+    int CenterDrawingThings(int value, bool isWidthOrHeight);
 };
 
 // Instance

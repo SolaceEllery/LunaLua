@@ -16,6 +16,9 @@ extern const char* GAME_ENGINE;
 #define COMPILE_PLAYGROUND  0 //See Misc/Playground.cpp
 #define COMBOOL(b) (b ? -1 : 0)
 
+//Easier for loops
+#define For(A, From, To) for(int A = From; A <= To; ++A)
+
 enum FIELDTYPE {
     FT_INVALID = 0,
     FT_BYTE = 1,
@@ -670,6 +673,9 @@ DEFMEM(VASM_END_ANIM,      BYTE, 0x00A3C86E);      // = 11
 DEFMEM(VASM_END_COINSOUND, BYTE, 0x00A3C87F);      // = 14
 DEFMEM(VASM_END_COINVAL,   BYTE, 0x00A3C891);      // = 1
 
+//Player-related settings
+DEFMEM(VASM_PLAYER_DEATHBOUNDARY, BYTE, 0x009B26DF);
+
 // see LEVEL_HUD_CONTROL
 
 ////////////////////////
@@ -890,6 +896,8 @@ DEFMEM(IMP_vbaInputFile, void*, 0x00401158); // Ptr to __cdecl
 
 #define GF_DRAW_BACKGROUND 0x00954F50
 
+#define GF_INIT_HDC        0x0094F680
+
 DEFMEM(GF_RTC_DO_EVENTS, void*, 0x004010B8);
 
 static const auto native_initStaticVals = (void(__stdcall *)())GF_INIT_STATIC_VALS;
@@ -991,6 +999,8 @@ static const auto native_initNPC = (int(__stdcall *)(short* npcId, float* dir, v
 static const auto native_drawBackground = (void(__stdcall *)(short* section, short* camera))GF_DRAW_BACKGROUND;
 
 static const auto native_setNPCFrame = (void(__stdcall*)(short* npcidx))GF_NPC_FRAME;
+
+static const auto native_initHDC    = (void(__stdcall *)())GF_INIT_HDC;
 /*
 Function name
                                            Segment Start    Length   Locals   Arguments
@@ -1553,8 +1563,5 @@ _O_Pub_Obj_Inf31_Event0x6                    .text 00B23F40 000000A7 0000000C 00
 //DEBUG:
 #define dbgbox(msg) MessageBoxW(NULL, msg, L"Dbg", NULL);
 #define dbgboxA(msg) MessageBoxA(NULL, msg, "Dbg", NULL);
-
-//Easier for loops
-#define For(A, From, To) for(int A = From; A <= To; ++A)
 
 #endif

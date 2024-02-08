@@ -58,15 +58,15 @@ void InitMinimalLuaState(lua_State* L) {
     lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_table);
     lua_call(L, 0, 0);
-    lua_pushcfunction(L, luaopen_bit);
-    lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_package);
     lua_call(L, 0, 0);
-    lua_pushcfunction(L, luaopen_io);
+    lua_pushcfunction(L, luaopen_bit);
     lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_ffi);
     lua_call(L, 0, 0);
     lua_pushcfunction(L, luaopen_jit);
+    lua_call(L, 0, 0);
+    lua_pushcfunction(L, luaopen_io);
     lua_call(L, 0, 0);
 
     lua_pushstring(L, WStr2Str(gAppPathWCHAR).c_str());

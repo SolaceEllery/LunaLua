@@ -1265,6 +1265,15 @@ int RndValue()
     return (rand() % 2 + 1) - 1;
 }
 
+void makeMessageBoxS(std::string message, std::string textTitle)
+{
+    MessageBoxA(NULL, message.c_str(), textTitle.c_str(), NULL);
+}
+
+void makeMessageBoxWS(std::wstring message, std::wstring textTitle)
+{
+    MessageBoxA(NULL, WStr2Str(message).c_str(), WStr2Str(textTitle).c_str(), NULL);
+}
 
 
 

@@ -118,6 +118,9 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     VB6StrPtr fullWorldFileNoPthVB6 = fullWorldFileNoPthS;
     VB6StrPtr fullPthNoWorldFileWithEndSlashVB6 = fullPthNoWorldFileWithEndSlashS;
 
+    // set GM_FULLDIR, otherwise the Loadscreen won't have write access to the episode we're loading to
+    GM_FULLDIR = fullPthNoWorldFileWithEndSlashWS;
+
     // FileFormats WorldData, saved for the FindSaves function and the world intro filename
     WorldData wldData;
 
@@ -213,9 +216,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
 
     // reset checkpoints
     GM_STR_CHECKPOINT = "";
-
-    // set GM_FULLDIR, otherwise the Loadscreen won't have write access to the episode we're loading to
-    GM_FULLDIR = fullPthNoWorldFileWithEndSlashWS;
 
     // show loadscreen
     LunaLoadScreenStart();

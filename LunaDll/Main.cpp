@@ -77,6 +77,55 @@ static DWORD __stdcall GetCurrentProcessorNumberXP(void)
     }
 }
 
+static void Episode_SetEpisodeIni()
+{
+    std::string episodePathToIni = WStr2Str(gEpisodeSettings.episodeDirectory) + "\\episode.ini";
+    if(file_existsX(episodePathToIni))
+    {
+        IniProcessing episodeConfig(episodePathToIni);
+        if (episodeConfig.beginGroup("boot-settings"))
+        {
+            std::string bootImageCheck = episodeConfig.value("boot-image", "").toString();
+            if(bootImageCheck.length() > 0)
+            {
+                gEpisodeSettings.episodeBootImage = Str2WStr(bootImageCheck);
+                gEpisodeSettings.usingCustomSplash = true;
+            }
+            else
+            {
+                gEpisodeSettings.usingCustomSplash = false;
+            }
+
+            int bootSoundIsANumber = episodeConfig.value("boot-sound", 0).toInt();
+
+            if (bootSoundIsANumber > 0)
+            {
+                gEpisodeSettings.episodeBootSoundID = episodeConfig.value("boot-sound", 1).toInt();
+            }
+            else if(bootSoundIsANumber == 0)
+            {
+                gEpisodeSettings.episodeBootSoundID = -1;
+                gEpisodeSettings.episodeBootSoundCustom = Str2WStr(episodeConfig.value("boot-sound", "").toString());
+            }
+
+            gEpisodeSettings.episodeBootSoundDelay = episodeConfig.value("boot-delay", 0).toInt();
+            gEpisodeSettings.useLegacyBootScreen = episodeConfig.value("enable-legacy-bootscreen", false).toBool();
+        }
+        episodeConfig.endGroup();
+        if (episodeConfig.beginGroup("other-settings"))
+        {
+            gEpisodeSettings.displayOriginalCredits = episodeConfig.value("show-x2-credits", true).toBool();
+            gEpisodeSettings.hideAllCreditLines = episodeConfig.value("hide-all-credits-lines", false).toBool();
+            //VASM_PLAYER_DEATHBOUNDARY = episodeConfig.value("player-falling-deathboundary", 64).toInt();
+        }
+    }
+}
+
+void ReadEpisodeIni()
+{
+    Episode_SetEpisodeIni();
+}
+
 // We don't call this directly from DLL_PROCESS_ATTACH because if we do things
 // can break when we're loaded via LoadLibrary
 // Instead this is called by LunaDLLInitHook, which is set up by
@@ -160,6 +209,9 @@ void LunaDLLInit()
         MessageBoxA(0, errmsg.c_str(), "Error", 0);
         exit(1);
     }
+    
+    // Read the episode.ini file
+    ReadEpisodeIni();
 
     TrySkipPatch();
 

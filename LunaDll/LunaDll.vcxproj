@@ -348,6 +348,7 @@
     <ClCompile Include="Misc\AsmPatch.cpp" />
     <ClCompile Include="Misc\CollisionMatrix.cpp" />
     <ClCompile Include="Misc\Gameover.cpp" />
+    <ClCompile Include="Misc\BootSystem.cpp" />
     <ClCompile Include="Misc\LoadScreen.cpp" />
     <ClCompile Include="Misc\MonitorSystem.cpp" />
     <ClCompile Include="Misc\NpcIdExtender.cpp" />

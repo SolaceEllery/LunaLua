@@ -46,6 +46,8 @@ bool gDisablePlayerMovementAboveThree = false;
 
 // Flag for returning from gameover screen
 bool gDidGameOver = false;
+// Flag for booting an episode
+bool gDidBootScreen = false;
 
 // Global variables
 int	gFrames;
@@ -99,6 +101,8 @@ MciEmulator gMciEmulator;
 
 StartupSettings gStartupSettings;
 
+EpisodeSettings gEpisodeSettings;
+
 HardcodedGraphicsManager gGraphManager;
 
 FreeImageInit        gFreeImgInit;
@@ -149,6 +153,7 @@ double soundEffectCount = 0;
 bool canUseSEEModFeatures = false;
 
 bool gEpisodeLoadedOnBoot = false;
+bool gEngineStarted = false;
 Characters gPlayerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO,CHARACTER_MARIO };
 
 int gUnfocusTimer = 2;

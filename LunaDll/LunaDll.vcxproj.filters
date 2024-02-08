@@ -1469,6 +1469,9 @@
     <ClCompile Include="Misc\Gameover.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Misc\BootSystem.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
     <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp">
       <Filter>SMBXInternal\Reconstructed</Filter>
     </ClCompile>

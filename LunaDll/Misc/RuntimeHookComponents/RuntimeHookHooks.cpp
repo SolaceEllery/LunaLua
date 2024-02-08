@@ -48,6 +48,13 @@
 #include "../../SMBXInternal/Reconstructed/PlayerInput.h"
 #include "../../SMBXInternal/Overworld.h"
 
+#include "../../Rendering/GL/GLContextManager.h"
+#include "../../Rendering/Rendering.h"
+#include "../../Rendering/WindowSizeHandler.h"
+
+#include <lua.hpp>
+#include "../../LuaMain/LunaPathValidator.h"
+
 void CheckIPCQuitRequest();
 
 extern HHOOK HookWnd;
@@ -187,6 +194,11 @@ extern int __stdcall LoadWorld()
 
         // Mark next render frame as the 'first'
         g_GLEngine.SetFirstFramePending();
+    }
+    
+    if(!gEngineStarted)
+    {
+        gEngineStarted = true;
     }
 
     if (!GM_CREDITS_MODE)
@@ -1680,6 +1692,9 @@ _declspec(naked) void __stdcall loadLevel_OrigFunc(VB6StrPtr* filename)
 void __stdcall runtimeHookGameMenu()
 {
     GM_LEVEL_MODE = 0; // Set this to prevent multiple loops
+
+    //if(makeCoinDisappear) //Extra check for the boot screen just in case
+    //{
     // Check to see if Test Mode is enabled. If so, start test mode.
     if(gStartupSettings.levelTest.length() > 0)
     {
@@ -1767,6 +1782,7 @@ void __stdcall runtimeHookGameMenu()
             mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
         }
     }
+    //}
 }
 
 void __stdcall runtimeHookLoadLevel(VB6StrPtr* filename)
@@ -2249,8 +2265,117 @@ __declspec(naked) void __stdcall runtimeHookSetHDCRaw(void)
     }
 }
 
+bool makeCoinDisappear = false;
+extern void LunaLuaBootSystemRun();
+
+void drawReplacementSplashScreen()
+{
+    // Get form to draw on
+    HDC frmHDC = nullptr;
+    uintptr_t mainFrm = *reinterpret_cast<uintptr_t*>(0xB25010);
+    uintptr_t mainFrmClass = *reinterpret_cast<uintptr_t*>(mainFrm);
+    auto frmGetHDC = (HRESULT(__stdcall *)(uintptr_t, HDC*)) *(void**)(mainFrmClass + 0xD8);
+    frmGetHDC(mainFrm, &frmHDC);
+    if (!frmHDC) return;
+
+    std::shared_ptr<LunaImage> splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+
+    // Load splash image
+    if(!gEpisodeSettings.usingCustomSplash)
+    {
+        splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+    }
+    else
+    {
+        if(gEpisodeSettings.episodeBootImage != L"")
+        {
+            std::wstring customImage = gEpisodeSettings.episodeDirectory + L"\\" + gEpisodeSettings.episodeBootImage;
+            const wchar_t * customImageWCHAR = customImage.c_str();
+            splashReplacement = LunaImage::fromFile(customImageWCHAR);
+        }
+        else
+        {
+            splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+        }
+    }
+
+    if (!splashReplacement) return;
+
+    // Get image as HBITMAP
+    HBITMAP splashBMP = splashReplacement->asHBITMAP();
+    if (!splashBMP) return;
+
+    // Generate HDC for drawing...
+    HDC splashHDC = CreateCompatibleDC(frmHDC);
+    if (!splashHDC) return;
+    SelectObject(splashHDC, splashBMP);
+
+    // Get window size
+    auto windowSize = gWindowSizeHandler.getWindowSize();
+
+    // Clear HDC...
+    BitBlt(frmHDC, 0, 0, windowSize.x, windowSize.y, frmHDC, 0, 0, WHITENESS);
+
+    // Draw with respecting alpha channel
+    BLENDFUNCTION bf;
+    bf.BlendOp = AC_SRC_OVER;
+    bf.BlendFlags = 0;
+    bf.AlphaFormat = AC_SRC_ALPHA;
+    bf.SourceConstantAlpha = 0xFF;
+
+    // Draw the splash screen!
+    AlphaBlend(frmHDC, g_GLContextManager.CenterDrawingThings(0, true), g_GLContextManager.CenterDrawingThings(0, false), windowSize.x, windowSize.y, splashHDC, 0, 0, 800, 600, bf);
+
+    DeleteDC(splashHDC);
+}
+
+__declspec(naked) void __stdcall coinSpin_OrigFunc()
+{
+    __asm {
+        push ebp
+        mov ebp, esp
+        sub esp, 0x8
+        push 0xAE8116
+        ret
+    }
+}
+
+static int coinSpinTimer = 0;
+
+void __stdcall runtimeHookCoinSpin(void)
+{
+    if(gEpisodeSettings.useLegacyBootScreen)
+    {
+        coinSpin_OrigFunc();
+    }
+    else
+    {
+        // Run the new boot drawing system
+        LunaLuaBootSystemRun();
+
+        // Now we can boot any episode we want
+        makeCoinDisappear = true;
+        runtimeHookGameMenu();
+    }
+}
+
+extern BOOL __stdcall CoinSpinBitBltHook(HDC hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, HDC hdcSrc, int nXSrc, int nYSrc, DWORD dwRop)
+{
+    if(!gEpisodeSettings.useLegacyBootScreen)
+    {
+        return -1;
+    }
+
+    return BitBltHook(hdcDest, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, dwRop);
+}
+
 void __stdcall runtimeHookInitGameHDC(void)
 {
+    // We have our own function for initialization, but the legacy episode booter will still need it
+    //if(gEpisodeSettings.useLegacyBootScreen)
+    //{
+    //native_initHDC();
+    //}
     auto initGameHDC = (void(__stdcall *)(void)) (void*)0x94F680;
     initGameHDC();
 }
@@ -2687,72 +2812,14 @@ void __stdcall runtimeHookCollectNPC(short* playerIdx, short* npcIdx)
     collectNPC_OrigFunc(playerIdx, npcIdx);
 }
 
-
-static void drawReplacementSplashScreen(void)
-{
-    // Get form to draw on
-    HDC frmHDC = nullptr;
-    uintptr_t mainFrm = *reinterpret_cast<uintptr_t*>(0xB25010);
-    uintptr_t mainFrmClass = *reinterpret_cast<uintptr_t*>(mainFrm);
-    auto frmGetHDC = (HRESULT(__stdcall *)(uintptr_t, HDC*)) *(void**)(mainFrmClass + 0xD8);
-    frmGetHDC(mainFrm, &frmHDC);
-    if (!frmHDC) return;
-
-    std::shared_ptr<LunaImage> splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
-
-    // Load splash image
-    if(!gStartupSettings.usingCustomSplash)
-    {
-        splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
-    }
-    else
-    {
-        if(gStartupSettings.episodeBootImage != L"")
-        {
-            std::wstring customImage = gStartupSettings.episodeDirectory + gStartupSettings.episodeBootImage;
-            const wchar_t * customImageWCHAR = customImage.c_str();
-            splashReplacement = LunaImage::fromFile(customImageWCHAR);
-        }
-        else
-        {
-            splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
-        }
-    }
-
-    if (!splashReplacement) return;
-
-    // Get image as HBITMAP
-    HBITMAP splashBMP = splashReplacement->asHBITMAP();
-    if (!splashBMP) return;
-
-    // Generate HDC for drawing...
-    HDC splashHDC = CreateCompatibleDC(frmHDC);
-    if (!splashHDC) return;
-    SelectObject(splashHDC, splashBMP);
-
-    // Get window size
-    auto windowSize = gWindowSizeHandler.getWindowSize();
-
-    // Clear HDC...
-    BitBlt(frmHDC, 0, 0, windowSize.x, windowSize.y, frmHDC, 0, 0, WHITENESS);
-
-    // Draw with respecting alpha channel
-    BLENDFUNCTION bf;
-    bf.BlendOp = AC_SRC_OVER;
-    bf.BlendFlags = 0;
-    bf.AlphaFormat = AC_SRC_ALPHA;
-    bf.SourceConstantAlpha = 0xff;
-    AlphaBlend(frmHDC, 0, 0, windowSize.x, windowSize.y, splashHDC, 0, 0, 800, 600, bf);
-
-    // Cleanup
-    DeleteDC(splashHDC);
-}
-
 void __stdcall runtimeHookLoadDefaultControls(void)
 {
     // Draw replacement splash screen if we have one
+    //if(!gEpisodeSettings.useLegacyBootScreen)
+    //{
     drawReplacementSplashScreen();
-
+    //}
+    
     // Run the regular load default controls...
     native_loadDefaultControls();
 }

@@ -485,3 +485,24 @@ void GLContextManager::SetMainFramebufferSize(int width, int height)
     // Re-init some state just in case
     InitProjectionAndState();
 }
+
+int GLContextManager::CenterDrawingThings(int value, bool isWidthOrHeight)
+{
+    int originalWidth = 800;
+    int originalHeight = 600;
+    
+    int additionalWidth = g_GLContextManager.GetMainFBWidth() / originalWidth;
+    int additionalHeight = g_GLContextManager.GetMainFBHeight() / originalHeight;
+    
+    int extendedWidth = additionalWidth / 2;
+    int extendedHeight = additionalHeight / 2;
+
+    if(isWidthOrHeight) //Width
+    {
+        return value + extendedWidth;
+    }
+    else if(!isWidthOrHeight) //Width
+    {
+        return value + extendedHeight;
+    }
+}

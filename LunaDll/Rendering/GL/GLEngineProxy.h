@@ -77,6 +77,7 @@ public:
     void EnsureMainThreadCTXApplied();
 
     static HDC GetHDC(void);
+    static HDC GetSplashHDC(void);
     static void CheckRendererInit(void);
 
     FrameStatStruct GetFrameStats(void) { return mFrameStats.load(std::memory_order_relaxed); }

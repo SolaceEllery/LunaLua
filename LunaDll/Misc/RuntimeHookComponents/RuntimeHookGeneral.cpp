@@ -1505,39 +1505,6 @@ void HID_QuitDevices()
 
 //----
 
-static void Episode_SetEpisodeIni(std::wstring pathToEpisodeIni)
-{
-    IniProcessing episodeConfig(WStr2Str(pathToEpisodeIni));
-    if (episodeConfig.beginGroup("boot-settings"))
-    {
-        gStartupSettings.episodeBootImage = Str2WStr(episodeConfig.value("boot-image", "").toString());
-
-        int tempInt = 0;
-        bool bootSoundIsNotANumber = (episodeConfig.value("boot-sound", 1).toInt() == NULL);
-
-        if (!bootSoundIsNotANumber)
-        {
-            gStartupSettings.episodeBootSoundID = episodeConfig.value("boot-sound", 1).toInt();
-        }
-        else
-        {
-            gStartupSettings.episodeBootSoundID = -1;
-            gStartupSettings.episodeBootSoundCustom = Str2WStr(episodeConfig.value("boot-sound", "").toString());
-        }
-    }
-    gStartupSettings.usingCustomSplash = true;
-    episodeConfig.endGroup();
-}
-
-static void Episode_ReadEpisodeIni()
-{
-    std::wstring episodeIniFile = gStartupSettings.episodeDirectory + L"episode.ini";
-    if(fileExists(episodeIniFile))
-    {
-        Episode_SetEpisodeIni(episodeIniFile);
-    }
-}
-
 LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (nCode < 0){
@@ -1588,9 +1555,6 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);
-                
-                // Now read the episode.ini at this point
-                
             }
         }
         break;
@@ -1633,11 +1597,15 @@ void ParseArgs(const std::vector<std::wstring>& args)
 
     if (vecStrFind(args, L"--nogl"))
         gStartupSettings.softwareGL = true;
+    
+    if (vecStrFind(args, L"--nobootsfx"))
+        gStartupSettings.noBootSound = true;
 
     for (unsigned int i = 0; i < args.size(); i++)
     {
         const std::wstring& arg = args[i];
         std::wstring levelPath;
+        std::wstring wldPath;
         if ((arg.length() > 0) && (arg[0] == L'-'))
         {
             if (arg.find(L"--testLevel=") == 0)
@@ -1660,6 +1628,12 @@ void ParseArgs(const std::vector<std::wstring>& args)
 
         if (levelPath.length() > 0)
         {
+            std::string levelPathS = WStr2Str(levelPath);
+            std::string levelPathNoFileS = splitFilenameFromPath(levelPathS);
+            std::string levelPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(levelPathNoFileS);
+            std::wstring tempPath = Str2WStr(levelPathNoFileResolvedS);
+            gEpisodeSettings.episodeDirectory = tempPath;
+
             STestModeSettings settings;
             settings.levelPath = levelPath;
             settings.rawData = "";
@@ -1715,9 +1689,13 @@ void ParseArgs(const std::vector<std::wstring>& args)
 
         if (wldPath.length() > 0)
         {
+            std::string worldPathS = WStr2Str(wldPath);
+            std::string worldPathNoFileS = splitFilenameFromPath(worldPathS);
+            std::string worldPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(worldPathNoFileS);
+            std::wstring tempPath = Str2WStr(worldPathNoFileResolvedS);
+            gEpisodeSettings.episodeDirectory = tempPath;
+
             gStartupSettings.epSettings.wldPath = wldPath;
-            std::string tempEpPath = splitFilenameFromPath(WStr2Str(wldPath));
-            gStartupSettings.episodeDirectory = Str2WStr(tempEpPath);
             gStartupSettings.epSettings.enabled = true;
             gStartupSettings.patch = true;
         }
@@ -1956,7 +1934,6 @@ void TrySkipPatch()
     PATCH(0x8F6E11).NOP_PAD_TO_SIZE<4>().Apply(); // effectively comments out line 9624 in modMain.bas, effectively increasing the range that blocks are checked for
 
     PATCH(0x8C0763).SAFE_CALL(&runtimeHookGameMenu).JMP(0x8C11B1).Apply(); // The Game Menu
-
     PATCH(0x9B7B80).CALL(&runtimeHookGameover).NOP_PAD_TO_SIZE<28>().Apply();
 
     PATCH(0xB2F244).dword(reinterpret_cast<uintptr_t>(&mciSendStringHookA)).Apply();
@@ -2349,6 +2326,25 @@ void TrySkipPatch()
     PATCH(0x8CE9FA).CALL(&runtimeHookInitGameWindow).Apply();
     PATCH(0x8E6C75).CALL(&runtimeHookInitGameWindow).Apply();
     PATCH(0xA02AEE).CALL(&runtimeHookInitGameWindow).Apply();
+
+    // Hooks to make our own coin loading graphics. All of these are commented out until the new system is finished.
+
+    //PATCH(0xAE8110).JMP(&runtimeHookCoinSpin).NOP_PAD_TO_SIZE<6>().Apply();
+    
+    // Hooks for preventing drawing the boot screen
+    // Legacy level editor
+    //PATCH(0xAE8352).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE849F).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE85E8).CALL(&CoinSpinBitBltHook).Apply();
+    
+    // Loading screen
+    //PATCH(0xAE87D1).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE891E).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE8A67).CALL(&CoinSpinBitBltHook).Apply();
+    
+    // Remove refresh functions
+    //PATCH(0xAE8618).NOP_PAD_TO_SIZE<5>().Apply();
+    //PATCH(0xAE8A97).NOP_PAD_TO_SIZE<5>().Apply();
 
     //Shorten reload thingy? TEMP
     PATCH(0x8C142B).NOP_PAD_TO_SIZE<10>().Apply();

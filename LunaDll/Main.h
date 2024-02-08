@@ -15,6 +15,8 @@ extern "C" {
 }
 
 // Other funcs
+void ReadEpisodeIni();
+
 void LunaDLLInit();
 
 void TestFrameCode();

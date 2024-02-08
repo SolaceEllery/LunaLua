@@ -205,6 +205,20 @@ HDC GLEngineProxy::GetHDC(void)
     return targetHdc;
 }
 
+HDC GLEngineProxy::GetSplashHDC(void)
+{
+    HDC frmHDC = nullptr;
+
+    uintptr_t mainFrm = *reinterpret_cast<uintptr_t*>(0xB2D79C);
+    uintptr_t mainFrmClass = *reinterpret_cast<uintptr_t*>(mainFrm);
+
+    auto frmGetHDC = (HRESULT(__stdcall *)(uintptr_t, HDC*)) *(void**)(mainFrmClass + 0xD8);
+
+    frmGetHDC(mainFrm, &frmHDC);
+
+    return frmHDC;
+}
+
 void GLEngineProxy::CheckRendererInit(void)
 {
     static bool ranEarlyInit = false;
