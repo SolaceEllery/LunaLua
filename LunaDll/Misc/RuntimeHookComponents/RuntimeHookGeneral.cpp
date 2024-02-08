@@ -2500,7 +2500,6 @@ void TrySkipPatch()
     PATCH(0xa2c966).JMP(&runtimeHookNpcHarmRaw_a2c966).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa2cd3c).JMP(&runtimeHookNpcHarmRaw_a2cd3c).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa2cffe).JMP(&runtimeHookNpcHarmRaw_a2cffe).NOP_PAD_TO_SIZE<6>().Apply();
-    PATCH(0xa2d1b9).JMP(&runtimeHookNpcHarmRaw_a2d1b9).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa2d2f1).JMP(&runtimeHookNpcHarmRaw_a2d2f5).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa2d30d).JMP(&runtimeHookNpcHarmRaw_a2d311).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa2d79f).JMP(&runtimeHookNpcHarmRaw_a2d79f).NOP_PAD_TO_SIZE<6>().Apply();
@@ -2556,6 +2555,9 @@ void TrySkipPatch()
     PATCH(0xa30162).JMP(&runtimeHookNpcHarmRaw_a30166).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa30180).JMP(&runtimeHookNpcHarmRaw_a30180).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0xa3045e).JMP(&runtimeHookNpcHarmRaw_a30465).NOP_PAD_TO_SIZE<9>().Apply();
+
+    // Mushroom bug event. Calls a Lua event and then kills off the item
+    PATCH(0xA2D1B9).JMP(&runtimeHookNpcHarmRaw_a2d1b9).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Hooks for color switch hitting (jg hooks to capture loop exits)
     PATCH(0xA31FA0).JG(&runtimeHookColorSwitchRedNpc).Apply();

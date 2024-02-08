@@ -522,6 +522,7 @@ void __stdcall runtimeHookYoshiEatExit(void);
 
 void __stdcall runtimeHookLogCollideNpc(DWORD addr, short* pNpcIdx, CollidersType* pObjType, short* pObjIdx);
 void __stdcall runtimeHookCollideNpc(short* pNpcIdx, CollidersType* pObjType, short* pObjIdx);
+unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* pObjType, short* pObjIdx);
 void __stdcall runtimeHookNpcHarmRaw_a291d8(void);
 void __stdcall runtimeHookNpcHarmRaw_a29272(void);
 void __stdcall runtimeHookNpcHarmRaw_a293ee(void);
@@ -601,7 +602,6 @@ void __stdcall runtimeHookNpcHarmRaw_a2c8a1(void);
 void __stdcall runtimeHookNpcHarmRaw_a2c966(void);
 void __stdcall runtimeHookNpcHarmRaw_a2cd3c(void);
 void __stdcall runtimeHookNpcHarmRaw_a2cffe(void);
-void __stdcall runtimeHookNpcHarmRaw_a2d1b9(void);
 void __stdcall runtimeHookNpcHarmRaw_a2d2f5(void);
 void __stdcall runtimeHookNpcHarmRaw_a2d311(void);
 void __stdcall runtimeHookNpcHarmRaw_a2d79f(void);
@@ -657,6 +657,8 @@ void __stdcall runtimeHookNpcHarmRaw_a3012c(void);
 void __stdcall runtimeHookNpcHarmRaw_a30166(void);
 void __stdcall runtimeHookNpcHarmRaw_a30180(void);
 void __stdcall runtimeHookNpcHarmRaw_a30465(void);
+
+void __stdcall runtimeHookNpcHarmRaw_a2d1b9(void);
 
 void __stdcall runtimeHookColorSwitchRedNpc(void);
 void __stdcall runtimeHookColorSwitchGreenNpc(void);

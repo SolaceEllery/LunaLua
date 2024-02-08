@@ -74,7 +74,7 @@ void __stdcall runtimeHookCollideNpc(short* pNpcIdx, CollidersType* pObjType, sh
 }
 
 // Hook to catch when NPC harm is about to occur
-static unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* pObjType, short* pObjIdx)
+unsigned int __stdcall runtimeHookNpcHarm(short* pNpcIdx, CollidersType* pObjType, short* pObjIdx)
 {
     if (!npcHarmResultSet && gLunaLua.isValid()) {
         std::shared_ptr<Event> npcKillEvent = std::make_shared<Event>("onNPCHarm", true);

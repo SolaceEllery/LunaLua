@@ -5405,6 +5405,7 @@ _declspec(naked) void __stdcall runtimeHookFixLinkFairyClowncar3()
     }
 }
 
+// Fixes a bug with mushrooms hitting lava and crashing the game. Also calls a Lua event when the mushBugFix is executed
 void __stdcall runtimeHookMushBugEvent()
 {
     if (gLunaLua.isValid())
