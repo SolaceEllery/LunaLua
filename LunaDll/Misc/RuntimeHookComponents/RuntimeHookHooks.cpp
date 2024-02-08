@@ -82,7 +82,7 @@ extern void __stdcall InitHook()
         if (!newLauncherLib){
             std::string errMsg = "Failed to load the new Launcher D:!\nLunadllNewLauncher.dll is missing?\nError Code: ";
             errMsg += std::to_string((long long)GetLastError());
-            MessageBoxA(NULL, errMsg.c_str(), "Error", 0);
+            LunaMsgBox::ShowA(NULL, errMsg.c_str(), "Error", 0);
             return;
         }
         RunProc hRunProc = (RunProc)GetProcAddress(newLauncherLib, "run");
@@ -118,7 +118,7 @@ extern void __stdcall InitHook()
         if (!newDebugger){
             std::string errMsg = "Failed to load the new Launcher D:!\nLunadllNewLauncher.dll is missing?\nError Code: ";
             errMsg += std::to_string((long long)GetLastError());
-            MessageBoxA(NULL, errMsg.c_str(), "Error", 0);
+            LunaMsgBox::ShowA(NULL, errMsg.c_str(), "Error", 0);
             newDebugger = NULL;
             return;
         }
@@ -683,7 +683,7 @@ EXCEPTION_DISPOSITION __cdecl LunaDLLCustomExceptionHandler(
 {
     // For VB error code 40040, defer to the original handler
     bool isVB6Exception = (ExceptionRecord->ExceptionCode == 0xc000008f);
-    if (isVB6Exception && lastVB6ErrCode == 40040) {
+    if (isVB6Exception && ErrorReportVars::lastVB6ErrCode == 40040) {
         return LunaDLLOriginalExceptionHandler(ExceptionRecord, EstablisherFrame, ContextRecord, DispatcherContext);
     }
 
@@ -700,18 +700,14 @@ EXCEPTION_DISPOSITION __cdecl LunaDLLCustomExceptionHandler(
 
 extern void __stdcall recordVBErrCode(int errCode)
 {
-    // Running the whole stack trace now is *far* too slow and can make the
-    // editor grind to a halt in some situations due to exceptions which are
-    // caught in the VB code.
-
-    // Instead... just capture a nice lightweight context. We can pass this
-    // to StackWalker later.
-    RtlCaptureContext(&lastVB6ErrContext);
-
     // Also record the VB6 error code, because this is simpler than fetching
     // VB6's "error" object that stores this internally (would involve calling
     // rtcErrObj)
-    lastVB6ErrCode = (ErrorReport::VB6ErrorCode)errCode;
+    ErrorReportVars::lastVB6ErrCode = (ErrorReport::VB6ErrorCode)errCode;
+
+    // Pass through pending context flags
+    ErrorReportVars::activeVB6ErrContext = ErrorReportVars::pendingVB6ErrContext;
+    ErrorReportVars::pendingVB6ErrContext = false;
 
     //HERE NEED ESI CMP CODE (ORIGINAL CODE)
     __asm{
@@ -3735,6 +3731,59 @@ __declspec(naked) void __stdcall runtimeHookNPCSectionWrap(void)
     }
 }
 
+static void __stdcall runtimeHookJumpSlideFixInternal(short playerIdx) {
+    PlayerMOB* player = PlayerMOB::Get(playerIdx);
+    auto extended = Player::GetExtended(playerIdx);
+
+    if (player->SlopeRelated != 0) {
+        extended->slidingTimeSinceOnSlope = 0;
+    } else {
+        extended->slidingTimeSinceOnSlope += 1;
+    }
+
+    if (gSlideJumpFixIsEnabled) {
+        // fixed check:
+        if (player->UpwardJumpingForce != 0) {
+            // if the player started jumping for real
+            player->SlidingState = 0;
+        } else if (player->keymap.jumpKeyState != 0 || player->keymap.altJumpKeyState != 0) {
+            // if the player pressed jump *and* has been disconnected from a slope for a couple frames
+            if (extended->slidingTimeSinceOnSlope >= 2) {
+                player->SlidingState = 0;
+            }
+        }
+    } else {
+        // redigit's check:
+        if (player->keymap.jumpKeyState != 0 || player->keymap.altJumpKeyState != 0) {
+            player->SlidingState = 0; // super jank town activate
+        }
+    }
+
+}
+
+__declspec(naked) void __stdcall runtimeHookJumpSlideFix(void)
+{
+    // eax, ecx, edx and flags are free for use at this point
+    __asm {
+
+        push eax
+        push edx
+        push ecx
+
+        movsx edx, word ptr ss : [ebp-0x114]
+        push edx  // Player index
+        call runtimeHookJumpSlideFixInternal
+
+        pop ecx
+        pop edx
+        pop eax
+        
+
+        push 0x99A850
+        ret
+    }
+}
+
 
 static void markBlocksUnsorted()
 {
@@ -4056,7 +4105,7 @@ __declspec(naked) void __stdcall runtimeHookNPCNoBlockCollisionA1B33F(void)
     }
 }
 
-static unsigned int __stdcall runtimeHookBlockNPCFilterInternal(unsigned int hitSpot, NPCMOB* npc, unsigned int blockIdx, unsigned int npcIdx, unsigned int oldSlope)
+static unsigned int __stdcall runtimeHookBlockNPCFilterInternal(unsigned int hitSpot, NPCMOB* npc, unsigned int blockIdx, unsigned int npcIdx, int oldSlope)
 {
     // If already not hitting, ignore
     if (hitSpot == 0) return 0;
@@ -4087,7 +4136,7 @@ static unsigned int __stdcall runtimeHookBlockNPCFilterInternal(unsigned int hit
                 // because of this, we have to check if a slope was stood on previously and cancel the bottom timer out
                 collidesBelow = 0;
             }
-            if (!Blocks::FilterSemisolidSlopeCollision(&npc->momentum, blockIdx, collidesBelow)) {
+            if (!Blocks::FilterSemisolidSlopeCollision(&npc->momentum, &npc->momentum, blockIdx, collidesBelow, (oldSlope != 0 || npc->unknown_22 != 0))) {
                 return 0;
             } else {
                 // change hitSpot to always act as top collision
@@ -4194,7 +4243,7 @@ __declspec(naked) void __stdcall runtimeHookNPCCollisionGroup(void)
     }
 }
 
-static unsigned int __stdcall runtimeHookBlockPlayerFilterInternal(short playerIdx, int blockIdx)
+static unsigned int __stdcall runtimeHookBlockPlayerFilterInternal(short playerIdx, int blockIdx, int oldSlope)
 {
     PlayerMOB* player = Player::Get(playerIdx);
     Block* block = Block::GetRaw(blockIdx);
@@ -4224,7 +4273,15 @@ static unsigned int __stdcall runtimeHookBlockPlayerFilterInternal(short playerI
     if (blockdef_semisolid[block->BlockType] && blockdef_floorslope[block->BlockType] != 0)
     {
         // check semisolid slope collision
-        if (!Blocks::FilterSemisolidSlopeCollision(&player->momentum, blockIdx, player->LayerStateStanding)) {
+        bool onSlope = (player->SlopeRelated != 0 || oldSlope != 0);
+        if (player->SlidingState && !onSlope) {
+            onSlope = Player::GetExtended(playerIdx)->slidingTimeSinceOnSlope < 2;
+        }
+        Momentum* speedMomentum = &(player->momentum);
+        if (player->NPCBeingStoodOnIndex > 0 && player->NPCBeingStoodOnIndex <= GM_NPCS_COUNT) {
+            speedMomentum = &(NPC::Get(player->NPCBeingStoodOnIndex-1)->momentum);
+        }
+        if (!Blocks::FilterSemisolidSlopeCollision(&player->momentum, speedMomentum, blockIdx, player->LayerStateStanding, onSlope)) {
             return 0;
         }
     }
@@ -4257,6 +4314,8 @@ __declspec(naked) void __stdcall runtimeHookBlockPlayerFilter(void)
         push edx
         push esi
 
+        movsx ecx, word ptr ss:[ebp-0x104]
+        push ecx                // oldSlope (for semisolid slope check)
         movsx ecx, word ptr ss:[ebp-0x120]
         push ecx                // Block index
         movsx ecx, word ptr ss:[ebp-0x114]

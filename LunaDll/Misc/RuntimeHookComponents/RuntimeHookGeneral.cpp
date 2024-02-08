@@ -405,8 +405,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     }
 
     // Notify Lua code
-    if (gLunaLua.isValid() && !ctrlPressed && !altPressed)
-    {
+    // But don't pass keystrokes with ctrl or alt as a keypress
+    if (gLunaLua.isValid() && !LunaMsgBox::IsActive() &&
+        (!ctrlPressed || (virtKey == VK_LCONTROL) || (virtKey == VK_RCONTROL)) &&
+        (!altPressed || (virtKey == VK_LMENU) || (virtKey == VK_RMENU))
+        ) {
         std::shared_ptr<Event> keyboardPressEvent = std::make_shared<Event>("onKeyboardPress", false);
 
         int unicodeRet = ToUnicode(virtKey, scanCode, gKeyState[keyboardIdx], unicodeData, 32, 0);
@@ -535,7 +538,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
 
 static void SendLuaRawKeyEventRepeated(uint32_t virtKey, bool isDown, int keyboardIdx)
 {
-    if (gLunaLua.isValid())
+    if (gLunaLua.isValid() && !LunaMsgBox::IsActive())
     {
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyDown" : "onKeyboardKeyUp", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
@@ -549,8 +552,7 @@ static void SendLuaRawKeyEventRepeated(uint32_t virtKey, bool isDown, int keyboa
 
 static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
 {
-    if (gLunaLua.isValid())
-    {
+    if (gLunaLua.isValid() && !LunaMsgBox::IsActive()) {
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyPress" : "onKeyboardKeyRelease", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
         if (cKey != 0) {
@@ -1641,7 +1643,7 @@ void ParseArgs(const std::vector<std::wstring>& args)
             {
                 // Invalid level name
                 std::wstring path = L"SMBX could not open \"" + settings.levelPath + L"\"";
-                MessageBoxW(0, path.c_str(), L"Error", MB_ICONERROR);
+                LunaMsgBox::ShowW(0, path.c_str(), L"Error", MB_ICONERROR);
                 _exit(1);
             }
             gStartupSettings.patch = true;
@@ -1800,6 +1802,7 @@ static auto npcSectionFixImpl = PatchCollection(
     PATCH(0xA0C931).JMP(&runtimeHookNPCSectionWrap).NOP_PAD_TO_SIZE<194>()
 );
 Patchable& gNPCSectionFix = npcSectionFixImpl;
+bool gSlideJumpFixIsEnabled;
 
 // these 3 are responsible for fixing link being able to turn into a fairy wihle in clowncar
 static auto linkFairyClowncarFixesImpl = PatchCollection(
@@ -1906,7 +1909,7 @@ void TrySkipPatch()
         std::string errCmd = "Failed to Hook";
         errCmd += "\nErr-Code: ";
         errCmd += std::to_string((long long)errCode);
-        MessageBoxA(NULL, errCmd.c_str(), "Failed to Hook", NULL);
+        LunaMsgBox::ShowA(NULL, errCmd.c_str(), "Failed to Hook", NULL);
     }
 
     /************************************************************************/
@@ -2355,6 +2358,9 @@ void TrySkipPatch()
     PATCH(0xA2B229).JMP(&runtimeHookFixVeggieBlockCrash).NOP_PAD_TO_SIZE<5>().Apply();
     // Patch link being able to kill himself by turning into a fairy in clowncar
     gLinkFairyClowncarFixes.Apply();
+    // Patch weird behaviour when sliding while holding jump
+    PATCH(0x997FC2).JMP(&runtimeHookJumpSlideFix).NOP_PAD_TO_SIZE<24>().Apply();
+    gSlideJumpFixIsEnabled = true;
 
     // Hooks to close the game instead of returning to titlescreen
     PATCH(0x8E642C).CALL(runtimeHookCloseGame).NOP_PAD_TO_SIZE<10>().Apply(); // quit when pressing save & exit in menu
