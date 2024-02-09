@@ -334,7 +334,7 @@ void fixup_WebBox()
 void fixup_Credits()
 {
     // The original X2 credits.
-    if(!gEpisodeSettings.displayOriginalCredits && !gEpisodeSettings.hideAllCreditLines)
+    if((gEpisodeSettings.displayOriginalCredits && !gEpisodeSettings.display13Credits) || (gEpisodeSettings.displayOriginalCredits && gEpisodeSettings.display13Credits))
     {
         const unsigned char nullStrMove[] = { 0xBA, 0x00, 0x3D, 0x42, 0x00 };
         const unsigned char line1_createdBy[] = { 0xBA, 0x70, 0xA6, 0x42, 0x00 };
@@ -366,10 +366,9 @@ void fixup_Credits()
         // Also replacing the old forums site to smbxgame.com, because that's the current site
         MemoryUnlock::Memcpy((void*)0x008F7C52, text_newSite, 4);
     }
-
-    if(gEpisodeSettings.hideAllCreditLines)
+    else if(!gEpisodeSettings.displayOriginalCredits && !gEpisodeSettings.display13Credits)
     {
-        // If this is on, all credits will not appear. This might be a perfect way to add new text or something
+        // If both are false, all credits will not appear. From there, Lua will redraw the text.
         const unsigned char nullStr[] = { 0xBA, 0x00, 0x3D, 0x42, 0x00 };
         
         For(i, 0, 103)

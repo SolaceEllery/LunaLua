@@ -1167,6 +1167,35 @@ std::string GetEditorPlacedItem()
     return (std::string)gEditorPlacedItem;
 }
 
+namespace LunaMsgBox
+{
+    static thread_local volatile uintptr_t s_activeCount = 0;
+
+    int ShowA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+    {
+        s_activeCount++;
+        int ret = MessageBoxA(hWnd, lpText, lpCaption, uType);
+        s_activeCount--;
+        return ret;
+    }
+
+    int ShowW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
+    {
+        s_activeCount++;
+        int ret = MessageBoxW(hWnd, lpText, lpCaption, uType);
+        s_activeCount--;
+        return ret;
+    }
+
+    bool IsActive()
+    {
+        return (s_activeCount != 0);
+    }
+}
+
+
+
+
 
 int findEpisodeIDFromWorldFileAndPath(std::string worldName)
 {
@@ -1373,29 +1402,3 @@ void doGitPull(std::string pathTemp)
     git_annotated_commit_free( heads[ 0 ] );
     git_repository_state_cleanup( repo );
 }*/
-
-namespace LunaMsgBox
-{
-    static thread_local volatile uintptr_t s_activeCount = 0;
-
-    int ShowA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
-    {
-        s_activeCount++;
-        int ret = MessageBoxA(hWnd, lpText, lpCaption, uType);
-        s_activeCount--;
-        return ret;
-    }
-
-    int ShowW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
-    {
-        s_activeCount++;
-        int ret = MessageBoxW(hWnd, lpText, lpCaption, uType);
-        s_activeCount--;
-        return ret;
-    }
-
-    bool IsActive()
-    {
-        return (s_activeCount != 0);
-    }
-}

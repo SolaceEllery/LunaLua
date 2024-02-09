@@ -280,10 +280,10 @@ DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__kill_drop_link_rupeeID3__get() {
     return *reinterpret_cast<const uint16_t*>(0x00A32A6F);
 }
 
-DEFINES_FFI_EXPORT(void) LunaLua_Defines__player_farthest_fall_to_death__set(uint16_t value) {
-    PATCH(0x009B26DF).byte(value).Apply();
+DEFINES_FFI_EXPORT(void) LunaLua_Defines__player_fallToDeathValue__set(uint16_t value) {
+    PATCH(0x009B26DF).word(value).Apply();
 }
-DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__player_farthest_fall_to_death__get() {
+DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__player_fallToDeathValue__get() {
     return *reinterpret_cast<const uint16_t*>(0x009B26DF);
 }
 

@@ -86,6 +86,7 @@ struct StartupSettings
 struct EpisodeSettings
 {
     std::wstring episodeDirectory;
+    std::wstring episodeDirectoryWithoutRoot;
     
     bool usingCustomSplash;
     std::wstring episodeBootImage;
@@ -93,16 +94,23 @@ struct EpisodeSettings
     std::wstring episodeBootSoundCustom;
     int episodeBootSoundID;
     int episodeBootSoundDelay;
-    
     bool useLegacyBootScreen;
+
     bool displayOriginalCredits;
-    bool hideAllCreditLines;
+    bool display13Credits;
+    bool useEpisodeDirectoryForCredits;
+    std::wstring creditsLvlFile;
+    
+    bool canSaveEpisode;
+    bool canCheatAndSave;
     
     EpisodeSettings() :
-        episodeDirectory(L""),
+        episodeDirectory(L""), episodeDirectoryWithoutRoot(L""),
         usingCustomSplash(false), episodeBootImage(L""),
-        episodeBootSoundCustom(L""), episodeBootSoundID(29), episodeBootSoundDelay(0),
-        useLegacyBootScreen(false), displayOriginalCredits(false), hideAllCreditLines(false)
+        episodeBootSoundCustom(L""), episodeBootSoundID(29), episodeBootSoundDelay(0), useLegacyBootScreen(true),
+        displayOriginalCredits(false), display13Credits(false), useEpisodeDirectoryForCredits(false),
+        creditsLvlFile(L"outro.lvlx"),
+        canSaveEpisode(true), canCheatAndSave(false)
     {
     }
 };

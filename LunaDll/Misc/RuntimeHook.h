@@ -135,11 +135,7 @@ extern void HID_QuitDevices();
 /************************************************************************/
 /* Boot Screen Things                                                   */
 /************************************************************************/
-extern bool makeCoinDisappear;
 extern void drawReplacementSplashScreen();
-
-
-
 
 /************************************************************************/
 /* Global Patch Variables                                               */
@@ -464,7 +460,7 @@ void __stdcall runtimeHookCheckInputRaw(void);
 void __stdcall runtimeHookSetHDCRaw(void);
 
 void __stdcall runtimeHookInitGameHDC(void);
-void __stdcall runtimeHookCoinSpin(void);
+void __stdcall runtimeHookCoinSpin();
 void __stdcall runtimeHookInitGameWindow(void);
 
 void __stdcall runtimeHookLoadDefaultGraphics(void);

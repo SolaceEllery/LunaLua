@@ -7,7 +7,7 @@ Pre-Requisites
 1. To install SDL2, you'll need the following:
 
 - CMake (The latest version)
-- Visual Studio 2015 (For building it for SMBX2)
+- Visual Studio 2019 (Or higher. Lowest is VS2019, since anything lower than that won't build libgsf)
 - Git (For downloading the repositories)
 - yasm (For part of building SDL Mixer X. Use the 32 bit version. It should go to "Program Files (x86)" in your C Drive)
 
@@ -21,31 +21,32 @@ Make sure WHERE you build the project DOESN'T have any folders with spaces!!!!
 1. Open up cmd (Command Prompt). Run it as an Admin just in case.
 
 2. Clone the following if you haven't yet:
-git clone https://github.com/WohlSoft/AudioCodecs.git
-git clone https://github.com/WohlSoft/SDL-Mixer-X.git
+(AudioCodecs and SDL Mixer X were forked by me so I can support even more music formats)
+git clone https://github.com/SpencerEverly/AudioCodecs.git
+git clone https://github.com/SpencerEverly/SDL-Mixer-X.git
 
 3. Go to the AudioCodecs commit folder. 
 cd AudioCodecs
 
 4. Run the following:
-mkdir build
-cd build
+mkdir build-x2
+cd build-x2
 
 And then run this:
-cmake -DCMAKE_BUILD_TYPE=Release -DUSE_LOCAL_SDL2=ON -DCMAKE_INSTALL_PREFIX="E:/Github/AudioCodecs/build/out/" .. -DYASM_ASSEMBLER="C:/Program Files (x86)/yasm" -G "Visual Studio 14 2015" -A Win32 ..
+cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 16 2019" -A Win32 ..
 
 5. It should start making part of the build. Now run this after it's done:
-cmake --build . --config Release --target install
+cmake --build . --config Release
 
 6. It should now build an SDL2.dll file into the "out" folder in the build folder. Now type up the following:
 
 cd../.. (This backs out two folders)
 cd SDL-Mixer-X
-mkdir build
-cd build
+mkdir build-x2
+cd build-x2
 
 Then do this:
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="E:/Github/SDL-Mixer-X/build/out/" -DAUDIO_CODECS_INSTALL_PATH="E:/Github/AudioCodecs/build/out/" -DAUDIO_CODECS_REPO_PATH="E:/Github/AudioCodecs/" .. -DMIXERX_ENABLE_GPL=ON -DAUDIO_CODECS_BUILD_LOCAL_SDL2=ON -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=OFF -DSDL_MIXER_X_SHARED=ON -G "Visual Studio 14 2015" -A Win32 ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="E:/Github/SDL-Mixer-X/build/out/" -DAUDIO_CODECS_INSTALL_PATH="E:/Github/AudioCodecs/build-x2/" -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=ON -DAUDIO_CODECS_REPO_URL=E:/Github/AudioCodecs/ -DMIXERX_ENABLE_GPL=ON -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=OFF -DSDL_MIXER_X_SHARED=ON -G "Visual Studio 16 2019" -A Win32 ..
 
 7. From there, finally do this:
 cmake --build . --config Release --target install

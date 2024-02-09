@@ -85,6 +85,7 @@ static void Episode_SetEpisodeIni()
         IniProcessing episodeConfig(episodePathToIni);
         if (episodeConfig.beginGroup("boot-settings"))
         {
+            // The boot image to use for the episode.
             std::string bootImageCheck = episodeConfig.value("boot-image", "").toString();
             if(bootImageCheck.length() > 0)
             {
@@ -96,6 +97,7 @@ static void Episode_SetEpisodeIni()
                 gEpisodeSettings.usingCustomSplash = false;
             }
 
+            // The boot sound for the episode.
             int bootSoundIsANumber = episodeConfig.value("boot-sound", 0).toInt();
 
             if (bootSoundIsANumber > 0)
@@ -108,16 +110,32 @@ static void Episode_SetEpisodeIni()
                 gEpisodeSettings.episodeBootSoundCustom = Str2WStr(episodeConfig.value("boot-sound", "").toString());
             }
 
+            // The delay before showing the first loadscreen on the boot screen.
             gEpisodeSettings.episodeBootSoundDelay = episodeConfig.value("boot-delay", 0).toInt();
+            // Enable to use the original boot screen rather than using a Lua one. 
             gEpisodeSettings.useLegacyBootScreen = episodeConfig.value("enable-legacy-bootscreen", false).toBool();
         }
         episodeConfig.endGroup();
-        if (episodeConfig.beginGroup("other-settings"))
+        if (episodeConfig.beginGroup("credits-settings"))
         {
-            gEpisodeSettings.displayOriginalCredits = episodeConfig.value("show-x2-credits", true).toBool();
-            gEpisodeSettings.hideAllCreditLines = episodeConfig.value("hide-all-credits-lines", false).toBool();
-            //VASM_PLAYER_DEATHBOUNDARY = episodeConfig.value("player-falling-deathboundary", 64).toInt();
+            // Show the X2 credits?
+            gEpisodeSettings.displayOriginalCredits = episodeConfig.value("show-x2-credits", false).toBool();
+            // Show the original 1.3 credits?
+            gEpisodeSettings.display13Credits = episodeConfig.value("show-original-credits", false).toBool();
+            // If we should use the episode directory for loading the credits instead of the root.
+            gEpisodeSettings.useEpisodeDirectoryForCredits = episodeConfig.value("use-episode-directory", false).toBool();
+            // The credits level file.
+            gEpisodeSettings.creditsLvlFile = Str2WStr(episodeConfig.value("credits-level-file", "outro.lvlx").toString());
         }
+        episodeConfig.endGroup();
+        if (episodeConfig.beginGroup("episode-settings"))
+        {
+            // Can the episode save? Can be used for episodes that have a custom save data system.
+            gEpisodeSettings.canSaveEpisode = episodeConfig.value("can-save-episode", true).toBool();
+            // Can the player cheat and still save? If on, this will remove the GM_CHEATED part of the saving code, but the game will still think you cheated.
+            gEpisodeSettings.canCheatAndSave = episodeConfig.value("can-save-episode-while-cheating", false).toBool();
+        }
+        episodeConfig.endGroup();
     }
 }
 

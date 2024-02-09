@@ -1689,8 +1689,6 @@ void __stdcall runtimeHookGameMenu()
 {
     GM_LEVEL_MODE = 0; // Set this to prevent multiple loops
 
-    //if(makeCoinDisappear) //Extra check for the boot screen just in case
-    //{
     // Check to see if Test Mode is enabled. If so, start test mode.
     if(gStartupSettings.levelTest.length() > 0)
     {
@@ -1778,7 +1776,6 @@ void __stdcall runtimeHookGameMenu()
             mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
         }
     }
-    //}
 }
 
 void __stdcall runtimeHookLoadLevel(VB6StrPtr* filename)
@@ -2261,7 +2258,6 @@ __declspec(naked) void __stdcall runtimeHookSetHDCRaw(void)
     }
 }
 
-bool makeCoinDisappear = false;
 extern void LunaLuaBootSystemRun();
 
 void drawReplacementSplashScreen()
@@ -2325,7 +2321,7 @@ void drawReplacementSplashScreen()
     DeleteDC(splashHDC);
 }
 
-__declspec(naked) void __stdcall coinSpin_OrigFunc()
+__declspec(naked) void __stdcall coinSpin_OrigFunc(void)
 {
     __asm {
         push ebp
@@ -2336,9 +2332,7 @@ __declspec(naked) void __stdcall coinSpin_OrigFunc()
     }
 }
 
-static int coinSpinTimer = 0;
-
-void __stdcall runtimeHookCoinSpin(void)
+void __stdcall runtimeHookCoinSpin()
 {
     if(gEpisodeSettings.useLegacyBootScreen)
     {
@@ -2349,9 +2343,8 @@ void __stdcall runtimeHookCoinSpin(void)
         // Run the new boot drawing system
         LunaLuaBootSystemRun();
 
-        // Now we can boot any episode we want
-        makeCoinDisappear = true;
-        runtimeHookGameMenu();
+        // Now we can boot the engine
+        runtimeHookInitGameHDC();
     }
 }
 
@@ -2368,12 +2361,11 @@ extern BOOL __stdcall CoinSpinBitBltHook(HDC hdcDest, int nXDest, int nYDest, in
 void __stdcall runtimeHookInitGameHDC(void)
 {
     // We have our own function for initialization, but the legacy episode booter will still need it
-    //if(gEpisodeSettings.useLegacyBootScreen)
-    //{
-    //native_initHDC();
-    //}
-    auto initGameHDC = (void(__stdcall *)(void)) (void*)0x94F680;
-    initGameHDC();
+    if(gEpisodeSettings.useLegacyBootScreen)
+    {
+        auto initGameHDC = (void(__stdcall *)(void)) (void*)0x94F680;
+        initGameHDC();
+    }
 }
 
 void __stdcall runtimeHookInitGameWindow(void)
@@ -2409,15 +2401,26 @@ static _declspec(naked) void __stdcall saveGame_OrigFunc()
 
 void __stdcall runtimeHookSaveGame()
 {
-    // Hook for saving the game
-    if (gLunaLua.isValid()) {
-        std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
-        saveGameEvent->setDirectEventName("onSaveGame");
-        saveGameEvent->setLoopable(false);
-        gLunaLua.callEvent(saveGameEvent);
-    }
+    if(gEpisodeSettings.canSaveEpisode)
+    {
+        bool isCancelled = false;
 
-    saveGame_OrigFunc();
+        // Hook for saving the game
+        if (gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", true);
+            saveGameEvent->setDirectEventName("onSaveGame");
+            saveGameEvent->setLoopable(false);
+            gLunaLua.callEvent(saveGameEvent);
+            
+            isCancelled = saveGameEvent->native_cancelled();
+        }
+        
+        if(!isCancelled)
+        {
+            saveGame_OrigFunc();
+        }
+    }
 }
 
 static _declspec(naked) void __stdcall cleanupLevel_OrigFunc()
@@ -2811,10 +2814,10 @@ void __stdcall runtimeHookCollectNPC(short* playerIdx, short* npcIdx)
 void __stdcall runtimeHookLoadDefaultControls(void)
 {
     // Draw replacement splash screen if we have one
-    //if(!gEpisodeSettings.useLegacyBootScreen)
-    //{
-    drawReplacementSplashScreen();
-    //}
+    if(!gEpisodeSettings.useLegacyBootScreen)
+    {
+        drawReplacementSplashScreen();
+    }
     
     // Run the regular load default controls...
     native_loadDefaultControls();

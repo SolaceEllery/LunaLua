@@ -1630,11 +1630,18 @@ void ParseArgs(const std::vector<std::wstring>& args)
 
         if (levelPath.length() > 0)
         {
+            //Get the episode directory
             std::string levelPathS = WStr2Str(levelPath);
             std::string levelPathNoFileS = splitFilenameFromPath(levelPathS);
             std::string levelPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(levelPathNoFileS);
-            std::wstring tempPath = Str2WStr(levelPathNoFileResolvedS);
-            gEpisodeSettings.episodeDirectory = tempPath;
+            
+            // Get the directory without the root path
+            std::string levelPathNoRootDir = levelPathNoFileResolvedS;
+            levelPathNoRootDir.erase(0, gAppPathUTF8.length());
+            
+            // Update the episode settings
+            gEpisodeSettings.episodeDirectory = Str2WStr(levelPathNoFileResolvedS);;
+            gEpisodeSettings.episodeDirectoryWithoutRoot = Str2WStr(levelPathNoRootDir);
 
             STestModeSettings settings;
             settings.levelPath = levelPath;
@@ -1691,11 +1698,18 @@ void ParseArgs(const std::vector<std::wstring>& args)
 
         if (wldPath.length() > 0)
         {
-            std::string worldPathS = WStr2Str(wldPath);
-            std::string worldPathNoFileS = splitFilenameFromPath(worldPathS);
-            std::string worldPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(worldPathNoFileS);
-            std::wstring tempPath = Str2WStr(worldPathNoFileResolvedS);
-            gEpisodeSettings.episodeDirectory = tempPath;
+            //Get the episode directory
+            std::string wldPathS = WStr2Str(wldPath);
+            std::string wldPathNoFileS = splitFilenameFromPath(wldPathS);
+            std::string wldPathNoFileResolvedS = replaceFowardSlashesWithBackSlashes(wldPathNoFileS);
+            
+            // Get the directory without the root path
+            std::string wldPathNoRootDir = wldPathNoFileResolvedS;
+            wldPathNoRootDir.erase(0, gAppPathUTF8.length());
+            
+            // Update the episode settings
+            gEpisodeSettings.episodeDirectory = Str2WStr(wldPathNoFileResolvedS);;
+            gEpisodeSettings.episodeDirectoryWithoutRoot = Str2WStr(wldPathNoRootDir);
 
             gStartupSettings.epSettings.wldPath = wldPath;
             gStartupSettings.epSettings.enabled = true;
@@ -2222,7 +2236,7 @@ void TrySkipPatch()
     // World rendering layering hooks
 
     //-85: Tiles
-    //PATCH(0x900124).NOP().NOP().CALL(GetRenderBelowPriorityHook<-85>()).Apply(); //.NOP().NOP()
+    //PATCH(0x900124).NOP().NOP().CALL(GetRenderBelowPriorityHook<-85>()).Apply();
     //-70: Sceneries
     //PATCH(0x9003AA).NOP().NOP().CALL(GetRenderBelowPriorityHook<-70>()).Apply();
     //-60: Paths
@@ -2245,6 +2259,12 @@ void TrySkipPatch()
 
     // Save game hook
     PATCH(0x8E47D0).JMP(runtimeHookSaveGame).NOP_PAD_TO_SIZE<6>().Apply();
+
+    // Disables the disabling of cheating while saving.
+    if(!gEpisodeSettings.canCheatAndSave)
+    {
+        PATCH(0x8E47FB).NOP_PAD_TO_SIZE<26>().Apply();
+    }
 
     PATCH(0x8DC6E0).JMP(runtimeHookCleanupLevel).NOP_PAD_TO_SIZE<6>().Apply();
 
@@ -2336,14 +2356,14 @@ void TrySkipPatch()
     
     // Hooks for preventing drawing the boot screen
     // Legacy level editor
-    //PATCH(0xAE8352).CALL(&CoinSpinBitBltHook).Apply();
-    //PATCH(0xAE849F).CALL(&CoinSpinBitBltHook).Apply();
-    //PATCH(0xAE85E8).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE8352).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE849F).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE85E8).CALL(&CoinSpinBitBltHook).Apply();
     
     // Loading screen
-    //PATCH(0xAE87D1).CALL(&CoinSpinBitBltHook).Apply();
-    //PATCH(0xAE891E).CALL(&CoinSpinBitBltHook).Apply();
-    //PATCH(0xAE8A67).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE87D1).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE891E).CALL(&CoinSpinBitBltHook).Apply();
+    PATCH(0xAE8A67).CALL(&CoinSpinBitBltHook).Apply();
     
     // Remove refresh functions
     //PATCH(0xAE8618).NOP_PAD_TO_SIZE<5>().Apply();
@@ -2558,6 +2578,18 @@ void TrySkipPatch()
 
     // Mushroom bug event. Calls a Lua event and then kills off the item
     PATCH(0xA2D1B9).JMP(&runtimeHookNpcHarmRaw_a2d1b9).NOP_PAD_TO_SIZE<6>().Apply();
+    
+    // Patch the outro.lvl filename to use a custom outro level. It can be from the episode, or the app path.
+    if(gEpisodeSettings.useEpisodeDirectoryForCredits)
+    {
+        VB6StrPtr* outroLvlx = new VB6StrPtr(std::string(WStr2Str(gEpisodeSettings.episodeDirectoryWithoutRoot) + "\\" + WStr2Str(gEpisodeSettings.creditsLvlFile)));
+        MemoryUnlock::Memcpy((void*)0x008C0149, outroLvlx, 4);
+    }
+    else
+    {
+        VB6StrPtr* outroLvlx = new VB6StrPtr(std::string("\\" + WStr2Str(gEpisodeSettings.creditsLvlFile)));
+        MemoryUnlock::Memcpy((void*)0x008C0149, outroLvlx, 4);
+    }
 
     // Hooks for color switch hitting (jg hooks to capture loop exits)
     PATCH(0xA31FA0).JG(&runtimeHookColorSwitchRedNpc).Apply();
