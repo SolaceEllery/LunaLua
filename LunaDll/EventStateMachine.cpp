@@ -9,7 +9,7 @@
 #include "Rendering/GL/GLEngineProxy.h"
 #include "SdlMusic/SdlMusPlayer.h"
 #include "SMBXInternal/Reconstructed/EpisodeMain.h"
-#include "SMBXInternal/modMain.h"
+#include "SMBXInternal/Types.h"
 #include "SMBXInternal/Variables.h"
 
 // Global instance

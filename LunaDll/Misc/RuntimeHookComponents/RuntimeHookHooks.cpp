@@ -54,7 +54,7 @@
 
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
-#include "../../SMBXInternal/modMain.h"
+#include "../../SMBXInternal/Types.h"
 
 using namespace SMBX13::Types;
 
