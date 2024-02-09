@@ -43,6 +43,10 @@ bool gLavaIsSafe = false;
 bool gRunWhenUnfocused = false;
 bool gDisablePlayerKeys = false;
 bool gDisablePlayerMovementAboveThree = false;
+int gPlayerLeftEdgeOffset = 0;
+int gPlayerBottomEdgeOffset = 64;
+int gPlayerRightEdgeOffset = 0;
+int gPlayerTopEdgeOffset = 0;
 
 // Flag for returning from gameover screen
 bool gDidGameOver = false;

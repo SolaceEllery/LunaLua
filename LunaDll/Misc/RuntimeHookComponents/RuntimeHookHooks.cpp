@@ -54,6 +54,9 @@
 
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
+#include "../../SMBXInternal/modMain.h"
+
+using namespace SMBX13::Types;
 
 void CheckIPCQuitRequest();
 
@@ -4607,18 +4610,219 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
     }
 }
 
+//----
+
+__declspec(naked) void __stdcall playerBoundaryBottom(PlayerMOB* p, int playerIdx)
+{
+    if(&modMain_t::Player[playerIdx]::Location::Y > modMain_t::level[p->CurrentSection]::Height + gPlayerBottomEdgeOffset)
+    {
+        // Call the event before killing the player. This is a special case rather than just calling it afterwards.
+        if (gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> playesBoundsBottom = std::make_shared<Event>("onPlayerBoundaryBottom", false);
+            playesBoundsBottom->setDirectEventName("onPlayerBoundaryBottom");
+            playesBoundsBottom->setLoopable(false);
+            gLunaLua.callEvent(playesBoundsBottom, playerIdx);
+        }
+
+        short* playerIdxPtr = (short*)(p + (PlayerMOB*)GM_PLAYERS_PTR);
+        runtimeHookPlayerKill(playerIdxPtr);
+    }
+}
+
+__declspec(naked) void __stdcall playerBoundaryLeft(PlayerMOB* p, bool isScreen, int playerIdx)
+{
+    if(isScreen)
+    {
+        if(&modMain_t::Player[playerIdx]::Location::X < -modMain_t::vScreenX[1] - gPlayerLeftEdgeOffset)
+        {
+            if (gLunaLua.isValid())
+            {
+                std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
+                playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                playesBoundsLeft->setLoopable(false);
+                gLunaLua.callEvent(playesBoundsLeft, playerIdx);
+            }
+
+            modMain_t::Player[playerIdx]::Location::X = -modMain_t::vScreenX[1] + 1;
+            modMain_t::Player[playerIdx]::Location::SpeedX = 4;
+        }
+    }
+    else
+    {
+        if(&modMain_t::Player[playerIdx]::Location::X + &modMain_t::Player[playerIdx]::Location::Width > modMain_t::level[p->CurrentSection]::Width - gPlayerLeftEdgeOffset)
+        {
+            if (gLunaLua.isValid())
+            {
+                std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
+                playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                playesBoundsLeft->setLoopable(false);
+                gLunaLua.callEvent(playesBoundsLeft, playerIdx);
+            }
+
+            modMain_t::Player[playerIdx]::Location::X = modMain_t::level[p->CurrentSection]::Width - modMain_t::Player[playerIdx]::Location::Width;
+        }
+    }
+}
+
+__declspec(naked) void __stdcall playerBoundaryTop(PlayerMOB* p, int playerIdx)
+{
+    if(&modMain_t::Player[playerIdx]::Location::Y < modMain_t::level[p->CurrentSection]::Y - &modMain_t::Player[playerIdx]::Location::Height - 32 - gPlayerTopEdgeOffset && &modMain_t::Player[playerIdx]::StandingOnTempNPC == 0)
+    {
+        modMain_t::Player[playerIdx]::Location::Y = modMain_t::level[p->CurrentSection]::Y - modMain_t::Player[playerIdx]::Location::Height - 32;
+        
+        if (gLunaLua.isValid())
+        {
+            std::shared_ptr<Event> playesBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTop", false);
+            playesBoundsBottom->setDirectEventName("onPlayerBoundaryTop");
+            playesBoundsBottom->setLoopable(false);
+            gLunaLua.callEvent(playesBoundsBottom, playerIdx);
+        }
+    }
+}
+
+__declspec(naked) void __stdcall playerBoundaryRight(PlayerMOB* p, bool isScreen, int playerIdx)
+{
+    if(isScreen)
+    {
+        auto windowScale = gWindowSizeHandler.getFramebufferScale();
+        if(&modMain_t::Player[playerIdx]::Location::X > (-modMain_t::vScreenX[1] + windowScale.x - &modMain_t::Player[playerIdx]::Location::Width + gPlayerRightEdgeOffset)
+        {
+            if (gLunaLua.isValid())
+            {
+                std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
+                playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                playesBoundsRight->setLoopable(false);
+                gLunaLua.callEvent(playesBoundsRight, i);
+            }
+
+            modMain_t::Player[playerIdx]::Location::X = (-modMain_t::vScreenX[1] + gPlayerRightEdgeOffset) + 1;
+            modMain_t::Player[playerIdx]::Location::SpeedX = -4;
+        }
+    }
+    else
+    {
+        if(&modMain_t::Player[playerIdx]::Location::X < modMain_t::level[p->CurrentSection]::X)
+        {
+            if (gLunaLua.isValid())
+            {
+                std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
+                playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                playesBoundsRight->setLoopable(false);
+                gLunaLua.callEvent(playesBoundsRight, i);
+            }
+
+            modMain_t::Player[playerIdx]::Location::X = modMain_t::level[p->CurrentSection]::X;
+        }
+    }
+}
+
+//----
+
+static void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
+{
+    // This was remade to configure how far the player falls down until dying
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryBottom(p, i);
+        }
+    }
+}
+
+static void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryLeft(p, false, i);
+        }
+    }
+}
+
+static void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryRight(p, false, i);
+        }
+    }
+}
+
+static void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryTop(p, i);
+        }
+    }
+}
+
+//----
+
+static void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryLeft(p, true, i);
+        }
+    }
+}
+
+static void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryRight(p, true, i);
+        }
+    }
+}
+
+static void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
+{
+    // This was remade to configure how far the player can go left from touching the left boundary
+    For(i, 1, 200)
+    {
+        PlayerMOB* p = Player::Get(i);
+        if(p->CurrentSection == playerSectionID)
+        {
+            playerBoundaryRight(p, true, i);
+        }
+    }
+}
+
+//----
+
 __declspec(naked) void __stdcall killPlayerEnd_OrigFunc()
 {
     __asm {
-        push ebp
-        mov ebp,esp
-        sub esp,0x08
-        push 0x9B7786
+        push 0x9B6EFF
         ret
     }
 }
 
-void __stdcall runtimeHookPlayerKillEnd(void)
+void __stdcall runtimeHookPlayerKillEnd(short* playerIdx)
 {
     bool playerKillEndCancelled = false;
 
@@ -4634,9 +4838,11 @@ void __stdcall runtimeHookPlayerKillEnd(void)
 
     if (!playerKillEndCancelled)
     {
-        killPlayerEnd_OrigFunc();
+        killPlayerEnd_OrigFunc(playerIdx);
     }
 }
+
+//----
 
 static int __stdcall runtimeHookWarpEnterInternal(short* playerIdx, int warpIdx)
 {

@@ -153,6 +153,12 @@ extern bool            gRunWhenUnfocused;
 extern bool            gDisablePlayerKeys;
 extern bool            gDisablePlayerMovementAboveThree;
 
+// Player boundary settings
+extern int             gPlayerLeftEdgeOffset;
+extern int             gPlayerBottomEdgeOffset;
+extern int             gPlayerRightEdgeOffset;
+extern int             gPlayerTopEdgeOffset;
+
 // Set to true when returning from gameover screen, read by lua to handle gameover-related stuff
 extern bool            gDidGameOver;
 // Flag for booting an episode

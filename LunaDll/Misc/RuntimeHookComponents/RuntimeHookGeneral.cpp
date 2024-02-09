@@ -2714,10 +2714,7 @@ void TrySkipPatch()
     PATCH(0x9B66D0).JMP(runtimeHookPlayerKill).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Hook for onPlayerKillEnd
-    //PATCH(0x8C23C6).CALL(runtimeHookPlayerKillEnd).Apply();
-    //PATCH(0x996F03).bytes(
-        //0x66, 0x3D, 0x7F, 0xFF //cmp ax, FFFF
-    //).Apply();
+    PATCH(0x9B6EF7).JMP(runtimeHookPlayerKillEnd).Apply();
 
     // Hooks for lava-related calls to onPlayerKill
     PATCH(0x9A394D).CALL(runtimeHookPlayerCountCollisionsForWeakLava).JMP(0x9A3A36).NOP_PAD_TO_SIZE<14>().Apply();
@@ -2733,6 +2730,16 @@ void TrySkipPatch()
     PATCH(0x9D55F1).JNE(runtimeHookWarpPipe).NOP_PAD_TO_SIZE<6>().Apply();
     PATCH(0x9D5614).JMP(runtimeHookWarpPipe).NOP_PAD_TO_SIZE<5>().Apply();
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
+    
+    // Hooks for when the player hits a boundary
+    PATCH(0x9B26C3).JMP(runtimeHookPlayerBoundaryBottomSection).Apply();
+    PATCH(0x9A0C35).JMP(runtimeHookPlayerBoundaryLeftSection).Apply();
+    PATCH(0x9A0CE9).JMP(runtimeHookPlayerBoundaryRightSection).Apply();
+    PATCH(0x9A0DC6).JMP(runtimeHookPlayerBoundaryTopSection).Apply();
+
+    // Hooks for when a player hits a screen edge
+    PATCH(0x9B2566).JMP(runtimeHookPlayerBoundaryLeftScreen).Apply();
+    PATCH(0x9B261B).JMP(runtimeHookPlayerBoundaryRightScreen).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();
