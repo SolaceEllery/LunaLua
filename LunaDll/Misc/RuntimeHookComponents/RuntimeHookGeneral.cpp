@@ -2732,14 +2732,14 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    PATCH(0x9B26C3).JMP(runtimeHookPlayerBoundaryBottomSection).Apply();
-    PATCH(0x9A0C35).JMP(runtimeHookPlayerBoundaryLeftSection).Apply();
-    PATCH(0x9A0CE9).JMP(runtimeHookPlayerBoundaryRightSection).Apply();
-    PATCH(0x9A0DC6).JMP(runtimeHookPlayerBoundaryTopSection).Apply();
+    PATCH(0x9B26C3).CALL(runtimeHookPlayerBoundaryBottomSection).Apply();
+    PATCH(0x9A0C35).CALL(runtimeHookPlayerBoundaryLeftSection).Apply();
+    PATCH(0x9A0CE9).CALL(runtimeHookPlayerBoundaryRightSection).Apply();
+    PATCH(0x9A0DC6).CALL(runtimeHookPlayerBoundaryTopSection).Apply();
 
     // Hooks for when a player hits a screen edge
-    PATCH(0x9B2566).JMP(runtimeHookPlayerBoundaryLeftScreen).Apply();
-    PATCH(0x9B261B).JMP(runtimeHookPlayerBoundaryRightScreen).Apply();
+    PATCH(0x9B2566).CALL(runtimeHookPlayerBoundaryLeftScreen).Apply();
+    PATCH(0x9B261B).CALL(runtimeHookPlayerBoundaryRightScreen).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();

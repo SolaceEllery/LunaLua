@@ -4614,7 +4614,7 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
 
 __declspec(naked) void __stdcall playerBoundaryBottom(PlayerMOB* p, int playerIdx)
 {
-    if(&modMain_t::Player[playerIdx]::Location::Y > modMain_t::level[p->CurrentSection]::Height + gPlayerBottomEdgeOffset)
+    if(modMain::Player[playerIdx].Location.Y > modMain.level[p->CurrentSection].Height + gPlayerBottomEdgeOffset)
     {
         // Call the event before killing the player. This is a special case rather than just calling it afterwards.
         if (gLunaLua.isValid())
@@ -4634,7 +4634,7 @@ __declspec(naked) void __stdcall playerBoundaryLeft(PlayerMOB* p, bool isScreen,
 {
     if(isScreen)
     {
-        if(&modMain_t::Player[playerIdx]::Location::X < -modMain_t::vScreenX[1] - gPlayerLeftEdgeOffset)
+        if(modMain.Player[playerIdx].Location.X < -modMain.vScreenX[1] - gPlayerLeftEdgeOffset)
         {
             if (gLunaLua.isValid())
             {
@@ -4644,13 +4644,13 @@ __declspec(naked) void __stdcall playerBoundaryLeft(PlayerMOB* p, bool isScreen,
                 gLunaLua.callEvent(playesBoundsLeft, playerIdx);
             }
 
-            modMain_t::Player[playerIdx]::Location::X = -modMain_t::vScreenX[1] + 1;
-            modMain_t::Player[playerIdx]::Location::SpeedX = 4;
+            modMain.Player[playerIdx].Location.X = -modMain.vScreenX[1] + 1;
+            modMain.Player[playerIdx].Location.SpeedX = 4;
         }
     }
     else
     {
-        if(&modMain_t::Player[playerIdx]::Location::X + &modMain_t::Player[playerIdx]::Location::Width > modMain_t::level[p->CurrentSection]::Width - gPlayerLeftEdgeOffset)
+        if(modMain.Player[playerIdx].Location.X + modMain.Player[playerIdx].Location.Width > modMain.level[p->CurrentSection].Width - gPlayerLeftEdgeOffset)
         {
             if (gLunaLua.isValid())
             {
@@ -4660,16 +4660,16 @@ __declspec(naked) void __stdcall playerBoundaryLeft(PlayerMOB* p, bool isScreen,
                 gLunaLua.callEvent(playesBoundsLeft, playerIdx);
             }
 
-            modMain_t::Player[playerIdx]::Location::X = modMain_t::level[p->CurrentSection]::Width - modMain_t::Player[playerIdx]::Location::Width;
+            modMain.Player[playerIdx].Location.X = modMain.level[p->CurrentSection].Width - modMain.Player[playerIdx].Location.Width;
         }
     }
 }
 
 __declspec(naked) void __stdcall playerBoundaryTop(PlayerMOB* p, int playerIdx)
 {
-    if(&modMain_t::Player[playerIdx]::Location::Y < modMain_t::level[p->CurrentSection]::Y - &modMain_t::Player[playerIdx]::Location::Height - 32 - gPlayerTopEdgeOffset && &modMain_t::Player[playerIdx]::StandingOnTempNPC == 0)
+    if(modMain.Player[playerIdx].Location.Y < modMain.level[p->CurrentSection].Y - modMain.Player[playerIdx].Location.Height - 32 - gPlayerTopEdgeOffset && modMain.Player[playerIdx].StandingOnTempNPC == 0)
     {
-        modMain_t::Player[playerIdx]::Location::Y = modMain_t::level[p->CurrentSection]::Y - modMain_t::Player[playerIdx]::Location::Height - 32;
+        modMain.Player[playerIdx].Location.Y = modMain.level[p->CurrentSection].Y - modMain.Player[playerIdx].Location.Height - 32;
         
         if (gLunaLua.isValid())
         {
@@ -4686,7 +4686,7 @@ __declspec(naked) void __stdcall playerBoundaryRight(PlayerMOB* p, bool isScreen
     if(isScreen)
     {
         auto windowScale = gWindowSizeHandler.getFramebufferScale();
-        if(&modMain_t::Player[playerIdx]::Location::X > (-modMain_t::vScreenX[1] + windowScale.x - &modMain_t::Player[playerIdx]::Location::Width + gPlayerRightEdgeOffset)
+        if(modMain.Player[playerIdx].Location.X > (-modMain.vScreenX[1] + windowScale.x - modMain.Player[playerIdx].Location.Width + gPlayerRightEdgeOffset)
         {
             if (gLunaLua.isValid())
             {
@@ -4696,13 +4696,13 @@ __declspec(naked) void __stdcall playerBoundaryRight(PlayerMOB* p, bool isScreen
                 gLunaLua.callEvent(playesBoundsRight, i);
             }
 
-            modMain_t::Player[playerIdx]::Location::X = (-modMain_t::vScreenX[1] + gPlayerRightEdgeOffset) + 1;
-            modMain_t::Player[playerIdx]::Location::SpeedX = -4;
+            modMain.Player[playerIdx].Location.X = (-modMain.vScreenX[1] + gPlayerRightEdgeOffset) + 1;
+            modMain.Player[playerIdx].Location.SpeedX = -4;
         }
     }
     else
     {
-        if(&modMain_t::Player[playerIdx]::Location::X < modMain_t::level[p->CurrentSection]::X)
+        if(modMain.Player[playerIdx].Location.X < modMain.level[p->CurrentSection].X)
         {
             if (gLunaLua.isValid())
             {
@@ -4712,14 +4712,14 @@ __declspec(naked) void __stdcall playerBoundaryRight(PlayerMOB* p, bool isScreen
                 gLunaLua.callEvent(playesBoundsRight, i);
             }
 
-            modMain_t::Player[playerIdx]::Location::X = modMain_t::level[p->CurrentSection]::X;
+            modMain.Player[playerIdx].Location.X = modMain.level[p->CurrentSection].X;
         }
     }
 }
 
 //----
 
-static void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
 {
     // This was remade to configure how far the player falls down until dying
     For(i, 1, 200)
@@ -4732,7 +4732,7 @@ static void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectio
     }
 }
 
-static void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
     For(i, 1, 200)
@@ -4745,7 +4745,7 @@ static void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionI
     }
 }
 
-static void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
     For(i, 1, 200)
@@ -4758,7 +4758,7 @@ static void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSection
     }
 }
 
-static void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
     For(i, 1, 200)
@@ -4773,7 +4773,7 @@ static void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID
 
 //----
 
-static void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
     For(i, 1, 200)
@@ -4786,20 +4786,7 @@ static void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID
     }
 }
 
-static void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
-{
-    // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
-    {
-        PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
-        {
-            playerBoundaryRight(p, true, i);
-        }
-    }
-}
-
-static void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
     For(i, 1, 200)

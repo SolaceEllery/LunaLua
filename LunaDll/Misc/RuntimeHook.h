@@ -727,6 +727,14 @@ void __stdcall runtimeHookPlayerNPCCollisionCheck9AE8FA(void);
 void __stdcall runtimeHookPlayerNPCCollisionCheck9ABC0B(void);
 void __stdcall runtimeHookPlayerPlayerInteraction(void);
 
+void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID);
+
+void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID);
+
 void __stdcall runtimeHookBlockNPCFilter(void);
 void __stdcall runtimeHookNPCCollisionGroup(void);
 
