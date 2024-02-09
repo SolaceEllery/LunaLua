@@ -2269,25 +2269,20 @@ void drawReplacementSplashScreen()
     auto frmGetHDC = (HRESULT(__stdcall *)(uintptr_t, HDC*)) *(void**)(mainFrmClass + 0xD8);
     frmGetHDC(mainFrm, &frmHDC);
     if (!frmHDC) return;
+    
+    std::wstring defaultImage = gAppPathWCHAR + L"\\graphics\\hardcoded\\hardcoded-30-4.png";
+    const wchar_t * defaultImageWCHAR = defaultImage.c_str();
 
-    std::shared_ptr<LunaImage> splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
+    std::shared_ptr<LunaImage> splashReplacement = LunaImage::fromFile(defaultImageWCHAR);
 
     // Load splash image
-    if(!gEpisodeSettings.usingCustomSplash)
+    if(gEpisodeSettings.usingCustomSplash)
     {
-        splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
-    }
-    else
-    {
-        if(gEpisodeSettings.episodeBootImage != L"")
+        if(gEpisodeSettings.episodeBootImage.length() > 0)
         {
             std::wstring customImage = gEpisodeSettings.episodeDirectory + L"\\" + gEpisodeSettings.episodeBootImage;
             const wchar_t * customImageWCHAR = customImage.c_str();
             splashReplacement = LunaImage::fromFile(customImageWCHAR);
-        }
-        else
-        {
-            splashReplacement = LunaImage::fromFile(L"graphics/hardcoded/hardcoded-30-4.png");
         }
     }
 
@@ -2814,7 +2809,7 @@ void __stdcall runtimeHookCollectNPC(short* playerIdx, short* npcIdx)
 void __stdcall runtimeHookLoadDefaultControls(void)
 {
     // Draw replacement splash screen if we have one
-    if(!gEpisodeSettings.useLegacyBootScreen)
+    if(gEpisodeSettings.useLegacyBootScreen)
     {
         drawReplacementSplashScreen();
     }
