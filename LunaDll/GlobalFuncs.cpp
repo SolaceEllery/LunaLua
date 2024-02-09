@@ -39,6 +39,8 @@
 #include <libgit2/include/git2.h>
 #include "Misc/LoadScreen.h"
 
+#include "SMBXInternal/Reconstructed/EpisodeMain.h"
+
 void splitStr(std::vector<std::string>& dest, const std::string& str, const char* separator)
 {
     dest.clear();
@@ -953,9 +955,20 @@ std::wstring getLatestConfigFile(const std::wstring& configname)
     return ret;
 }
 
+void ToggleDebugConsole(bool enable)
+{
+    if(enable)
+    {
+        InitDebugConsole();
+    }
+    else
+    {
+        FreeConsole();
+    }
+}
+
 void InitDebugConsole()
 {
-
     CONSOLE_SCREEN_BUFFER_INFO coninfo;
 
     // allocate a console for this app
@@ -1200,9 +1213,9 @@ namespace LunaMsgBox
 int findEpisodeIDFromWorldFileAndPath(std::string worldName)
 {
     int id = 0;
-    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
-        auto ep = EpisodeListItem::Get(i - 1);
-        if(worldName == std::string(ep->episodePath) + std::string(ep->episodeWorldFile))
+    for (int i = 0; i <= EpisodeCount; i++)
+    {
+        if(worldName == WStr2Str(g_episodeList[i].episodePath) + WStr2Str(g_episodeList[i].episodeWorldFile))
         {
             id = i;
             break;
@@ -1214,11 +1227,10 @@ int findEpisodeIDFromWorldFileAndPath(std::string worldName)
 std::string findEpisodeWorldPathFromName(std::string name)
 {
     std::string finalWldPath = "";
-    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
-        auto ep = EpisodeListItem::Get(i - 1);
-        if(name == std::string(ep->episodeName))
+    for (int i = 0; i <= EpisodeCount; i++) {
+        if(name == WStr2Str(g_episodeList[i].episodeName))
         {
-            finalWldPath = std::string(ep->episodePath) + std::string(ep->episodeWorldFile);
+            finalWldPath = WStr2Str(g_episodeList[i].episodePath) + WStr2Str(g_episodeList[i].episodeWorldFile);
             break;
         }
         else
@@ -1232,11 +1244,10 @@ std::string findEpisodeWorldPathFromName(std::string name)
 std::string findNameFromEpisodeWorldPath(std::string wldPath)
 {
     std::string finalName = "";
-    for (int i = 1; i <= GM_EP_LIST_COUNT; i++) {
-        auto ep = EpisodeListItem::Get(i - 1);
-        if(wldPath == std::string(ep->episodePath) + std::string(ep->episodeWorldFile))
+    for (int i = 0; i <= EpisodeCount; i++) {
+        if(wldPath == WStr2Str(g_episodeList[i].episodePath) + WStr2Str(g_episodeList[i].episodeWorldFile))
         {
-            finalName = std::string(ep->episodeName);
+            finalName = WStr2Str(g_episodeList[i].episodeName);
             break;
         }
         else
@@ -1250,10 +1261,9 @@ std::string findNameFromEpisodeWorldPath(std::string wldPath)
 int getUnblockedCharacterFromWorld(int curWorldID)
 {
     int identity = 1;
-    EpisodeListItem* ep = EpisodeListItem::GetRaw(curWorldID);
     for (int i = 1; i <= 5; i++)
     {
-        if(ep->blockChar[i - 1] == 0)
+        if(g_episodeList[i].blockedCharacters[i - 1] == 0)
         {
             identity = i;
             break;
@@ -1269,8 +1279,7 @@ void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID)
     for (size_t i = 0; i < 5; i++)
     {
         auto p = Player::Get(playerID);
-        EpisodeListItem* ep = EpisodeListItem::Get(GM_CUR_MENULEVEL);
-        if(ep->blockChar[i] == -1 && p->Identity == static_cast<Characters>(i + 1))
+        if(g_episodeList[i].blockedCharacters[i] == -1 && p->Identity == static_cast<Characters>(i + 1))
         {
             // if Player 1's character that was specified is blocked from the new episode, use the first character that isn't blocked
             p->Identity = static_cast<Characters>(getUnblockedCharacterFromWorld(GM_CUR_MENULEVEL));

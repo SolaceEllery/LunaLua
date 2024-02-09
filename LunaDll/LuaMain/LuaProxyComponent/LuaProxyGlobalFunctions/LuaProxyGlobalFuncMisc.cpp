@@ -411,17 +411,17 @@ luabind::object LuaProxy::Misc::__getPerfTrackerData(lua_State* L)
 
 static luabind::object getAllEpisodes(lua_State *L)
 {
+    EpisodeMain episodeMainFunc;
     luabind::object outData = luabind::newtable(L);
     {
         size_t counter = 0;
 
-        for (int i = 1; i <= GM_EP_LIST_COUNT; i++)
+        for (int i = 0; i <= EpisodeCount; i++)
         {
             luabind::object e = luabind::newtable(L);
-            auto ep = EpisodeListItem::Get(i - 1);
-            e["episodeName"] = std::string(ep->episodeName);
-            e["episodePath"] = std::string(ep->episodePath);
-            e["episodeWorldFile"] = std::string(ep->episodeWorldFile);
+            e["episodeName"] = WStr2Str(g_episodeList[i].episodeName);
+            e["episodePath"] = WStr2Str(g_episodeList[i].episodePath);
+            e["episodeWorldFile"] = WStr2Str(g_episodeList[i].episodeWorldFile);
             outData[++counter] = e;
         }
     }

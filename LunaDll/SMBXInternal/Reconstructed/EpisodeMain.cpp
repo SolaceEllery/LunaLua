@@ -40,6 +40,8 @@
 #include "../../Misc/CollisionMatrix.h"
 #include "../../FileManager/SMBXFileManager.h"
 
+#include <DirManager/dirman.h>
+
 extern PlayerMOB* getTemplateForCharacterWithDummyFallback(int id);
 extern "C" void __cdecl LunaLuaSetGameData(const char* dataPtr, int dataLen);
 
@@ -52,7 +54,9 @@ EpisodeMain::EpisodeMain()
 
 EpisodeMain::~EpisodeMain() {}
 
-static EpisodeList g_episodeList[32767];
+EpisodeList g_episodeList[32767];
+int EpisodeCount = 0;
+int EpisodeIdx = 0;
 
 // The big one. This will load an episode anywhere in the engine. This is also used when booting the engine.
 void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound)
@@ -187,12 +191,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     std::string worldNameS = "";
     VB6StrPtr worldNameVB6 = worldNameS;
     
-    // make an idx int variable
-    int externalEpisodeIdx = 0;
-
-    // build the episode list
-    SMBXWorldFileBase::PopulateEpisodeList();
-    
     // check to see if the episode is external. if so, we'll need to change some things.
     if(checkIfWorldIsInWorldPath(fullPathS))
     {
@@ -202,46 +200,31 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     {
         // toggle this on
         externalEpisode = true;
-
-        // make the episode name the episode's actual name
-        worldNameS = wldData.EpisodeTitle;
-        worldNameVB6 = worldNameS;
-
-        // this code, from here, sets the new episode
-        externalEpisodeIdx = episodeMainFunc.WriteEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData, true);
     }
+    
+    // build the new episode list
+    episodeMainFunc.PopulateEpisodeList();
+
+    // get the episode idx for the new system
+    EpisodeIdx = findEpisodeIDFromWorldFileAndPath(wldPathS);
+    
+    // make sure that the old system still has an episode entry, otherwise we'll crash
+    episodeMainFunc.WriteLegacyEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData);
 
     // reset cheat status
     GM_CHEATED = COMBOOL(false);
 
     // reset checkpoints
     GM_STR_CHECKPOINT = "";
+    
+    // make the legacy episode count set the episode entry to 1
+    GM_CUR_MENULEVEL = 1;
 
     // show loadscreen
     LunaLoadScreenStart();
 
     // setup SFXs
     native_setupSFX();
-
-    // specify the menu level
-    if(!externalEpisode)
-    {
-        if(GM_EP_LIST_COUNT < 100)
-        {
-            GM_CUR_MENULEVEL = findEpisodeIDFromWorldFileAndPath(fullPathS); // this NEEDS to be set, otherwise the engine will just crash loading the episode
-        }
-        else
-        {
-            GM_EP_LIST_COUNT = 100;
-            int additionalEpIdx = 0;
-            int error = episodeMainFunc.WriteEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData, false);
-            GM_CUR_MENULEVEL = additionalEpIdx;
-        }
-    }
-    else if(externalEpisode)
-    {
-        GM_CUR_MENULEVEL = externalEpisodeIdx;
-    }
 
     // clear gamedata
     LunaLuaSetGameData(0, 0);
@@ -611,22 +594,10 @@ int EpisodeMain::FindSaves(std::string worldPathS, int saveSlot)
     //--END MAIN RECODE--
 }
 
-int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData, bool isNewEpisode)
+void EpisodeMain::WriteLegacyEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData)
 {
-    int newIdx = 0;
-    if(GM_EP_LIST_COUNT < 100)
-    {
-        if(isNewEpisode)
-        {
-            GM_EP_LIST_COUNT++;
-            newIdx = GM_EP_LIST_COUNT - 1;
-        }
-    }
-    else
-    {
-        newIdx = 0;
-    }
-    EpisodeListItem* item = EpisodeListItem::GetRaw(newIdx);
+    GM_EP_LIST_COUNT = 1;
+    EpisodeListItem* item = EpisodeListItem::GetRaw(0);
     item->episodeName = worldNameVB6;
     item->episodePath = worldPathVB6;
     item->episodeWorldFile = worldFileVB6;
@@ -643,14 +614,83 @@ int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB
         }
     }
     item->padding_16 = 0;
-
-    return newIdx;
 }
 
 void EpisodeMain::PopulateEpisodeList()
 {
-    For(i, 0, 32766)
+    static const std::vector<std::string> wldExtensions({".wld", ".wldx"});
+    std::string worldsPath = replaceFowardSlashesWithBackSlashes(gAppPathUTF8 + "/worlds");
+    DirMan worldDir(worldsPath);
+
+    // Reset episode count
+    EpisodeCount = 0;
+
+    // Get list of (potential) episode folders
+    std::vector<std::string> episodeDirs;
+    if (!worldDir.getListOfFolders(episodeDirs))
     {
-        
+        // Couldn't read dir
+        return;
+    }
+
+    // Walk all (potential) episode folders
+    for (const std::string& epDirName : episodeDirs)
+    {
+        std::string epPath = worldsPath + "\\" + epDirName;
+        DirMan epDir(epPath);
+        std::vector<std::string> wldFiles;
+        if (!epDir.getListOfFiles(wldFiles, wldExtensions))
+        {
+            // Couldn't read dir
+            continue;
+        }
+
+        // Walk all *.wld files in episode folder
+        for (const std::string& wldName : wldFiles)
+        {
+            std::string wldPath = epPath + "\\" + wldName;
+            WorldData wldData;
+
+            if (!FileFormats::OpenWorldFileHeader(wldPath, wldData) || !wldData.meta.ReadFileValid)
+            {
+                // Couldn't read file
+                continue;
+            }
+
+            if (wldData.meta.RecentFormat != WorldData::SMBX64)
+            {
+                // Wrong .wld format, we don't handle it right now
+                continue;
+            }
+
+            // Make sure the .wld path is something we can handle
+            std::wstring nonAnsiCharsFullPath = GetNonANSICharsFromWStr(Str2WStr(wldPath));
+            if (!nonAnsiCharsFullPath.empty())
+            {
+                // The .wld path contains characters we can't currently deal with
+                continue;
+            }
+
+            // Make new episode list entry
+            int newIdx = EpisodeCount;
+            EpisodeCount++;
+            g_episodeList[newIdx].episodeName = Str2WStr(wldData.EpisodeTitle);
+            g_episodeList[newIdx].episodePath = Str2WStr(epPath + "\\");
+            g_episodeList[newIdx].episodeWorldFile = Str2WStr(wldName);
+            for (size_t i = 0; i < 5; i++)
+            {
+                if (i < wldData.nocharacter.size())
+                {
+                    g_episodeList[newIdx].blockedCharacters[i] = COMBOOL(wldData.nocharacter[i]);
+                }
+                else
+                {
+                    g_episodeList[newIdx].blockedCharacters[i] = 0;
+                }
+            }
+
+            // We're done after we get our first success per episode folder
+            break;
+        }
     }
 }

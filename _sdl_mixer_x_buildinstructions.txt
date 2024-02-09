@@ -36,7 +36,7 @@ And then run this:
 cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 16 2019" -A Win32 ..
 
 5. It should start making part of the build. Now run this after it's done:
-cmake --build . --config Release
+cmake --build . --config Release --target install
 
 6. It should now build an SDL2.dll file into the "out" folder in the build folder. Now type up the following:
 
@@ -46,7 +46,7 @@ mkdir build-x2
 cd build-x2
 
 Then do this:
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="E:/Github/SDL-Mixer-X/build/out/" -DAUDIO_CODECS_INSTALL_PATH="E:/Github/AudioCodecs/build-x2/" -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=ON -DAUDIO_CODECS_REPO_URL=E:/Github/AudioCodecs/ -DMIXERX_ENABLE_GPL=ON -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=OFF -DSDL_MIXER_X_SHARED=ON -G "Visual Studio 16 2019" -A Win32 ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="E:/Github/SDL-Mixer-X/build-x2/out/" -DAUDIO_CODECS_INSTALL_PATH="C:/Program Files (x86)/AudioCodecs/" -DAUDIO_CODECS_REPO_PATH="E:/Github/AudioCodecs/" -DMIXERX_ENABLE_GPL=ON -DDOWNLOAD_AUDIO_CODECS_DEPENDENCY=OFF -DSDL_MIXER_X_SHARED=ON -G "Visual Studio 16 2019" -A Win32 ..
 
 7. From there, finally do this:
 cmake --build . --config Release --target install

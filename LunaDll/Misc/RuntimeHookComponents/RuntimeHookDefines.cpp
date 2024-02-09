@@ -23,7 +23,8 @@ std::map<int, FIELDTYPE> definesLegalAddresses = {
     {0x009DBE64, FT_WORD},
     {0x00A32943, FT_WORD},
     {0x00A329D5, FT_WORD},
-    {0x00A32A6F, FT_WORD}
+    {0x00A32A6F, FT_WORD},
+    {0x004024B7, FT_BYTE}
 };
 // set memory, only allowing a pre-defined set of addresses within program memory
 DEFINES_FFI_EXPORT(bool) LunaLua_Defines_mem_set(int address, double value) {
@@ -280,11 +281,11 @@ DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__kill_drop_link_rupeeID3__get() {
     return *reinterpret_cast<const uint16_t*>(0x00A32A6F);
 }
 
-DEFINES_FFI_EXPORT(void) LunaLua_Defines__player_fallToDeathValue__set(uint16_t value) {
-    PATCH(0x009B26DF).word(value).Apply();
+DEFINES_FFI_EXPORT(void) LunaLua_Defines__bottomEdgeOffset__set(uint32_t value) {
+    PATCH(0x004024B7).dword(value).Apply();
 }
-DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__player_fallToDeathValue__get() {
-    return *reinterpret_cast<const uint16_t*>(0x009B26DF);
+DEFINES_FFI_EXPORT(uint32_t) LunaLua_Defines__bottomEdgeOffset__get() {
+    return *reinterpret_cast<const uint32_t*>(0x004024B7);
 }
 
 #undef DEFINES_FFI_EXPORT

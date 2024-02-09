@@ -2261,9 +2261,9 @@ void TrySkipPatch()
     PATCH(0x8E47D0).JMP(runtimeHookSaveGame).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Disables the disabling of cheating while saving.
-    if(!gEpisodeSettings.canCheatAndSave)
+    if(gEpisodeSettings.canCheatAndSave)
     {
-        PATCH(0x8E47FB).NOP_PAD_TO_SIZE<26>().Apply();
+        PATCH(0x8E47FB).JMP(0x8E480F).Apply();
     }
 
     PATCH(0x8DC6E0).JMP(runtimeHookCleanupLevel).NOP_PAD_TO_SIZE<6>().Apply();

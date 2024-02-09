@@ -7,10 +7,10 @@
 
 static const char* timeoutURLs[] =
 {
-    "http://codehaus.moe",
-    "http://codehaus.wohlsoft.ru",
-    "http://google.com",
-    "http://baidu.com",
+    "https://codehaus.moe",
+    "https://codehaus.wohlsoft.ru",
+    "https://google.com",
+    "https://baidu.com",
     NULL
 };
 

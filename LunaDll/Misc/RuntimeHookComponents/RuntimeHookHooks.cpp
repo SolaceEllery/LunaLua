@@ -4813,7 +4813,11 @@ void __stdcall runtimeHookDrawBackground(short* section, short* camera)
 
 void __stdcall runtimeHookLoadWorldList(void)
 {
-    SMBXWorldFileBase::PopulateEpisodeList();
+    GM_EP_LIST_COUNT = 1;
+    EpisodeListItem* ep = EpisodeListItem::GetRaw(0);
+    ep->episodeName = "Episode Name";
+    ep->episodePath = "Path";
+    ep->episodeWorldFile = "World File";
 }
 
 static unsigned int __stdcall runtimeHookSpeedOverrideCheck(unsigned int id)
@@ -5434,8 +5438,7 @@ static void LunaLuaResetEpisode() {
     // show loadscreen while re-loading everything
     LunaLoadScreenStart();
     // re-load world
-    auto ep = EpisodeListItem::Get(GM_CUR_MENULEVEL - 1);
-    VB6StrPtr pathVb6 = std::string(ep->episodePath) + std::string(ep->episodeWorldFile);
+    VB6StrPtr pathVb6 = WStr2Str(g_episodeList[GM_CUR_MENULEVEL - 1].episodePath) + WStr2Str(g_episodeList[GM_CUR_MENULEVEL - 1].episodeWorldFile);
     native_loadWorld(&pathVb6);
     // re-load save
     if (saveFileExists())

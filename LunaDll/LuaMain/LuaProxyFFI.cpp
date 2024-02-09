@@ -1069,4 +1069,8 @@ extern "C" {
         std::string titleFinal = CW2A(title);
         return titleFinal.c_str();
     }
+    FFI_EXPORT(void) LunaLuaSetConsole(bool enable)
+    {
+        ToggleDebugConsole(enable);
+    }
 }
