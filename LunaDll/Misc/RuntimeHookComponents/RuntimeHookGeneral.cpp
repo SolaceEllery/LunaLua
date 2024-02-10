@@ -2611,12 +2611,12 @@ void TrySkipPatch()
     if(gEpisodeSettings.useEpisodeDirectoryForCredits)
     {
         VB6StrPtr* outroLvlx = new VB6StrPtr(std::string(WStr2Str(gEpisodeSettings.episodeDirectoryWithoutRoot) + "\\" + WStr2Str(gEpisodeSettings.creditsLvlFile)));
-        MemoryUnlock::Memcpy((void*)0x008C0149, outroLvlx, 4);
+        MemoryUnlock_Memcpy((void*)0x008C0149, outroLvlx, 4);
     }
     else
     {
         VB6StrPtr* outroLvlx = new VB6StrPtr(std::string("\\" + WStr2Str(gEpisodeSettings.creditsLvlFile)));
-        MemoryUnlock::Memcpy((void*)0x008C0149, outroLvlx, 4);
+        MemoryUnlock_Memcpy((void*)0x008C0149, outroLvlx, 4);
     }
 
     // Hooks for color switch hitting (jg hooks to capture loop exits)
