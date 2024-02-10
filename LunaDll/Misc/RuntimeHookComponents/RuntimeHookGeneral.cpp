@@ -1485,10 +1485,10 @@ bool HID_RegisterDevices()
     HID_RefreshDevices();
 
     // Set up the keyboard system
-    UINT numKeyBoards = numberOfKeyboards - 1;
+    UINT numKeyBoards = numberOfKeyboards;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
     
-    For(i, 0, numberOfKeyboards - 1)
+    For(i, 0, numberOfKeyboards)
     {
         // Set HID_USAGE_PAGE_GENERIC
         rid[i].usUsagePage = 0x01;
@@ -1497,7 +1497,7 @@ bool HID_RegisterDevices()
         rid[i].usUsage = 0x06;
 
         // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
-        rid[i].dwFlags = RIDEV_INPUTSINK;// | RIDEV_DEVNOTIFY;
+        rid[i].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
 
         // Set the SMBX window as our target
         rid[i].hwndTarget = gMainWindowHwnd;
@@ -1527,12 +1527,11 @@ void HID_UnregisterDevices()
 void HID_RefreshDevices()
 {
     HID_GetAllRawKeyboards();
-    HID_GetAllRawMouses();
 }
 
 void HID_QuitDevices()
 {
-    HID_UnregisterDevices();
+    //HID_UnregisterDevices();
 }
 
 //----
