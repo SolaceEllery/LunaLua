@@ -4714,8 +4714,8 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
     if(isScreen)
     {
-        auto windowScale = gWindowSizeHandler.getFramebufferScale();
-        if((plr.Location.X) > (-vScreenX + windowScale.x - plr.Location.Width) + gPlayerRightEdgeOffset)
+        auto windowSize = gWindowSizeHandler.getWindowSize();
+        if((plr.Location.X) > (-vScreenX + windowSize.x - plr.Location.Width) + gPlayerRightEdgeOffset)
         {
             plr.Location.X = -vScreenX + gPlayerRightEdgeOffset + 1;
             plr.Location.SpeedX = -4;
