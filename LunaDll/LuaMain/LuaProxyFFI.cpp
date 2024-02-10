@@ -532,11 +532,13 @@ typedef struct ExtendedPlayerFields_\
         if (enable)
         {
             gDisableNPCDownwardClipFix.Apply();
+            // Question to my past self: Why was the following line commented out? Way later I noticed this patch used to conflict with NpcIdExtender so perhaps that's why?
             //gDisableNPCDownwardClipFixSlope.Apply();
         }
         else
         {
             gDisableNPCDownwardClipFix.Unapply();
+            // Question to my past self: Why was the following line commented out? Way later I noticed this patch used to conflict with NpcIdExtender so perhaps that's why?
             //gDisableNPCDownwardClipFixSlope.Unapply();
         }
     }
@@ -938,7 +940,6 @@ typedef struct PlayerLavaFields_\
     }
 }
 
-
 //****SEE Mod FFI functions start here****
 extern "C" {
     // Toggles the runWhenUnfocused setting.
@@ -1072,5 +1073,29 @@ extern "C" {
     FFI_EXPORT(void) LunaLuaSetConsole(bool enable)
     {
         ToggleDebugConsole(enable);
+    }
+}
+
+
+
+extern "C" {
+    // Debug function to dump patched ranges
+    FFI_EXPORT(const char*) LunaLuaGetPatchedRange(int i)
+    {
+        static std::string strRet;
+
+        std::stringstream strBuild;
+        for (AsmRange* cursor = AsmRange::mFirst; cursor; cursor = cursor->mNext)
+        {
+            if (i == 0)
+            {
+                strBuild << std::hex << "0x" << cursor->mAddr << "\t0x" << cursor->mSize << "\t" << cursor->mLineNum;
+                break;
+            }
+            i--;
+        }
+
+        strRet = strBuild.str();
+        return strRet.c_str();
     }
 }

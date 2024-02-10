@@ -143,7 +143,7 @@ extern void drawReplacementSplashScreen();
 /************************************************************************/
 extern AsmPatch<777> gDisablePlayerDownwardClipFix;
 extern AsmPatch<8> gDisableNPCDownwardClipFix;
-extern AsmPatch<167> gDisableNPCDownwardClipFixSlope;
+extern AsmPatch<6> gDisableNPCDownwardClipFixSlope;
 extern Patchable& gNPCSectionFix;
 extern Patchable& gFenceFixes;
 extern Patchable& gLinkFairyClowncarFixes;

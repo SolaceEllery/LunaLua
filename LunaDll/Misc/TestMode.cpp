@@ -299,9 +299,6 @@ void testModeSmbxChangeModeHook(void)
     }
 }
 
-static AsmPatch<10U> shortenReloadPatch =
-    PATCH(0x8C142B).NOP_PAD_TO_SIZE<10>();
-
 // 008CA487 | E8 34 B0 01 00 | call <smbx.GF_MSGBOX>
 // 008CA597 | E8 24 AF 01 00 | call <smbx.GF_MSGBOX>
 // TODO: Figure out if 0x8CA597 is the right only place, or if others should be patched
@@ -341,7 +338,6 @@ bool testModeEnable(const STestModeSettings& settings)
     testModeSettings.enabled = true;
     testModeSettings.levelPath = fullPath;
 
-    //shortenReloadPatch.Apply();
     playerDeathOverridePatch.Apply();
     pauseOverridePatch.Apply();
 
@@ -354,7 +350,6 @@ void testModeDisable(void)
     testModeSettings.ResetToDefault();
     testModeSettings.enabled = false;
 
-    //shortenReloadPatch.Unapply();
     playerDeathOverridePatch.Unapply();
     pauseOverridePatch.Unapply();
     exitPausePatch.Unapply();

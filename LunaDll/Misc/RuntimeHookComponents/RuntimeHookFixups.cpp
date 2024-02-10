@@ -318,8 +318,8 @@ void fixup_WebBox()
     const wchar_t* aboutBlank = L"about:blank";
     const wchar_t* webBoxTitle = L"LunaLua-SMBX";
 
-    MemoryUnlock::Memcpy((void*)0x00431A34, aboutBlank, sizeof(wchar_t) * lstrlenW(aboutBlank) + 2);
-    MemoryUnlock::Memcpy((void*)0x00427614, webBoxTitle, sizeof(wchar_t) * lstrlenW(webBoxTitle) + 2);
+    MemoryUnlock_Memcpy((void*)0x00431A34, aboutBlank, sizeof(wchar_t) * lstrlenW(aboutBlank) + 2);
+    MemoryUnlock_Memcpy((void*)0x00427614, webBoxTitle, sizeof(wchar_t) * lstrlenW(webBoxTitle) + 2);
 
     //const unsigned char nullStrMove[] = { 0xBA, 0x00, 0x3D, 0x42, 0x00 };
     //memcpy((void*)0x00B201AA, nullStrMove, sizeof(nullStrMove));//Heck off, WebBox!
@@ -341,15 +341,10 @@ void fixup_Credits()
         const unsigned char line2_andrewSpinks[] = { 0xBA, 0x8C, 0xA6, 0x42, 0x00 };
         const unsigned char line3_redigit[] = { 0xBA, 0xAC, 0xA6, 0x42, 0x00 };
 
-        MemoryUnlock::Memcpy((void*)0x008F72D0, nullStrMove, sizeof(nullStrMove));  //Sorry Redigit, but I need that space
-        MemoryUnlock::Memcpy((void*)0x008F7300, nullStrMove, sizeof(nullStrMove));
-        MemoryUnlock::Memcpy((void*)0x008F7318, nullStrMove, sizeof(nullStrMove));
-
-
-        MemoryUnlock::Memcpy((void*)0x008F7288, line1_createdBy, sizeof(line1_createdBy)); //Still give you the "king" position
-        MemoryUnlock::Memcpy((void*)0x008F72A0, line2_andrewSpinks, sizeof(line2_andrewSpinks));
-        MemoryUnlock::Memcpy((void*)0x008F72B8, line3_redigit, sizeof(line3_redigit));
-
+        MemoryUnlock_Memcpy((void*)0x008F72D0, nullStrMove, sizeof(nullStrMove));  //Sorry Redigit, but I need that space
+        MemoryUnlock_Memcpy((void*)0x008F7288, line1_createdBy, sizeof(line1_createdBy)); //Still give you the "king" position
+        MemoryUnlock_Memcpy((void*)0x008F72A0, line2_andrewSpinks, sizeof(line2_andrewSpinks));
+        MemoryUnlock_Memcpy((void*)0x008F72B8, line3_redigit, sizeof(line3_redigit));
 
         VB6StrPtr* text_HackedBy = new VB6StrPtr(std::string("Hacked By [LunaDll]: "));
         VB6StrPtr* text_Kevsoft = new VB6StrPtr(std::string("Kevsoft"));
@@ -358,13 +353,13 @@ void fixup_Credits()
         VB6StrPtr* text_Wohlstand = new VB6StrPtr(std::string("Wohlstand"));
         VB6StrPtr* text_newSite = new VB6StrPtr(std::string("https://smbxgame.com"));
 
-        MemoryUnlock::Memcpy((void*)0x008F7301, text_HackedBy, 4);
-        MemoryUnlock::Memcpy((void*)0x008F7319, text_Kevsoft, 4);
-        MemoryUnlock::Memcpy((void*)0x008F7331, text_Rednaxela, 4);
-        MemoryUnlock::Memcpy((void*)0x008F7349, text_Kil, 4);
-        MemoryUnlock::Memcpy((void*)0x008F7361, text_Wohlstand, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7301, text_HackedBy, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7319, text_Kevsoft, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7331, text_Rednaxela, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7349, text_Kil, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7361, text_Wohlstand, 4);
         // Also replacing the old forums site to smbxgame.com, because that's the current site
-        MemoryUnlock::Memcpy((void*)0x008F7C52, text_newSite, 4);
+        MemoryUnlock_Memcpy((void*)0x008F7C52, text_newSite, 4);
     }
     else if(!gEpisodeSettings.displayOriginalCredits && !gEpisodeSettings.display13Credits)
     {
@@ -374,7 +369,7 @@ void fixup_Credits()
         For(i, 0, 103)
         {
             int value = 0x008F7258 + (0x18 * i);
-            MemoryUnlock::Memcpy((void*)value, nullStr, 4);
+            MemoryUnlock_Memcpy((void*)value, nullStr, 4);
         }
     }
 }
