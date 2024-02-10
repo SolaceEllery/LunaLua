@@ -43,6 +43,8 @@ bool gLavaIsSafe = false;
 bool gRunWhenUnfocused = false;
 bool gDisablePlayerKeys = false;
 bool gDisablePlayerMovementAboveThree = false;
+
+// Player boundary offsets
 int gPlayerLeftEdgeOffset = 0;
 int gPlayerBottomEdgeOffset = 64;
 int gPlayerRightEdgeOffset = 0;

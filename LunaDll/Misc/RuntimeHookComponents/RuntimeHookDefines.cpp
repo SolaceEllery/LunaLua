@@ -294,11 +294,32 @@ DEFINES_FFI_EXPORT(uint16_t) LunaLua_Defines__kill_drop_link_rupeeID3__get() {
     return *reinterpret_cast<const uint16_t*>(0x00A32A6F);
 }
 
+DEFINES_FFI_EXPORT(void) LunaLua_Defines__leftEdgeOffset__set(uint32_t value) {
+    gPlayerLeftEdgeOffset = (int)value;
+}
+DEFINES_FFI_EXPORT(uint32_t) LunaLua_Defines__leftEdgeOffset__get() {
+    return (uint32_t)gPlayerLeftEdgeOffset;
+}
+
 DEFINES_FFI_EXPORT(void) LunaLua_Defines__bottomEdgeOffset__set(uint32_t value) {
-    PATCH(0x004024B7).dword(value).Apply();
+    gPlayerBottomEdgeOffset = (int)value;
 }
 DEFINES_FFI_EXPORT(uint32_t) LunaLua_Defines__bottomEdgeOffset__get() {
-    return *reinterpret_cast<const uint32_t*>(0x004024B7);
+    return (uint32_t)gPlayerBottomEdgeOffset;
+}
+
+DEFINES_FFI_EXPORT(void) LunaLua_Defines__rightEdgeOffset__set(uint32_t value) {
+    gPlayerRightEdgeOffset = (int)value;
+}
+DEFINES_FFI_EXPORT(uint32_t) LunaLua_Defines__rightEdgeOffset__get() {
+    return (uint32_t)gPlayerRightEdgeOffset;
+}
+
+DEFINES_FFI_EXPORT(void) LunaLua_Defines__topEdgeOffset__set(uint32_t value) {
+    gPlayerTopEdgeOffset = (int)value;
+}
+DEFINES_FFI_EXPORT(uint32_t) LunaLua_Defines__topEdgeOffset__get() {
+    return (uint32_t)gPlayerTopEdgeOffset;
 }
 
 #undef DEFINES_FFI_EXPORT

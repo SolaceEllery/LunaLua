@@ -893,12 +893,6 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
                     gotFirstSize = true;
                     currentDpi = gWindowSizeHandler.SetInitialWindowSize();
-                    
-                    if(gEpisodeSettings.episodeWidth != 800 || gEpisodeSettings.episodeHeight != 600)
-                    {
-                        gWindowSizeHandler.SetWindowSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
-                        g_GLContextManager.SetMainFramebufferSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
-                    }
                 }
                 // Use default window procedure for WM_SHOWWINDOW
                 return DefWindowProcW(hwnd, uMsg, wParam, lParam);
@@ -1481,9 +1475,6 @@ int HID_GetMouseCount()
 
 bool HID_RegisterDevices()
 {
-    // Refresh all devices
-    HID_RefreshDevices();
-
     // Set up the keyboard system
     UINT numKeyBoards = numberOfKeyboards;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
@@ -1527,6 +1518,7 @@ void HID_UnregisterDevices()
 void HID_RefreshDevices()
 {
     HID_GetAllRawKeyboards();
+    HID_GetAllRawMouses();
 }
 
 void HID_QuitDevices()
@@ -1578,7 +1570,10 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Override window proc
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
-                // Register for the raw input API for keyboards and mouses, as well as register for input connection detection
+                // Get all the raw keyboards
+                HID_GetAllRawKeyboards();
+
+                // Register for the raw input API for keyboards, as well as register for input connection detection
                 HID_RegisterDevices();
                 
                 // Setup the monitors for the many SEE Mod functions
@@ -1586,6 +1581,13 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
 
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);
+                
+                // Finally, resize the window and resolution if set
+                if(gEpisodeSettings.episodeWidth != 800 || gEpisodeSettings.episodeHeight != 600)
+                {
+                    gWindowSizeHandler.SetWindowSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
+                    g_GLContextManager.SetMainFramebufferSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
+                }
             }
         }
         break;

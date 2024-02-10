@@ -54,7 +54,6 @@
 
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
-#include "../../SMBXInternal/Types.h"
 
 void CheckIPCQuitRequest();
 
