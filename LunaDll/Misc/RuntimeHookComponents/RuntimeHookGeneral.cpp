@@ -1479,21 +1479,29 @@ bool HID_RegisterDevices()
     HID_RefreshDevices();
 
     // Set up the keyboard system
-    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[HID_GetKeyboardCount()];
+    UINT numKeyBoards = numberOfKeyboards - 1;
+    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
     
-    For(i, 0, HID_GetKeyboardCount())
+    For(i, 0, numKeyBoards)
     {
-        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-        rid[i].dwFlags = RIDEV_INPUTSINK;
+        // Set HID_USAGE_PAGE_GENERIC
+        rid[i].usUsagePage = 0x01;
+
+        // Set HID_USAGE_GENERIC_KEYBOARD
+        rid[i].usUsage = 0x06;
+
+        // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
+        rid[i].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+
+        // Set the SMBX window as our target
         rid[i].hwndTarget = gMainWindowHwnd;
     }
 
     // Register all keyboards
-    int success = RegisterRawInputDevices(rid, HID_GetKeyboardCount(), sizeof(rid));
-
-    // Delete the temporarily stored RAWINPUTDEVICE variable
-    delete rid;
+    int success = RegisterRawInputDevices(rid, numKeyBoards, sizeof(rid));
+    
+    // Delete the rid
+    delete [] rid;
 
     // Return it
     return success;

@@ -10,8 +10,6 @@
 namespace SMBX13 {
     namespace Types {
         struct StdPicture_t;
-            //0xB25010
-            //0xB2501C
 
         struct Controls_t {
             VB6Bool Up;      // 0x0
