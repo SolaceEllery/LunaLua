@@ -56,8 +56,6 @@
 #include "../../LuaMain/LunaPathValidator.h"
 #include "../../SMBXInternal/Types.h"
 
-using namespace SMBX13::Types;
-
 void CheckIPCQuitRequest();
 
 extern HHOOK HookWnd;
@@ -4612,9 +4610,14 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
 
 //----
 
-__declspec(naked) void __stdcall playerBoundaryBottom(PlayerMOB* p, int playerIdx)
+static void __stdcall playerBoundaryBottom(int playerIdx)
 {
-    if(modMain::Player[playerIdx].Location.Y > modMain.level[p->CurrentSection].Height + gPlayerBottomEdgeOffset)
+    PlayerMOB* playerForIdx = Player::Get(playerIdx);
+    auto& plr = modMain.Player[playerIdx];
+    int16_t playerSection = plr.Section;
+    auto& levelSection = modMain.level[playerSection];
+
+    if(plr.Location.Y > levelSection.Height + gPlayerBottomEdgeOffset)
     {
         // Call the event before killing the player. This is a special case rather than just calling it afterwards.
         if (gLunaLua.isValid())
@@ -4625,94 +4628,108 @@ __declspec(naked) void __stdcall playerBoundaryBottom(PlayerMOB* p, int playerId
             gLunaLua.callEvent(playesBoundsBottom, playerIdx);
         }
 
-        short* playerIdxPtr = (short*)(p + (PlayerMOB*)GM_PLAYERS_PTR);
+        short* playerIdxPtr = (short*)(playerIdx + (PlayerMOB*)GM_PLAYERS_PTR);
         runtimeHookPlayerKill(playerIdxPtr);
     }
 }
 
-__declspec(naked) void __stdcall playerBoundaryLeft(PlayerMOB* p, bool isScreen, int playerIdx)
+static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 {
+    auto& plr = modMain.Player[playerIdx];
+    int16_t playerSection = plr.Section;
+    auto& levelSection = modMain.level[playerSection];
+    double vScreenX = modMain.vScreenX[1];
+
     if(isScreen)
     {
-        if(modMain.Player[playerIdx].Location.X < -modMain.vScreenX[1] - gPlayerLeftEdgeOffset)
+        if(plr.Location.X < -vScreenX - gPlayerLeftEdgeOffset)
         {
+            plr.Location.X = -vScreenX + 1;
+            plr.Location.SpeedX = 4;
+
             if (gLunaLua.isValid())
             {
                 std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
                 playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
                 playesBoundsLeft->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsLeft, playerIdx);
+                gLunaLua.callEvent(playesBoundsLeft, playerIdx, 1);
             }
-
-            modMain.Player[playerIdx].Location.X = -modMain.vScreenX[1] + 1;
-            modMain.Player[playerIdx].Location.SpeedX = 4;
         }
     }
     else
     {
-        if(modMain.Player[playerIdx].Location.X + modMain.Player[playerIdx].Location.Width > modMain.level[p->CurrentSection].Width - gPlayerLeftEdgeOffset)
+        if(plr.Location.X + plr.Location.Width > levelSection.Width - gPlayerLeftEdgeOffset)
         {
+            plr.Location.X = levelSection.Width - plr.Location.Width;
+
             if (gLunaLua.isValid())
             {
                 std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
                 playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
                 playesBoundsLeft->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsLeft, playerIdx);
+                gLunaLua.callEvent(playesBoundsLeft, playerIdx, 1);
             }
-
-            modMain.Player[playerIdx].Location.X = modMain.level[p->CurrentSection].Width - modMain.Player[playerIdx].Location.Width;
         }
     }
 }
 
-__declspec(naked) void __stdcall playerBoundaryTop(PlayerMOB* p, int playerIdx)
+static void __stdcall playerBoundaryTop(int playerIdx)
 {
-    if(modMain.Player[playerIdx].Location.Y < modMain.level[p->CurrentSection].Y - modMain.Player[playerIdx].Location.Height - 32 - gPlayerTopEdgeOffset && modMain.Player[playerIdx].StandingOnTempNPC == 0)
+    auto& plr = modMain.Player[playerIdx];
+    int16_t playerSection = plr.Section;
+    auto& levelSection = modMain.level[playerSection];
+
+    if(plr.Location.Y < levelSection.Y - plr.Location.Height - 32 - gPlayerTopEdgeOffset && plr.StandingOnTempNPC == 0)
     {
-        modMain.Player[playerIdx].Location.Y = modMain.level[p->CurrentSection].Y - modMain.Player[playerIdx].Location.Height - 32;
+        plr.Location.Y = levelSection.Y - plr.Location.Height - 32;
         
         if (gLunaLua.isValid())
         {
             std::shared_ptr<Event> playesBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTop", false);
             playesBoundsBottom->setDirectEventName("onPlayerBoundaryTop");
             playesBoundsBottom->setLoopable(false);
-            gLunaLua.callEvent(playesBoundsBottom, playerIdx);
+            gLunaLua.callEvent(playesBoundsBottom, playerIdx, 2);
         }
     }
 }
 
-__declspec(naked) void __stdcall playerBoundaryRight(PlayerMOB* p, bool isScreen, int playerIdx)
+static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 {
+    auto& plr = modMain.Player[playerIdx];
+    int16_t playerSection = plr.Section;
+    auto& levelSection = modMain.level[playerSection];
+    double vScreenX = modMain.vScreenX[1];
+
     if(isScreen)
     {
         auto windowScale = gWindowSizeHandler.getFramebufferScale();
-        if(modMain.Player[playerIdx].Location.X > (-modMain.vScreenX[1] + windowScale.x - modMain.Player[playerIdx].Location.Width + gPlayerRightEdgeOffset)
+        if(plr.Location.X > -vScreenX + windowScale.x - plr.Location.Width + gPlayerRightEdgeOffset)
         {
-            if (gLunaLua.isValid())
+            plr.Location.X = -vScreenX + gPlayerRightEdgeOffset + 1;
+            plr.Location.SpeedX = -4;
+
+            if(gLunaLua.isValid())
             {
                 std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
                 playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
                 playesBoundsRight->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsRight, i);
+                gLunaLua.callEvent(playesBoundsRight, playerIdx, 3);
             }
-
-            modMain.Player[playerIdx].Location.X = (-modMain.vScreenX[1] + gPlayerRightEdgeOffset) + 1;
-            modMain.Player[playerIdx].Location.SpeedX = -4;
         }
     }
     else
     {
-        if(modMain.Player[playerIdx].Location.X < modMain.level[p->CurrentSection].X)
+        if(plr.Location.X < levelSection.X)
         {
+            plr.Location.X = levelSection.X;
+
             if (gLunaLua.isValid())
             {
                 std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
                 playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
                 playesBoundsRight->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsRight, i);
+                gLunaLua.callEvent(playesBoundsRight, playerIdx, 3);
             }
-
-            modMain.Player[playerIdx].Location.X = modMain.level[p->CurrentSection].X;
         }
     }
 }
@@ -4725,9 +4742,9 @@ void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryBottom(p, i);
+            playerBoundaryBottom(i);
         }
     }
 }
@@ -4738,9 +4755,9 @@ void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryLeft(p, false, i);
+            playerBoundaryLeft(false, i);
         }
     }
 }
@@ -4751,9 +4768,9 @@ void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryRight(p, false, i);
+            playerBoundaryRight(false, i);
         }
     }
 }
@@ -4764,9 +4781,9 @@ void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryTop(p, i);
+            playerBoundaryTop(i);
         }
     }
 }
@@ -4779,9 +4796,9 @@ void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryLeft(p, true, i);
+            playerBoundaryLeft(true, i);
         }
     }
 }
@@ -4792,16 +4809,16 @@ void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
     For(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if(p->CurrentSection == playerSectionID)
+        if((short*)p->CurrentSection == playerSectionID)
         {
-            playerBoundaryRight(p, true, i);
+            playerBoundaryRight(true, i);
         }
     }
 }
 
 //----
 
-__declspec(naked) void __stdcall killPlayerEnd_OrigFunc()
+__declspec(naked) void __stdcall killPlayerEnd_OrigFunc(short* playerIdx)
 {
     __asm {
         push 0x9B6EFF

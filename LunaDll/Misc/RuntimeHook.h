@@ -14,6 +14,9 @@
 #include <luabind/class.hpp>
 #include <luabind/detail/call_function.hpp>
 #include "../../LuaMain/LuaHelper.h"
+#include "../../SMBXInternal/Types.h"
+
+extern SMBX13::Types::modMain_t modMain;
 
 struct SMBX_Warp;
 
