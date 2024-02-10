@@ -36,6 +36,8 @@ using std::max;
 #include "Misc/LoadScreen.h"
 #include "../LunaLoader/LunaLoaderPatch.h"
 #include "SMBXInternal/Reconstructed/PlayerInput.h"
+#include "SMBXInternal/CameraInfo.h"
+#include "Rendering/GL/GLContextManager.h"
 
 static bool LevelCustomSounds = false;
 
@@ -134,6 +136,14 @@ static void Episode_SetEpisodeIni()
             gEpisodeSettings.canSaveEpisode = episodeConfig.value("can-save-episode", true).toBool();
             // Can the player cheat and still save? If on, this will remove the GM_CHEATED part of the saving code, but the game will still think you cheated.
             gEpisodeSettings.canCheatAndSave = episodeConfig.value("can-save-episode-while-cheating", false).toBool();
+            // The frame buffer width.
+            gEpisodeSettings.episodeWidth = episodeConfig.value("screen-width", 800).toInt();
+            // The frame buffer height.
+            gEpisodeSettings.episodeHeight = episodeConfig.value("screen-height", 600).toInt();
+            // (Resolution code will be on runtimeHookGeneral)
+            
+            // Automatically resizes the camera to the framebuffer on every level load. This might cause issues, which is why this is set to false by default.
+            gEpisodeSettings.resizeMainCamera = episodeConfig.value("autoresize-camera-to-framebuffer", false).toBool();
         }
         episodeConfig.endGroup();
     }
@@ -257,6 +267,17 @@ int OnLvlLoad() {
     GLEngineProxy::CheckRendererInit();
 
     ResetLunaModule();
+
+    if(gEpisodeSettings.resizeMainCamera)
+    {
+        // Get the camera
+        int cameraIdx = Renderer::Get().GetCameraIdx();
+        SMBX_CameraInfo* cam = SMBX_CameraInfo::Get(cameraIdx);
+
+        // Resize it to the framebuffer's size
+        cam->width = g_GLContextManager.GetMainFBWidth();
+        cam->height = g_GLContextManager.GetMainFBHeight();
+    }
 
     // WIP
     // dumpTypeLibrary((IDispatch*)*(DWORD*)0xB2D7E8, std::wcout);

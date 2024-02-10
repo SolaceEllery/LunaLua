@@ -893,6 +893,12 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
                     gotFirstSize = true;
                     currentDpi = gWindowSizeHandler.SetInitialWindowSize();
+                    
+                    if(gEpisodeSettings.episodeWidth != 800 || gEpisodeSettings.episodeHeight != 600)
+                    {
+                        gWindowSizeHandler.SetWindowSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
+                        g_GLContextManager.SetMainFramebufferSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
+                    }
                 }
                 // Use default window procedure for WM_SHOWWINDOW
                 return DefWindowProcW(hwnd, uMsg, wParam, lParam);

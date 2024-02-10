@@ -105,13 +105,18 @@ struct EpisodeSettings
     bool canSaveEpisode;
     bool canCheatAndSave;
     
+    int episodeWidth;
+    int episodeHeight;
+    bool resizeMainCamera;
+    
     EpisodeSettings() :
         episodeDirectory(L""), episodeDirectoryWithoutRoot(L""),
         usingCustomSplash(false), episodeBootImage(L""),
         episodeBootSoundCustom(L""), episodeBootSoundID(29), episodeBootSoundDelay(0), useLegacyBootScreen(true),
         displayOriginalCredits(false), display13Credits(false), useEpisodeDirectoryForCredits(false),
         creditsLvlFile(L"outro.lvlx"),
-        canSaveEpisode(true), canCheatAndSave(false)
+        canSaveEpisode(true), canCheatAndSave(false),
+        episodeWidth(800), episodeHeight(600), resizeMainCamera(false)
     {
     }
 };
