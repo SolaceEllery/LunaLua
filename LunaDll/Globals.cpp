@@ -17,6 +17,7 @@ bool gMainWindowFocused = false;
 // Global settings
 bool gLunaEnabled;
 bool gPrintErrorsToScreen;
+bool gIsLevel = false;
 bool gIsOverworld;
 bool gHook_SkipTestMsgBox;
 bool gAutostartRan = false;

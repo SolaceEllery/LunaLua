@@ -54,6 +54,7 @@
 
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
+#include "../../Misc/VB6Bool.h"
 
 void CheckIPCQuitRequest();
 
@@ -164,6 +165,7 @@ extern int __stdcall LoadWorld()
 
     ResetLunaModule();
     gIsOverworld = true;
+    gIsLevel = false;
 
 #ifndef NO_SDL
     if (!episodeStarted)
@@ -2435,6 +2437,9 @@ void __stdcall runtimeHookCleanupLevel()
     gLunaLua.exitContext();
     gCachedFileMetadata.purge();
 
+    // Mark we're not in a level anymore
+    gIsLevel = false;
+
     cleanupLevel_OrigFunc();
 }
 
@@ -4619,10 +4624,10 @@ static void __stdcall playerBoundaryBottom(int playerIdx)
         // Call the event before killing the player. This is a special case rather than just calling it afterwards.
         if (gLunaLua.isValid())
         {
-            std::shared_ptr<Event> playesBoundsBottom = std::make_shared<Event>("onPlayerBoundaryBottom", false);
-            playesBoundsBottom->setDirectEventName("onPlayerBoundaryBottom");
-            playesBoundsBottom->setLoopable(false);
-            gLunaLua.callEvent(playesBoundsBottom, playerIdx);
+            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryBottom", false);
+            playerBoundsBottom->setDirectEventName("onPlayerBoundaryBottom");
+            playerBoundsBottom->setLoopable(false);
+            gLunaLua.callEvent(playerBoundsBottom, playerIdx);
         }
 
         short* playerIdxPtr = (short*)(playerIdx + (PlayerMOB*)GM_PLAYERS_PTR);
@@ -4648,10 +4653,10 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
-                playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
-                playesBoundsLeft->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsLeft, playerIdx, 1);
+                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
+                playerBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                playerBoundsLeft->setLoopable(false);
+                gLunaLua.callEvent(playerBoundsLeft, playerIdx, 1);
             }
         }
     }
@@ -4663,10 +4668,10 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playesBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
-                playesBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
-                playesBoundsLeft->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsLeft, playerIdx, 1);
+                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
+                playerBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                playerBoundsLeft->setLoopable(false);
+                gLunaLua.callEvent(playerBoundsLeft, playerIdx, 1);
             }
         }
     }
@@ -4685,10 +4690,10 @@ static void __stdcall playerBoundaryTop(int playerIdx)
         
         if (gLunaLua.isValid())
         {
-            std::shared_ptr<Event> playesBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTop", false);
-            playesBoundsBottom->setDirectEventName("onPlayerBoundaryTop");
-            playesBoundsBottom->setLoopable(false);
-            gLunaLua.callEvent(playesBoundsBottom, playerIdx, 2);
+            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTop", false);
+            playerBoundsBottom->setDirectEventName("onPlayerBoundaryTop");
+            playerBoundsBottom->setLoopable(false);
+            gLunaLua.callEvent(playerBoundsBottom, playerIdx, 2);
         }
     }
 }
@@ -4710,10 +4715,10 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
             if(gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
-                playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
-                playesBoundsRight->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsRight, playerIdx, 3);
+                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
+                playerBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                playerBoundsRight->setLoopable(false);
+                gLunaLua.callEvent(playerBoundsRight, playerIdx, 3);
             }
         }
     }
@@ -4725,10 +4730,10 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playesBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
-                playesBoundsRight->setDirectEventName("onPlayerBoundaryRight");
-                playesBoundsRight->setLoopable(false);
-                gLunaLua.callEvent(playesBoundsRight, playerIdx, 3);
+                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
+                playerBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                playerBoundsRight->setLoopable(false);
+                gLunaLua.callEvent(playerBoundsRight, playerIdx, 3);
             }
         }
     }
@@ -4739,10 +4744,11 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
 {
     // This was remade to configure how far the player falls down until dying
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryBottom(i);
         }
@@ -4752,10 +4758,11 @@ void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryLeft(false, i);
         }
@@ -4765,10 +4772,11 @@ void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryRight(false, i);
         }
@@ -4778,10 +4786,11 @@ void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryTop(i);
         }
@@ -4793,10 +4802,11 @@ void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryLeft(true, i);
         }
@@ -4806,10 +4816,11 @@ void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    For(i, 1, 200)
+    forsim(i, 1, 200)
     {
         PlayerMOB* p = Player::Get(i);
-        if((short*)p->CurrentSection == playerSectionID)
+        short* currentSection(&p->CurrentSection);
+        if(currentSection == playerSectionID)
         {
             playerBoundaryRight(true, i);
         }
@@ -4817,6 +4828,23 @@ void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
 }
 
 //----
+
+// Apparently, the engine is crashing when the boundary checks are active when 0x8CA3A2 is calling LivingPlayers(), so I remade LivingPlayers()...
+int16_t __stdcall runtimeHookIsAnyoneAlive()
+{
+    if(GM_PLAYERS_COUNT > 0 && gEpisodeLoadedOnBoot)
+    {
+        forsim(i, 1, GM_PLAYERS_COUNT)
+        {
+            PlayerMOB* p = Player::Get(i);
+            if(p->DeathState == 0)
+            {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
 
 __declspec(naked) void __stdcall killPlayerEnd_OrigFunc(short* playerIdx)
 {

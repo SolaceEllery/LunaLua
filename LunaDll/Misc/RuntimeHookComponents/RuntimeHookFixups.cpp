@@ -366,7 +366,7 @@ void fixup_Credits()
         // If both are false, all credits will not appear. From there, Lua will redraw the text.
         const unsigned char nullStr[] = { 0xBA, 0x00, 0x3D, 0x42, 0x00 };
         
-        For(i, 0, 103)
+        forsim(i, 0, 103)
         {
             int value = 0x008F7258 + (0x18 * i);
             MemoryUnlock_Memcpy((void*)value, nullStr, 4);

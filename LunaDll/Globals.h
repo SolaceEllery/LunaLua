@@ -135,6 +135,7 @@ extern bool gMainWindowFocused;
 /// Global settings
 extern bool            gLunaEnabled;
 extern bool            gPrintErrorsToScreen;
+extern bool            gIsLevel;
 extern bool            gIsOverworld;
 extern bool            gHook_SkipTestMsgBox;
 extern bool            gAutostartRan;

@@ -245,7 +245,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     GM_PLAYERS_COUNT = playerCount; //--numPlayers = MenuMode / 10 (line 4947)--
 
     // apply templates (SavedChar)
-    For(i, 1, GM_MAX_CHARACTERS) //--For A = 1 To numCharacters (line 4948)--
+    forsim(i, 1, GM_MAX_CHARACTERS) //--For A = 1 To numCharacters (line 4948)--
     {
         PlayerMOB* playerTemplate = &((PlayerMOB*)GM_PLAYERS_TEMPLATE)[i]; //--SavedChar(A) = blankPlayer (line 4949)--
         memset(playerTemplate, 0, sizeof(PlayerMOB));
@@ -255,7 +255,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     }
 
     // use the character variables that were specified
-    For(i, 1, GM_PLAYERS_COUNT)
+    forsim(i, 1, GM_PLAYERS_COUNT)
     {
         auto p = Player::Get(i);
 
@@ -293,7 +293,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // implement the 2nd player's character (lines 4979-4982)
     if(GM_PLAYERS_COUNT >= 2)
     {
-        For(i, 2, GM_PLAYERS_COUNT)
+        forsim(i, 2, GM_PLAYERS_COUNT)
         {
             // get any player above 2
             auto p2 = Player::Get(i);
@@ -313,7 +313,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // we'll probably get more than 3 players loading on boot if specified on the command prompt, so this needs to exist (index starts at 2 on the for loop to simulate supermario# cheats)
     if(GM_PLAYERS_COUNT >= 3)
     {
-        For(i, 2, GM_PLAYERS_COUNT)
+        forsim(i, 2, GM_PLAYERS_COUNT)
         {
             auto p = Player::Get(i);
             p->Identity = Player::Get(1)->Identity;
@@ -323,7 +323,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     if(gEpisodeLoadedOnBoot) // do this too if an episode is already loaded
     {
         // restore characters if booted already
-        For(i, 1, GM_PLAYERS_COUNT)
+        forsim(i, 1, GM_PLAYERS_COUNT)
         {
             auto p = Player::Get(i);
 
@@ -333,7 +333,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     }
 
     // if we have any blocked characters, don't use them and instead specify whatever is not blocked (Not compatible with X2 characters, but they're a mess in basegame so oh well)
-    For(i, 1, GM_PLAYERS_COUNT)
+    forsim(i, 1, GM_PLAYERS_COUNT)
     {
         checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(i);
     }
@@ -391,7 +391,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     if(GM_WORLD_UNLOCK == -1) //--If WorldUnlock = True Then (line 5000)--
     {
         // get all paths
-        For(i, 1, GM_PATH_COUNT) //--For A = 1 To numWorldPaths (line 5001)--
+        forsim(i, 1, GM_PATH_COUNT) //--For A = 1 To numWorldPaths (line 5001)--
         {
             tempLocation = SMBXPath::Get(i)->momentum; //--tempLocation = WorldPath(A).Location (line 5002)--
 
@@ -406,7 +406,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
             SMBXPath::Get(i)->visible = COMBOOL(true); //--WorldPath(A).Active = True (line 5009)--
 
             // now get sceneries
-            For(j, 1, GM_SCENERY_COUNT) //--For B = 1 To numScenes (line 5010)--
+            forsim(j, 1, GM_SCENERY_COUNT) //--For B = 1 To numScenes (line 5010)--
             {
                 // check the collision of paths and sceneries
                 if(CheckCollision(tempLocation, SMBXScenery::Get(j)->momentum)) //--If CheckCollision(tempLocation, Scene(B).Location) Then Scene(B).Active = False (line 5011)--
@@ -418,7 +418,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
         } //--Next A (line 5013)--
 
         // now get world levels
-        For(i, 1, GM_LEVEL_COUNT) //--For A = 1 To numWorldLevels (line 5014)--
+        forsim(i, 1, GM_LEVEL_COUNT) //--For A = 1 To numWorldLevels (line 5014)--
         {
             // make them visible
             WorldLevel::Get(i)->visible = COMBOOL(true); //--WorldLevel(A).Active = True (line 5015)--

@@ -259,6 +259,7 @@ void LunaDLLInit()
 
 // *EXPORT* On Level Load -- Run once as a level is loaded (including title screen level)
 int OnLvlLoad() {
+    gIsLevel = true;
 
     // Restore some code the hook overwrote
     *(DWORD*)0x00B25958 = 0;

@@ -16,8 +16,10 @@ extern const char* GAME_ENGINE;
 #define COMPILE_PLAYGROUND  0 //See Misc/Playground.cpp
 #define COMBOOL(b) (b ? -1 : 0)
 
-//Easier for loops
-#define For(A, From, To) for(int A = From; A <= To; ++A)
+// Easier for loops
+#define forsim(A, From, To) for(int A = From; A <= To; ++A)
+// forsim longer name alias
+#define forsimple(A, From, To) forsim(A, From, To)
 
 enum FIELDTYPE {
     FT_INVALID = 0,

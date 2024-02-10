@@ -298,7 +298,7 @@ void PlayerInput::GetKeyboardInput(int virtKey, int keyboardIdx)
     PlayerInput playerInputFunc;
     if(gPlayerInputOverhaulToggled)
     {
-        For(i, 1, GM_PLAYERS_COUNT)
+        forsim(i, 1, GM_PLAYERS_COUNT)
         {
             
         }
@@ -310,7 +310,7 @@ void PlayerInput::Update()
     PlayerInput playerInputFunc;
     if(gPlayerInputOverhaulToggled)
     {
-        For(i, 1, GM_PLAYERS_COUNT)
+        forsim(i, 1, GM_PLAYERS_COUNT)
         {
             PlayerMOB* p = Player::Get(i);
             int playerIdxC = i - 1;
@@ -468,7 +468,7 @@ void PlayerInput::Update()
 
 void PlayerInput::ResetAllInputs()
 {
-    For(i, 0, 199)
+    forsim(i, 0, 199)
     {
         g_playerKeyboardInputs[i].Reset();
         g_playerControllerInputs[i].Reset();

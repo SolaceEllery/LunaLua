@@ -566,7 +566,7 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
 
 static int GetKeyboardIDListing(int id)
 {
-    For(i, 0, 9)
+    forsim(i, 0, 9)
     {
         if(keyboardDeviceList[i].keyboardID == id)
         {
@@ -580,7 +580,7 @@ static int GetKeyboardToPressKeysWith(HANDLE hDevice)
 {
     int finalKey = -1;
     int hDeviceInt = (int)hDevice;
-    For(i, 0, 9)
+    forsim(i, 0, 9)
     {
         if(keyboardDeviceList[i].keyboardID == hDeviceInt)
         {
@@ -1193,7 +1193,7 @@ luabind::object HID_GetKeyboardInfoFromIdx(int index, lua_State *L)
 
 void HID_GetAllRawKeyboards()
 {
-    For(i, 0, 9)
+    forsim(i, 0, 9)
     {
         keyboardDeviceList[i].Reset();
     }
@@ -1354,7 +1354,7 @@ luabind::object HID_GetMouseInfoFromIdx(int index, lua_State *L)
 
 void HID_GetAllRawMouses()
 {
-    For(i, 0, 9)
+    forsim(i, 0, 9)
     {
         mouseDeviceList[i].Reset();
     }
@@ -1479,7 +1479,7 @@ bool HID_RegisterDevices()
     UINT numKeyBoards = numberOfKeyboards;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
     
-    For(i, 0, numberOfKeyboards)
+    forsim(i, 0, numberOfKeyboards)
     {
         // Set HID_USAGE_PAGE_GENERIC
         rid[i].usUsagePage = 0x01;
@@ -2774,14 +2774,17 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    PATCH(0x9B2664).CALL(runtimeHookPlayerBoundaryBottomSection).Apply();
-    PATCH(0x9A0C35).CALL(runtimeHookPlayerBoundaryLeftSection).Apply();
-    PATCH(0x9A0CE9).CALL(runtimeHookPlayerBoundaryRightSection).Apply();
-    PATCH(0x9A0DC6).CALL(runtimeHookPlayerBoundaryTopSection).Apply();
+    PATCH(0x9B26B9).CALL(runtimeHookPlayerBoundaryBottomSection).NOP_PAD_TO_SIZE<0x64>().Apply();
+    PATCH(0x9A0C67).CALL(runtimeHookPlayerBoundaryLeftSection).NOP_PAD_TO_SIZE<0x5B>().Apply();
+    PATCH(0x9A0CF1).CALL(runtimeHookPlayerBoundaryRightSection).NOP_PAD_TO_SIZE<0x41>().Apply();
+    PATCH(0x9A0E0C).CALL(runtimeHookPlayerBoundaryTopSection).NOP_PAD_TO_SIZE<0x5D>().Apply();
 
     // Hooks for when a player hits a screen edge
-    PATCH(0x9B250C).CALL(runtimeHookPlayerBoundaryLeftScreen).Apply();
-    PATCH(0x9B261B).CALL(runtimeHookPlayerBoundaryRightScreen).Apply();
+    PATCH(0x9B2540).CALL(runtimeHookPlayerBoundaryLeftScreen).NOP_PAD_TO_SIZE<0x69>().Apply();
+    PATCH(0x9B25E9).CALL(runtimeHookPlayerBoundaryRightScreen).NOP_PAD_TO_SIZE<0x4F>().Apply();
+    
+    // Hooks for the player death check. See RuntimeHookHooks on why it was remade
+    PATCH(0x9B7710).CALL(runtimeHookIsAnyoneAlive).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();

@@ -14,6 +14,7 @@
 #include <luabind/class.hpp>
 #include <luabind/detail/call_function.hpp>
 #include "../../LuaMain/LuaHelper.h"
+#include "VB6Bool.h"
 
 struct SMBX_Warp;
 
@@ -743,6 +744,8 @@ void __stdcall runtimeHookLevelPauseCheck(void);
 void __stdcall runtimeHookPlayerHarm(void);
 void __stdcall runtimeHookPlayerKill(short* playerIdxPtr);
 void __stdcall runtimeHookPlayerKillEnd(short* playerIdx);
+
+int16_t __stdcall runtimeHookIsAnyoneAlive(void);
 
 void __stdcall runtimeHookWarpEnter(void);
 void __stdcall runtimeHookWarpInstant(void);
