@@ -34,6 +34,7 @@
 
 #include <libgit2/include/git2.h>
 #include "../FileManager/SMBXFileManager.h"
+#include "../SMBXInternal/Reconstructed/EpisodeMain.h"
 #include "../SMBXInternal/Reconstructed/PlayerInput.h"
 #include "../Misc/MonitorSystem.h"
 
