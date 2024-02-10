@@ -16,8 +16,6 @@
 #include "../../LuaMain/LuaHelper.h"
 #include "../../SMBXInternal/Types.h"
 
-extern SMBX13::Types::modMain_t modMain;
-
 struct SMBX_Warp;
 
 /************************************************************************/
@@ -745,7 +743,7 @@ void __stdcall runtimeHookLevelPauseCheck(void);
 
 void __stdcall runtimeHookPlayerHarm(void);
 void __stdcall runtimeHookPlayerKill(short* playerIdxPtr);
-void __stdcall runtimeHookPlayerKillEnd(void);
+void __stdcall runtimeHookPlayerKillEnd(short* playerIdx);
 
 void __stdcall runtimeHookWarpEnter(void);
 void __stdcall runtimeHookWarpInstant(void);

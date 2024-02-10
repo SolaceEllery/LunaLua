@@ -698,6 +698,10 @@ void CLunaLua::bindAll()
                 def("flipY", &LuaProxy::Effects::flipY),
                 def("flipXY", &LuaProxy::Effects::flipXY)
             ],
+            
+            namespace_("Episode")[
+                def("getList", &LuaProxy::Misc::getEpisodeList)
+            ],
 
             namespace_("Misc")[
                 def("cheatBuffer", (std::string(*)())&LuaProxy::Misc::cheatBuffer),
@@ -739,7 +743,6 @@ void CLunaLua::bindAll()
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
                 def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
-                def("getEpisodeList", &LuaProxy::Misc::getEpisodeList),
 
                 //**SEE Mod**
                 

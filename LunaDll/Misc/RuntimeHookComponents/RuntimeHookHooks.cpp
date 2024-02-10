@@ -4612,10 +4612,13 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
 
 static void __stdcall playerBoundaryBottom(int playerIdx)
 {
+    using namespace SMBX13::Types;
+    struct modMain_t* modMainBas;
+
     PlayerMOB* playerForIdx = Player::Get(playerIdx);
-    auto& plr = modMain.Player[playerIdx];
+    auto& plr = modMainBas->Player[playerIdx];
     int16_t playerSection = plr.Section;
-    auto& levelSection = modMain.level[playerSection];
+    auto& levelSection = modMainBas->level[playerSection];
 
     if(plr.Location.Y > levelSection.Height + gPlayerBottomEdgeOffset)
     {
@@ -4635,14 +4638,17 @@ static void __stdcall playerBoundaryBottom(int playerIdx)
 
 static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 {
-    auto& plr = modMain.Player[playerIdx];
+    using namespace SMBX13::Types;
+    struct modMain_t* modMainBas;
+
+    auto& plr = modMainBas->Player[playerIdx];
     int16_t playerSection = plr.Section;
-    auto& levelSection = modMain.level[playerSection];
-    double vScreenX = modMain.vScreenX[1];
+    auto& levelSection = modMainBas->level[playerSection];
+    double vScreenX = modMainBas->vScreenX[1];
 
     if(isScreen)
     {
-        if(plr.Location.X < -vScreenX - gPlayerLeftEdgeOffset)
+        if(plr.Location.X < (-vScreenX - gPlayerLeftEdgeOffset))
         {
             plr.Location.X = -vScreenX + 1;
             plr.Location.SpeedX = 4;
@@ -4658,9 +4664,9 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
     }
     else
     {
-        if(plr.Location.X + plr.Location.Width > levelSection.Width - gPlayerLeftEdgeOffset)
+        if(plr.Location.X < levelSection.X)
         {
-            plr.Location.X = levelSection.Width - plr.Location.Width;
+            plr.Location.X = levelSection.X;
 
             if (gLunaLua.isValid())
             {
@@ -4675,11 +4681,14 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
 static void __stdcall playerBoundaryTop(int playerIdx)
 {
-    auto& plr = modMain.Player[playerIdx];
-    int16_t playerSection = plr.Section;
-    auto& levelSection = modMain.level[playerSection];
+    using namespace SMBX13::Types;
+    struct modMain_t* modMainBas;
 
-    if(plr.Location.Y < levelSection.Y - plr.Location.Height - 32 - gPlayerTopEdgeOffset && plr.StandingOnTempNPC == 0)
+    auto& plr = modMainBas->Player[playerIdx];
+    int16_t playerSection = plr.Section;
+    auto& levelSection = modMainBas->level[playerSection];
+
+    if(plr.Location.Y < (levelSection.Y - plr.Location.Height - 32) - gPlayerTopEdgeOffset && plr.StandingOnTempNPC == 0)
     {
         plr.Location.Y = levelSection.Y - plr.Location.Height - 32;
         
@@ -4695,15 +4704,18 @@ static void __stdcall playerBoundaryTop(int playerIdx)
 
 static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 {
-    auto& plr = modMain.Player[playerIdx];
+    using namespace SMBX13::Types;
+    struct modMain_t* modMainBas;
+
+    auto& plr = modMainBas->Player[playerIdx];
     int16_t playerSection = plr.Section;
-    auto& levelSection = modMain.level[playerSection];
-    double vScreenX = modMain.vScreenX[1];
+    auto& levelSection = modMainBas->level[playerSection];
+    double vScreenX = modMainBas->vScreenX[1];
 
     if(isScreen)
     {
         auto windowScale = gWindowSizeHandler.getFramebufferScale();
-        if(plr.Location.X > -vScreenX + windowScale.x - plr.Location.Width + gPlayerRightEdgeOffset)
+        if((plr.Location.X) > (-vScreenX + windowScale.x - plr.Location.Width) + gPlayerRightEdgeOffset)
         {
             plr.Location.X = -vScreenX + gPlayerRightEdgeOffset + 1;
             plr.Location.SpeedX = -4;
@@ -4719,9 +4731,9 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
     }
     else
     {
-        if(plr.Location.X < levelSection.X)
+        if((plr.Location.X + plr.Location.Width) > levelSection.Width - gPlayerLeftEdgeOffset)
         {
-            plr.Location.X = levelSection.X;
+            plr.Location.X = levelSection.Width - plr.Location.Width;
 
             if (gLunaLua.isValid())
             {
