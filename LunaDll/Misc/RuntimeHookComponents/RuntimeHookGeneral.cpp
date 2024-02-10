@@ -1472,15 +1472,22 @@ int HID_GetMouseCount()
 
 bool HID_RegisterDevices()
 {
+    // Refresh all devices
+    HID_RefreshDevices();
+
     // Set up the keyboard system
-    RAWINPUTDEVICE rid;
-    rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-    rid.usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-    rid.dwFlags = RIDEV_INPUTSINK;
-    rid.hwndTarget = gMainWindowHwnd;
+    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[HID_GetKeyboardCount()];
+    
+    For(i, 0, HID_GetKeyboardCount())
+    {
+        rid[i].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+        rid[i].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+        rid[i].dwFlags = RIDEV_INPUTSINK;
+        rid[i].hwndTarget = gMainWindowHwnd;
+    }
 
     //Register all keyboards
-    return RegisterRawInputDevices(&rid, 1, sizeof(rid));
+    return RegisterRawInputDevices(rid, HID_GetKeyboardCount(), sizeof(rid));
 }
 
 void HID_UnregisterDevices()

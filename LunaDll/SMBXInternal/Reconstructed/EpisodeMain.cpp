@@ -650,47 +650,55 @@ void EpisodeMain::PopulateEpisodeList()
         {
             std::string wldPath = epPath + "\\" + wldName;
             WorldData wldData;
-
-            if (!FileFormats::OpenWorldFileHeader(wldPath, wldData) || !wldData.meta.ReadFileValid)
+            
+            if(wldPath.length() > 0)
             {
-                // Couldn't read file
-                continue;
-            }
-
-            if (wldData.meta.RecentFormat != WorldData::SMBX64)
-            {
-                // Wrong .wld format, we don't handle it right now
-                continue;
-            }
-
-            // Make sure the .wld path is something we can handle
-            std::wstring nonAnsiCharsFullPath = GetNonANSICharsFromWStr(Str2WStr(wldPath));
-            if (!nonAnsiCharsFullPath.empty())
-            {
-                // The .wld path contains characters we can't currently deal with
-                continue;
-            }
-
-            // Make new episode list entry
-            int newIdx = EpisodeCount;
-            EpisodeCount++;
-            g_episodeList[newIdx].episodeName = Str2WStr(wldData.EpisodeTitle);
-            g_episodeList[newIdx].episodePath = Str2WStr(epPath + "\\");
-            g_episodeList[newIdx].episodeWorldFile = Str2WStr(wldName);
-            for (size_t i = 0; i < 5; i++)
-            {
-                if (i < wldData.nocharacter.size())
+                if (!FileFormats::OpenWorldFileHeader(wldPath, wldData) || !wldData.meta.ReadFileValid)
                 {
-                    g_episodeList[newIdx].blockedCharacters[i] = COMBOOL(wldData.nocharacter[i]);
+                    // Couldn't read file
+                    continue;
                 }
-                else
-                {
-                    g_episodeList[newIdx].blockedCharacters[i] = 0;
-                }
-            }
 
-            // We're done after we get our first success per episode folder
-            break;
+                if (wldData.meta.RecentFormat != WorldData::SMBX64)
+                {
+                    // Wrong .wld format, we don't handle it right now
+                    continue;
+                }
+
+                // Make sure the .wld path is something we can handle
+                std::wstring nonAnsiCharsFullPath = GetNonANSICharsFromWStr(Str2WStr(wldPath));
+                if (!nonAnsiCharsFullPath.empty())
+                {
+                    // The .wld path contains characters we can't currently deal with
+                    continue;
+                }
+
+                // Make new episode list entry
+                int newIdx = EpisodeCount;
+                EpisodeCount++;
+                g_episodeList[newIdx].episodeName = Str2WStr(wldData.EpisodeTitle);
+                g_episodeList[newIdx].episodePath = Str2WStr(epPath + "\\");
+                g_episodeList[newIdx].episodeWorldFile = Str2WStr(wldName);
+                for (size_t i = 0; i < 5; i++)
+                {
+                    if (i < wldData.nocharacter.size())
+                    {
+                        g_episodeList[newIdx].blockedCharacters[i] = COMBOOL(wldData.nocharacter[i]);
+                    }
+                    else
+                    {
+                        g_episodeList[newIdx].blockedCharacters[i] = 0;
+                    }
+                }
+
+                // We're done after we get our first success per episode folder
+                break;
+            }
+            else
+            {
+                // The episode has blank information, don't add it
+                continue;
+            }
         }
     }
 }

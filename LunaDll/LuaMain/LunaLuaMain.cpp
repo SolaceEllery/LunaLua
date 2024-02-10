@@ -700,7 +700,9 @@ void CLunaLua::bindAll()
             ],
             
             namespace_("Episode")[
-                def("getList", &LuaProxy::Misc::getEpisodeList)
+                def("getList", &LuaProxy::Misc::getEpisodeList),
+                def("count", (int(*)()) &EpisodeCount),
+                def("idx", (int(*)()) &EpisodeIdx)
             ],
 
             namespace_("Misc")[
