@@ -1293,7 +1293,7 @@ void HID_GetAllRawKeyboards()
     // If we have more than 10 keyboards inserted, let the player know
     if(numberOfKeyboards > 9)
     {
-        numberOfKeyboards = 10;
+        numberOfKeyboards = 9;
         error = "Unfortunately, only 10 keyboards can be connected at maximum for the engine. Please disconnect an extra keyboard, then refresh the device status again.";
         MessageBoxA(NULL, error.c_str(), "Keyboard Error", NULL);
     }
@@ -1326,7 +1326,7 @@ mouseDevices mouseDeviceList[9];
 static luabind::object getMouseDeviceThings(int index, lua_State *L)
 {
     int realIndex = index - 1;
-    if(index < 1 && index > numberOfKeyboards || std::to_string(mouseDeviceList[index].index).length() == 0)
+    if(index < 1 && index > numberOfMouses || std::to_string(mouseDeviceList[index].index).length() == 0)
     {
         luabind::object outData = luabind::newtable(L);
         outData["invalid"] = "mouse";
@@ -1482,7 +1482,7 @@ bool HID_RegisterDevices()
     UINT numKeyBoards = numberOfKeyboards - 1;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
     
-    For(i, 0, numKeyBoards)
+    For(i, 0, numberOfKeyboards - 1)
     {
         // Set HID_USAGE_PAGE_GENERIC
         rid[i].usUsagePage = 0x01;
@@ -1491,7 +1491,7 @@ bool HID_RegisterDevices()
         rid[i].usUsage = 0x06;
 
         // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
-        rid[i].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+        rid[i].dwFlags = RIDEV_INPUTSINK;// | RIDEV_DEVNOTIFY;
 
         // Set the SMBX window as our target
         rid[i].hwndTarget = gMainWindowHwnd;
@@ -1499,7 +1499,7 @@ bool HID_RegisterDevices()
 
     // Register all keyboards
     int success = RegisterRawInputDevices(rid, numKeyBoards, sizeof(rid));
-    
+
     // Delete the rid
     delete [] rid;
 
@@ -2738,7 +2738,7 @@ void TrySkipPatch()
     PATCH(0x9B66D0).JMP(runtimeHookPlayerKill).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Hook for onPlayerKillEnd
-    PATCH(0x9B6EF7).JMP(runtimeHookPlayerKillEnd).Apply();
+    PATCH(0x9B6EC0).JMP(runtimeHookPlayerKillEnd).Apply();
 
     // Hooks for lava-related calls to onPlayerKill
     PATCH(0x9A394D).CALL(runtimeHookPlayerCountCollisionsForWeakLava).JMP(0x9A3A36).NOP_PAD_TO_SIZE<14>().Apply();
@@ -2756,13 +2756,13 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    PATCH(0x9B26C3).CALL(runtimeHookPlayerBoundaryBottomSection).Apply();
+    PATCH(0x9B2664).CALL(runtimeHookPlayerBoundaryBottomSection).Apply();
     PATCH(0x9A0C35).CALL(runtimeHookPlayerBoundaryLeftSection).Apply();
     PATCH(0x9A0CE9).CALL(runtimeHookPlayerBoundaryRightSection).Apply();
     PATCH(0x9A0DC6).CALL(runtimeHookPlayerBoundaryTopSection).Apply();
 
     // Hooks for when a player hits a screen edge
-    PATCH(0x9B2566).CALL(runtimeHookPlayerBoundaryLeftScreen).Apply();
+    PATCH(0x9B250C).CALL(runtimeHookPlayerBoundaryLeftScreen).Apply();
     PATCH(0x9B261B).CALL(runtimeHookPlayerBoundaryRightScreen).Apply();
 
     // Hooks for populating world map

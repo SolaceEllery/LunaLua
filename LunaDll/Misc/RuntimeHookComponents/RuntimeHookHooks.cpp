@@ -4822,7 +4822,11 @@ void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
 __declspec(naked) void __stdcall killPlayerEnd_OrigFunc(short* playerIdx)
 {
     __asm {
-        push 0x9B6EFF
+        push ebp
+        mov ebp,esp
+        and esp,0xFFFFFFF8
+        sub esp,0x54
+        push 0x9B6EC9
         ret
     }
 }
