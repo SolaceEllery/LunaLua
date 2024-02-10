@@ -25,7 +25,6 @@
 #include "GameConfig/GeneralLunaConfig.h"
 #include "EventStateMachine.h"
 #include "Input/LunaGameController.h"
-#include "SMBXInternal/Types.h"
 
 class RenderOverrideManager;
 

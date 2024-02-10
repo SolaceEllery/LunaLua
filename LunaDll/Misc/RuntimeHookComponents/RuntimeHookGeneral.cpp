@@ -1585,8 +1585,15 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Finally, resize the window and resolution if set
                 if(gEpisodeSettings.episodeWidth != 800 || gEpisodeSettings.episodeHeight != 600)
                 {
-                    gWindowSizeHandler.SetWindowSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
-                    g_GLContextManager.SetMainFramebufferSize(gEpisodeSettings.episodeWidth, gEpisodeSettings.episodeHeight);
+                    auto obj = std::make_shared<GLEngineCmd_SetFramebufferSize>();
+                    obj->mWidth = gEpisodeSettings.episodeWidth;
+                    obj->mHeight = gEpisodeSettings.episodeHeight;
+
+                    // NOTE: This command is processed synchronously, avoiding the potential
+                    //       for race conditions.
+                    //       This does however mean that switching framebuffer size may cause
+                    //       a momentary hitch.
+                    g_GLEngine.QueueCmd(obj);
                 }
             }
         }
