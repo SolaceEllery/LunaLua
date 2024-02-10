@@ -4612,15 +4612,10 @@ void __stdcall runtimeHookPlayerKill(short* playerIdxPtr)
 
 static void __stdcall playerBoundaryBottom(int playerIdx)
 {
-    using namespace SMBX13::Types;
-    struct modMain_t* modMainBas;
+    PlayerMOB* plr = Player::Get(playerIdx);
+    auto& bounds = GM_LVL_BOUNDARIES[plr->CurrentSection];
 
-    PlayerMOB* playerForIdx = Player::Get(playerIdx);
-    auto& plr = modMainBas->Player[playerIdx];
-    int16_t playerSection = plr.Section;
-    auto& levelSection = modMainBas->level[playerSection];
-
-    if(plr.Location.Y > levelSection.Height + gPlayerBottomEdgeOffset)
+    if(plr->momentum.y > bounds.bottom + gPlayerBottomEdgeOffset)
     {
         // Call the event before killing the player. This is a special case rather than just calling it afterwards.
         if (gLunaLua.isValid())
@@ -4638,20 +4633,19 @@ static void __stdcall playerBoundaryBottom(int playerIdx)
 
 static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 {
-    using namespace SMBX13::Types;
-    struct modMain_t* modMainBas;
-
-    auto& plr = modMainBas->Player[playerIdx];
-    int16_t playerSection = plr.Section;
-    auto& levelSection = modMainBas->level[playerSection];
-    double vScreenX = modMainBas->vScreenX[1];
+    PlayerMOB* plr = Player::Get(playerIdx);
+    auto& bounds = GM_LVL_BOUNDARIES[plr->CurrentSection];
 
     if(isScreen)
     {
-        if(plr.Location.X < (-vScreenX - gPlayerLeftEdgeOffset))
+        int cameraIdx = Renderer::Get().GetCameraIdx();
+        SMBX_CameraInfo* cam = SMBX_CameraInfo::Get(cameraIdx);
+        int camX = (int)GM_CAMERA_X;
+
+        if(plr->momentum.x < -camX - gPlayerLeftEdgeOffset)
         {
-            plr.Location.X = -vScreenX + 1;
-            plr.Location.SpeedX = 4;
+            plr->momentum.x = -camX + 1;
+            plr->momentum.speedX = 4;
 
             if (gLunaLua.isValid())
             {
@@ -4664,9 +4658,9 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
     }
     else
     {
-        if(plr.Location.X < levelSection.X)
+        if(plr->momentum.x < bounds.left)
         {
-            plr.Location.X = levelSection.X;
+            plr->momentum.x = bounds.left;
 
             if (gLunaLua.isValid())
             {
@@ -4681,16 +4675,14 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
 static void __stdcall playerBoundaryTop(int playerIdx)
 {
-    using namespace SMBX13::Types;
-    struct modMain_t* modMainBas;
+    PlayerMOB* plr = Player::Get(playerIdx);
+    auto& bounds = GM_LVL_BOUNDARIES[plr->CurrentSection];
 
-    auto& plr = modMainBas->Player[playerIdx];
-    int16_t playerSection = plr.Section;
-    auto& levelSection = modMainBas->level[playerSection];
+    bool checkValue = (plr->momentum.y < (bounds.top - plr->momentum.height - 32) - gPlayerTopEdgeOffset);
 
-    if(plr.Location.Y < (levelSection.Y - plr.Location.Height - 32) - gPlayerTopEdgeOffset && plr.StandingOnTempNPC == 0)
+    if(checkValue && plr->Unknown178 == 0)
     {
-        plr.Location.Y = levelSection.Y - plr.Location.Height - 32;
+        plr->momentum.y = bounds.top - plr->momentum.height - 32;
         
         if (gLunaLua.isValid())
         {
@@ -4704,21 +4696,18 @@ static void __stdcall playerBoundaryTop(int playerIdx)
 
 static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 {
-    using namespace SMBX13::Types;
-    struct modMain_t* modMainBas;
-
-    auto& plr = modMainBas->Player[playerIdx];
-    int16_t playerSection = plr.Section;
-    auto& levelSection = modMainBas->level[playerSection];
-    double vScreenX = modMainBas->vScreenX[1];
+    PlayerMOB* plr = Player::Get(playerIdx);
+    auto& bounds = GM_LVL_BOUNDARIES[plr->CurrentSection];
 
     if(isScreen)
     {
         auto windowSize = gWindowSizeHandler.getWindowSize();
-        if((plr.Location.X) > (-vScreenX + windowSize.x - plr.Location.Width) + gPlayerRightEdgeOffset)
+        int camX = (int)GM_CAMERA_X;
+
+        if((plr->momentum.x) > (-camX + windowSize.x - plr->momentum.width) + gPlayerRightEdgeOffset)
         {
-            plr.Location.X = -vScreenX + gPlayerRightEdgeOffset + 1;
-            plr.Location.SpeedX = -4;
+            plr->momentum.x = -camX + gPlayerRightEdgeOffset + 1;
+            plr->momentum.speedX = -4;
 
             if(gLunaLua.isValid())
             {
@@ -4731,9 +4720,9 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
     }
     else
     {
-        if((plr.Location.X + plr.Location.Width) > levelSection.Width - gPlayerLeftEdgeOffset)
+        if((plr->momentum.x + plr->momentum.width) > bounds.right - gPlayerLeftEdgeOffset)
         {
-            plr.Location.X = levelSection.Width - plr.Location.Width;
+            plr->momentum.x = bounds.right - plr->momentum.width;
 
             if (gLunaLua.isValid())
             {

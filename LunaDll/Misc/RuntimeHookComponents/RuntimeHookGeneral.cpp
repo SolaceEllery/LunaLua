@@ -1489,8 +1489,14 @@ bool HID_RegisterDevices()
         rid[i].hwndTarget = gMainWindowHwnd;
     }
 
-    //Register all keyboards
-    return RegisterRawInputDevices(rid, HID_GetKeyboardCount(), sizeof(rid));
+    // Register all keyboards
+    int success = RegisterRawInputDevices(rid, HID_GetKeyboardCount(), sizeof(rid));
+
+    // Delete the temporarily stored RAWINPUTDEVICE variable
+    delete rid;
+
+    // Return it
+    return success;
 }
 
 void HID_UnregisterDevices()
