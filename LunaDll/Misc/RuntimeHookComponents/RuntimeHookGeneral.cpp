@@ -397,7 +397,8 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
     if (!repeated)
     {
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
-        
+
+        // Dumb fix for the test mode pause menu when using the player keys recode
         if(TestModeIsEnabled() && gDisablePlayerKeys && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
         {
             testModePauseMenu(true, false);
@@ -417,11 +418,11 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         if (unicodeRet > 0)
         {
             std::string charStr = WStr2Str(std::wstring(unicodeData, unicodeRet));
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, charStr, keyboardIdx);
         }
         else
         {
-            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated);
+            gLunaLua.callEvent(keyboardPressEvent, static_cast<int>(virtKey), repeated, "", keyboardIdx);
         }
     }
 
@@ -452,7 +453,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         }
     }
 
-    // Process F12 key for screenshot to file
+    // Process the F12 key for screenshots
     if ((virtKey == VK_F12) && plainPress && g_GLEngine.IsEnabled())
     {
         bool cantMakeSound = false;
@@ -489,7 +490,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         });
     }
 
-    // Process F11 key for GIF recorder toggle
+    // Process the F11 key for the GIF recorder toggle
     if ((virtKey == VK_F11) && plainPress && g_GLEngine.IsEnabled())
     {
         bool cantMakeSound = false;
@@ -688,7 +689,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     {
         if (keyDown)
         {
-            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardIdx);
+            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardIdx + 1);
         }
     }
 }
@@ -736,12 +737,14 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
     int keyboardIdx = GetKeyboardIDListing(keyboardID);
     int hDeviceInt = (int)hDevice;
     
-    ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
-    
-    //if(hDeviceInt == keyboardID)
-    //{
-        //ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
-    //}
+    if(hDeviceInt == keyboardID)
+    {
+        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
+    }
+    else
+    {
+        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
+    }
 }
 
 static int UpdateWindowSizeForDPI(int currentDpi, int newDpi, SIZE* pSize)
