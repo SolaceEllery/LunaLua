@@ -581,8 +581,10 @@ void CLunaLua::setupDefaults()
         _G["world"] = LuaProxy::World();
     }
 
-    _G["inputConfig1"] = LuaProxy::InputConfig(1);
-    _G["inputConfig2"] = LuaProxy::InputConfig(2);
+    forsim(i, 0, 199)
+    {
+        _G["inputConfig" + std::to_string(i + 1)] = LuaProxy::InputConfig(i + 1);
+    }
 
     _G["console"] = LuaProxy::Console();
 

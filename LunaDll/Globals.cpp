@@ -8,6 +8,8 @@
 #include "Shlwapi.h"
 #include "UserSaves/UserSaving.h"
 #include "GlobalFuncs.h"
+#include "SMBXInternal/Reconstructed/PlayerInput.h"
+#include "SMBXInternal/Reconstructed/EpisodeMain.h"
 
 HINSTANCE gHInstance;
 
@@ -40,10 +42,12 @@ bool gDisablePlayerFilterBounceFix = false;
 // Other gameplay settings
 bool gRightClickPaste = false;
 bool gLavaIsWeak = false;
-bool gLavaIsSafe = false;
 bool gRunWhenUnfocused = false;
+
+// Player input settings
+bool gDisablePlayerKeysLegacy = true;
 bool gDisablePlayerKeys = false;
-bool gDisablePlayerMovementAboveThree = false;
+bool gDisablePlayerMovementAboveThree = true;
 
 // Player boundary offsets
 int gPlayerLeftEdgeOffset = 0;
@@ -165,3 +169,6 @@ Characters gPlayerStoredCharacters[] = {CHARACTER_MARIO,CHARACTER_MARIO,CHARACTE
 
 int gUnfocusTimer = 2;
 int gFocusTimer = 2;
+
+PlayerInput gPlayerInput;
+EpisodeMain gEpisodeMain;

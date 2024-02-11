@@ -1553,8 +1553,7 @@ extern void __stdcall RenderLevelHook()
     g_renderDoneCameraUpdate = 0;
     RenderLevelReal();
 
-    PlayerInput playerInputFunc;
-    playerInputFunc.Update();
+    gPlayerInput.Update();
 
     MusicManager::update();
 
@@ -1632,8 +1631,7 @@ extern void __stdcall RenderWorldHook()
     g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
 
-    PlayerInput playerInputFunc;
-    playerInputFunc.Update();
+    gPlayerInput.Update();
 
     MusicManager::update();
 
@@ -1713,7 +1711,6 @@ void __stdcall runtimeHookGameMenu()
                 if (doAutostart)
                 {
                     // Note: Internally this uses beginGroup and endGroup, so the group won't be open after it
-                    EpisodeMain mainEpisodeFunc;
                     autostartConfig.beginGroup("autostart");
 
                     std::string selectedEpisode = autostartConfig.value("episode-name", "").toString();
@@ -1725,7 +1722,7 @@ void __stdcall runtimeHookGameMenu()
 
                     autostarter.setSelectedEpisode(selectedEpisode);
 
-                    mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+                    gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
 
                     if (autostartConfig.value("transient", false).toBool())
                     {
@@ -1739,8 +1736,6 @@ void __stdcall runtimeHookGameMenu()
         else if(gStartupSettings.epSettings.enabled && gStartupSettings.epSettings.wldPath != L"")
         {
             // If there's no autostart file but the command prompt gives out a world path and some other things, we will then boot to the episode from there
-            EpisodeMain mainEpisodeFunc;
-            
             std::string selectedEpisode = "";
             std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
             int playerCount = gStartupSettings.epSettings.players;
@@ -1750,7 +1745,7 @@ void __stdcall runtimeHookGameMenu()
 
             autostarter.setSelectedEpisode(selectedEpisode);
             
-            mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+            gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
         }
         else
         {
@@ -1774,8 +1769,7 @@ void __stdcall runtimeHookGameMenu()
 
             autostarter.setSelectedEpisode(selectedEpisode);
 
-            EpisodeMain mainEpisodeFunc;
-            mainEpisodeFunc.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
+            gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
         }
     }
 }
@@ -2288,7 +2282,10 @@ void drawReplacementSplashScreen()
         }
     }
 
-    if (!splashReplacement) return;
+    if (!splashReplacement || splashReplacement == nullptr)
+    {
+        return;
+    }
 
     // Get image as HBITMAP
     HBITMAP splashBMP = splashReplacement->asHBITMAP();
@@ -2816,7 +2813,7 @@ void __stdcall runtimeHookLoadDefaultControls(void)
     // Draw replacement splash screen if we have one
     if(gEpisodeSettings.useLegacyBootScreen)
     {
-        drawReplacementSplashScreen();
+        //drawReplacementSplashScreen();
     }
     
     // Run the regular load default controls...
@@ -4624,10 +4621,10 @@ static void __stdcall playerBoundaryBottom(int playerIdx)
         // Call the event before killing the player. This is a special case rather than just calling it afterwards.
         if (gLunaLua.isValid())
         {
-            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryBottom", false);
-            playerBoundsBottom->setDirectEventName("onPlayerBoundaryBottom");
+            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+            playerBoundsBottom->setDirectEventName("onPlayerBoundaryTouch");
             playerBoundsBottom->setLoopable(false);
-            gLunaLua.callEvent(playerBoundsBottom, playerIdx);
+            gLunaLua.callEvent(playerBoundsBottom, playerIdx, 4);
         }
 
         short* playerIdxPtr = (short*)(playerIdx + (PlayerMOB*)GM_PLAYERS_PTR);
@@ -4653,8 +4650,8 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
-                playerBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+                playerBoundsLeft->setDirectEventName("onPlayerBoundaryTouch");
                 playerBoundsLeft->setLoopable(false);
                 gLunaLua.callEvent(playerBoundsLeft, playerIdx, 1);
             }
@@ -4668,8 +4665,8 @@ static void __stdcall playerBoundaryLeft(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryLeft", false);
-                playerBoundsLeft->setDirectEventName("onPlayerBoundaryLeft");
+                std::shared_ptr<Event> playerBoundsLeft = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+                playerBoundsLeft->setDirectEventName("onPlayerBoundaryTouch");
                 playerBoundsLeft->setLoopable(false);
                 gLunaLua.callEvent(playerBoundsLeft, playerIdx, 1);
             }
@@ -4690,8 +4687,8 @@ static void __stdcall playerBoundaryTop(int playerIdx)
         
         if (gLunaLua.isValid())
         {
-            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTop", false);
-            playerBoundsBottom->setDirectEventName("onPlayerBoundaryTop");
+            std::shared_ptr<Event> playerBoundsBottom = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+            playerBoundsBottom->setDirectEventName("onPlayerBoundaryTouch");
             playerBoundsBottom->setLoopable(false);
             gLunaLua.callEvent(playerBoundsBottom, playerIdx, 2);
         }
@@ -4715,8 +4712,8 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
             if(gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
-                playerBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+                playerBoundsRight->setDirectEventName("onPlayerBoundaryTouch");
                 playerBoundsRight->setLoopable(false);
                 gLunaLua.callEvent(playerBoundsRight, playerIdx, 3);
             }
@@ -4730,8 +4727,8 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
             if (gLunaLua.isValid())
             {
-                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryRight", false);
-                playerBoundsRight->setDirectEventName("onPlayerBoundaryRight");
+                std::shared_ptr<Event> playerBoundsRight = std::make_shared<Event>("onPlayerBoundaryTouch", false);
+                playerBoundsRight->setDirectEventName("onPlayerBoundaryTouch");
                 playerBoundsRight->setLoopable(false);
                 gLunaLua.callEvent(playerBoundsRight, playerIdx, 3);
             }

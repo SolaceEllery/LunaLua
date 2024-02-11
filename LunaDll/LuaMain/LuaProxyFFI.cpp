@@ -1074,6 +1074,16 @@ extern "C" {
     {
         ToggleDebugConsole(enable);
     }
+    // Disables the legacy player keys if on. IF ON, KEYS LIKE SPECIAL, L, AND R WON'T WORK
+    FFI_EXPORT(void) LunaLuaSetDisabledLegacyPlayerKeys(bool enable)
+    {
+        gDisablePlayerKeysLegacy = enable;
+    }
+    // Checks if the legacy player keys are disabled.
+    FFI_EXPORT(bool) LunaLuaGetDisabledLegacyPlayerKeys()
+    {
+        return gDisablePlayerKeysLegacy;
+    }
 }
 
 

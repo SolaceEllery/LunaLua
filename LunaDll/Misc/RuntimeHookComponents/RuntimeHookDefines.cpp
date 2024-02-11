@@ -24,8 +24,7 @@ std::map<int, FIELDTYPE> definesLegalAddresses = {
     {0x009DBE64, FT_WORD},
     {0x00A32943, FT_WORD},
     {0x00A329D5, FT_WORD},
-    {0x00A32A6F, FT_WORD},
-    {0x004024B7, FT_BYTE}
+    {0x00A32A6F, FT_WORD}
 };
 // set memory, only allowing a pre-defined set of addresses within program memory
 DEFINES_FFI_EXPORT(bool) LunaLua_Defines_mem_set(int address, double value) {

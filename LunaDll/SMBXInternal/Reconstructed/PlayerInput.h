@@ -27,7 +27,9 @@ struct NewSMBXInput
     bool specialPressing;
     bool leftTriggerPressing;
     bool rightTriggerPressing;
-    
+
+    int currentInputType;
+
     // Constructor
     NewSMBXInput()
     {
@@ -49,6 +51,8 @@ struct NewSMBXInput
         specialPressing = false;
         leftTriggerPressing = false;
         rightTriggerPressing = false;
+
+        currentInputType = 0;
     }
 };
 
@@ -126,22 +130,22 @@ struct NewSMBXInputController
     // Reset function
     void Reset()
     {
-        // Lua, or the launcher, will fill the list up instead
         controllerID = 0;
 
         up = 0;
-        down = 0;
-        left = 0;
-        right = 0;
-        jump = 0;
-        run = 0;
-        dropitem = 0;
-        pause = 0;
-        altjump = 0;
-        altrun = 0;
+        down = 1;
+        left = 2;
+        right = 3;
+
+        jump = 1;
+        run = 2;
+        dropitem = 10;
+        pause = 7;
+        altjump = 11;
+        altrun = 3;
         special = 0;
-        leftTrigger = 0;
-        rightTrigger = 0;
+        leftTrigger = 4;
+        rightTrigger = 5;
     }
 };
 
@@ -157,8 +161,6 @@ class PlayerInput {
 
         void SetControllerControls(int type, int playerIdx, int controllerButton);
         void SetKeyboardControls(int type, int playerIdx, int virtKey);
-
-        void GetKeyboardInput(int virtKey, int keyboardIdx);
         
         void SetKeyboardIdx(int playerIdx, int keyboardIdx);
         void SetControllerIdx(int playerIdx, int controllerIdx);
@@ -168,6 +170,8 @@ class PlayerInput {
 
         bool Toggle(bool enable);
         void Update();
+
+        void RefreshAllInputs(bool isWritten, bool isRead);
         void ResetAllInputs();
 };
 

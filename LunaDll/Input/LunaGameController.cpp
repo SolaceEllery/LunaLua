@@ -6,7 +6,7 @@
 #       include <windows.h>
 #   endif
 #   include "../LuaMain/LunaLuaMain.h"
-#   include "../SMBXInternal/NativeInput.h"
+#   include "../SMBXInternal/Reconstructed/PlayerInput.h"
 #   include "../Globals.h"
 #endif
 
@@ -177,8 +177,8 @@ void LunaGameControllerManager::handleInputs()
             players[0].joyId = selectedController->getJoyId();
             players[0].haveKeyboard = false;
             players[0].haveController = true;
-
-            SMBXInput::setPlayerInputType(1, 1); // Set player 1 input type to 'joystick 1'
+            
+            g_playerInputPressing[0].currentInputType = 1; // Set player 1 input type to 'joystick 1'
             #if defined(CONTROLLER_DEBUG)
                 printf("Selected controller: %s\n", selectedController->getName().c_str());
             #endif
@@ -239,7 +239,7 @@ void LunaGameControllerManager::handleInputs()
                 players[playerNum - 1].haveKeyboard = false;
                 players[playerNum - 1].haveController = true;
 
-                SMBXInput::setPlayerInputType(playerNum, playerNum); // Set player n input type to 'joystick n'
+                g_playerInputPressing[playerNum - 1].currentInputType = playerNum; // Set player n input type to 'joystick n'
                 #if defined(CONTROLLER_DEBUG)
                     printf("Selected controller: %s\n", selectedController->getName().c_str());
                 #endif
@@ -325,16 +325,16 @@ void LunaGameControllerManager::handleInputsForPlayer(int playerNum)
         return;
     }
 
-    // Get and player controller
+    // Get a player controller
     LunaGameControllerPlayer& player = players[playerNum - 1];
     LunaGameController* controller = getController(playerNum);
 
     // No selected controller? Nothing to do
     if (controller == nullptr)
     {
-        if (SMBXInput::getPlayerInputType(playerNum) != 0)
+        if (g_playerInputPressing[playerNum - 1].currentInputType != 0)
         {
-            SMBXInput::setPlayerInputType(playerNum, 0); // Set player 1 input type to 'keyboard'
+            g_playerInputPressing[playerNum - 1].currentInputType = 0; // Set player 1 input type to 'keyboard'
             #if defined(CONTROLLER_DEBUG)
                 printf("Selected controller: Keyboard\n");
             #endif
@@ -429,32 +429,31 @@ void LunaGameControllerManager::notifyKeyboardPress(int keycode)
         }
 
         // If the selected input type is not keyboard, maybe switch to keyboard
-        SMBXNativeKeyboard* keyboardConfig = SMBXNativeKeyboard::Get(playerNum);
         bool isConfiguredKey = (
-            (keycode == keyboardConfig->up) ||
-            (keycode == keyboardConfig->down) ||
-            (keycode == keyboardConfig->left) ||
-            (keycode == keyboardConfig->right) ||
-            (keycode == keyboardConfig->jump) ||
-            (keycode == keyboardConfig->run) ||
-            (keycode == keyboardConfig->dropitem) ||
-            (keycode == keyboardConfig->pause) ||
-            (keycode == keyboardConfig->altjump) ||
-            (keycode == keyboardConfig->altrun)
+            (keycode == g_playerKeyboardInputs[playerNum].up) ||
+            (keycode == g_playerKeyboardInputs[playerNum].down) ||
+            (keycode == g_playerKeyboardInputs[playerNum].left) ||
+            (keycode == g_playerKeyboardInputs[playerNum].right) ||
+            (keycode == g_playerKeyboardInputs[playerNum].jump) ||
+            (keycode == g_playerKeyboardInputs[playerNum].run) ||
+            (keycode == g_playerKeyboardInputs[playerNum].dropitem) ||
+            (keycode == g_playerKeyboardInputs[playerNum].pause) ||
+            (keycode == g_playerKeyboardInputs[playerNum].altjump) ||
+            (keycode == g_playerKeyboardInputs[playerNum].altrun)
             );
 
         // If the key that is pressed is configured as an input, switch to keyboard control
         if (isConfiguredKey)
         {
             if ((GM_PLAYERS_COUNT <= 1) || (!players[playerNum - 1].haveController)) {
-                if (SMBXInput::getPlayerInputType(playerNum) != 0)
+                if (g_playerInputPressing[playerNum - 1].currentInputType != 0)
                 {
                     // Clear selected flag if set
                     players[playerNum - 1].haveKeyboard = true;
                     players[playerNum - 1].haveController = false;
                     players[playerNum - 1].controllerJustDisconnected = false;
 
-                    SMBXInput::setPlayerInputType(playerNum, 0); // Set player 1 input type to 'keyboard'
+                    g_playerInputPressing[playerNum].currentInputType = 0; // Set player 1 input type to 'keyboard'
                     #if defined(CONTROLLER_DEBUG)
                         printf("Selected controller: Keyboard\n");
                     #endif

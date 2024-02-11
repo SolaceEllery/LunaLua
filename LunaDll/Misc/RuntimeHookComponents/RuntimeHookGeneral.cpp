@@ -399,10 +399,10 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
 
         // Dumb fix for the test mode pause menu when using the player keys recode
-        if(TestModeIsEnabled() && gDisablePlayerKeys && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
+        /*if(TestModeIsEnabled() && gDisablePlayerKeysLegacy && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
         {
             testModePauseMenu(true, false);
-        }
+        }*/
     }
 
     // Notify Lua code
@@ -2398,14 +2398,14 @@ void TrySkipPatch()
     
     // Hooks for preventing drawing the boot screen
     // Legacy level editor
-    PATCH(0xAE8352).CALL(&CoinSpinBitBltHook).Apply();
-    PATCH(0xAE849F).CALL(&CoinSpinBitBltHook).Apply();
-    PATCH(0xAE85E8).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE8352).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE849F).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE85E8).CALL(&CoinSpinBitBltHook).Apply();
     
     // Loading screen
-    PATCH(0xAE87D1).CALL(&CoinSpinBitBltHook).Apply();
-    PATCH(0xAE891E).CALL(&CoinSpinBitBltHook).Apply();
-    PATCH(0xAE8A67).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE87D1).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE891E).CALL(&CoinSpinBitBltHook).Apply();
+    //PATCH(0xAE8A67).CALL(&CoinSpinBitBltHook).Apply();
     
     // Remove refresh functions
     //PATCH(0xAE8618).NOP_PAD_TO_SIZE<5>().Apply();
@@ -2756,7 +2756,7 @@ void TrySkipPatch()
     PATCH(0x9B66D0).JMP(runtimeHookPlayerKill).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Hook for onPlayerKillEnd
-    PATCH(0x9B6EC0).JMP(runtimeHookPlayerKillEnd).Apply();
+    //PATCH(0x9B6EC0).JMP(runtimeHookPlayerKillEnd).Apply();
 
     // Hooks for lava-related calls to onPlayerKill
     PATCH(0x9A394D).CALL(runtimeHookPlayerCountCollisionsForWeakLava).JMP(0x9A3A36).NOP_PAD_TO_SIZE<14>().Apply();
@@ -2774,17 +2774,17 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    PATCH(0x9B26B9).CALL(runtimeHookPlayerBoundaryBottomSection).NOP_PAD_TO_SIZE<0x64>().Apply();
-    PATCH(0x9A0C67).CALL(runtimeHookPlayerBoundaryLeftSection).NOP_PAD_TO_SIZE<0x5B>().Apply();
-    PATCH(0x9A0CF1).CALL(runtimeHookPlayerBoundaryRightSection).NOP_PAD_TO_SIZE<0x41>().Apply();
-    PATCH(0x9A0E0C).CALL(runtimeHookPlayerBoundaryTopSection).NOP_PAD_TO_SIZE<0x5D>().Apply();
+    //PATCH(0x9B26B9).CALL(runtimeHookPlayerBoundaryBottomSection).NOP_PAD_TO_SIZE<100>().Apply();
+    //PATCH(0x9A0C67).CALL(runtimeHookPlayerBoundaryLeftSection).NOP_PAD_TO_SIZE<91>().Apply();
+    //PATCH(0x9A0CF1).CALL(runtimeHookPlayerBoundaryRightSection).NOP_PAD_TO_SIZE<65>().Apply();
+    //PATCH(0x9A0E0C).CALL(runtimeHookPlayerBoundaryTopSection).NOP_PAD_TO_SIZE<93>().Apply();
 
     // Hooks for when a player hits a screen edge
-    PATCH(0x9B2540).CALL(runtimeHookPlayerBoundaryLeftScreen).NOP_PAD_TO_SIZE<0x69>().Apply();
-    PATCH(0x9B25E9).CALL(runtimeHookPlayerBoundaryRightScreen).NOP_PAD_TO_SIZE<0x4F>().Apply();
+    //PATCH(0x9B2540).CALL(runtimeHookPlayerBoundaryLeftScreen).NOP_PAD_TO_SIZE<105>().Apply();
+    //PATCH(0x9B25E9).CALL(runtimeHookPlayerBoundaryRightScreen).NOP_PAD_TO_SIZE<79>().Apply();
     
     // Hooks for the player death check. See RuntimeHookHooks on why it was remade
-    PATCH(0x9B7710).JMP(runtimeHookIsAnyoneAlive).Apply();
+    //PATCH(0x9B7710).JMP(runtimeHookIsAnyoneAlive).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();

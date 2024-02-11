@@ -81,9 +81,9 @@ void Input::UpdateKeyRecords(PlayerMOB* pPlayer) {
     if(pPlayer == 0)
         return;
     
-    if(!gDisablePlayerKeys)
+    if(gDisablePlayerKeysLegacy || gDisablePlayerKeys)
     {
-        // the window is in the background, so return it
+        // return it if keys are disabled
         return;
     }
 

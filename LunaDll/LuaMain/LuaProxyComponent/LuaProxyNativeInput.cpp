@@ -2,6 +2,7 @@
 
 #include "../../SMBXInternal/NativeInput.h"
 #include "../../Defines.h"
+#include "../../SMBXInternal/Reconstructed/PlayerInput.h"
 
 #pragma warning(disable: 4800)
 
@@ -18,14 +19,14 @@ short LuaProxy::InputConfig::inputType(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     else
-        return SMBXInput::getPlayerInputType(m_index);
+        return g_playerInputPressing[m_index - 1].currentInputType;
 }
 
 void LuaProxy::InputConfig::setInputType(short inputType, lua_State* L)
 {
     if (!isValid_throw(L))
         return;
-    SMBXInput::setPlayerInputType(m_index, inputType);
+    g_playerInputPressing[m_index - 1].currentInputType = inputType;
 }
 
 
@@ -34,9 +35,9 @@ short LuaProxy::InputConfig::up(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->up;
+        return g_playerKeyboardInputs[m_index - 1].up;
     else
-        return SMBXNativeJoystick::Get(m_index)->up;
+        return g_playerControllerInputs[m_index - 1].up;
     return 0;
 }
 
@@ -45,9 +46,9 @@ short LuaProxy::InputConfig::down(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->down;
+        return g_playerKeyboardInputs[m_index - 1].down;
     else
-        return SMBXNativeJoystick::Get(m_index)->down;
+        return g_playerControllerInputs[m_index - 1].down;
     return 0;
 }
 
@@ -56,9 +57,9 @@ short LuaProxy::InputConfig::left(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->left;
+        return g_playerKeyboardInputs[m_index - 1].left;
     else
-        return SMBXNativeJoystick::Get(m_index)->left;
+        return g_playerControllerInputs[m_index - 1].left;
     return 0;
 }
 
@@ -67,9 +68,9 @@ short LuaProxy::InputConfig::right(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->right;
+        return g_playerKeyboardInputs[m_index - 1].right;
     else
-        return SMBXNativeJoystick::Get(m_index)->right;
+        return g_playerControllerInputs[m_index - 1].right;
     return 0;
 }
 
@@ -78,9 +79,9 @@ short LuaProxy::InputConfig::run(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->run;
+        return g_playerKeyboardInputs[m_index - 1].run;
     else
-        return SMBXNativeJoystick::Get(m_index)->run;
+        return g_playerControllerInputs[m_index - 1].run;
 }
 
 short LuaProxy::InputConfig::altrun(lua_State* L)
@@ -88,9 +89,9 @@ short LuaProxy::InputConfig::altrun(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->altrun;
+        return g_playerKeyboardInputs[m_index - 1].altrun;
     else
-        return SMBXNativeJoystick::Get(m_index)->altrun;
+        return g_playerControllerInputs[m_index - 1].altrun;
 }
 
 short LuaProxy::InputConfig::jump(lua_State* L)
@@ -98,9 +99,9 @@ short LuaProxy::InputConfig::jump(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->jump;
+        return g_playerKeyboardInputs[m_index - 1].jump;
     else
-        return SMBXNativeJoystick::Get(m_index)->jump;
+        return g_playerControllerInputs[m_index - 1].jump;
 }
 
 short LuaProxy::InputConfig::altjump(lua_State* L)
@@ -108,9 +109,9 @@ short LuaProxy::InputConfig::altjump(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->altjump;
+        return g_playerKeyboardInputs[m_index - 1].altjump;
     else
-        return SMBXNativeJoystick::Get(m_index)->altjump;
+        return g_playerControllerInputs[m_index - 1].altjump;
 }
 
 short LuaProxy::InputConfig::dropitem(lua_State* L)
@@ -118,9 +119,9 @@ short LuaProxy::InputConfig::dropitem(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->dropitem;
+        return g_playerKeyboardInputs[m_index - 1].dropitem;
     else
-        return SMBXNativeJoystick::Get(m_index)->dropitem;
+        return g_playerControllerInputs[m_index - 1].dropitem;
 }
 
 short LuaProxy::InputConfig::pause(lua_State* L)
@@ -128,9 +129,9 @@ short LuaProxy::InputConfig::pause(lua_State* L)
     if (!isValid_throw(L))
         return 0;
     if (inputType(L) == 0)
-        return SMBXNativeKeyboard::Get(m_index)->pause;
+        return g_playerKeyboardInputs[m_index - 1].pause;
     else
-        return SMBXNativeJoystick::Get(m_index)->pause;
+        return g_playerControllerInputs[m_index - 1].pause;
 }
 
 
@@ -139,9 +140,9 @@ void LuaProxy::InputConfig::setUp(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->up = keycode;
+        g_playerKeyboardInputs[m_index - 1].up = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->up = keycode;
+        g_playerControllerInputs[m_index - 1].up = keycode;
 }
 
 
@@ -150,9 +151,9 @@ void LuaProxy::InputConfig::setDown(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
         if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->down = keycode;
+        g_playerKeyboardInputs[m_index - 1].down = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->down = keycode;
+        g_playerControllerInputs[m_index - 1].down = keycode;
 }
 
 void LuaProxy::InputConfig::setLeft(unsigned short keycode, lua_State* L)
@@ -160,9 +161,9 @@ void LuaProxy::InputConfig::setLeft(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->left = keycode;
+        g_playerKeyboardInputs[m_index - 1].left = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->left = keycode;
+        g_playerControllerInputs[m_index - 1].left = keycode;
 }
 
 void LuaProxy::InputConfig::setRight(unsigned short keycode, lua_State* L)
@@ -170,9 +171,9 @@ void LuaProxy::InputConfig::setRight(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->right = keycode;
+        g_playerKeyboardInputs[m_index - 1].right = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->right = keycode;
+        g_playerControllerInputs[m_index - 1].right = keycode;
 }
 
 void LuaProxy::InputConfig::setRun(unsigned short keycode, lua_State* L)
@@ -180,9 +181,9 @@ void LuaProxy::InputConfig::setRun(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->run = keycode;
+        g_playerKeyboardInputs[m_index - 1].run = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->run = keycode;
+        g_playerControllerInputs[m_index - 1].run = keycode;
 }
 
 void LuaProxy::InputConfig::setAltRun(unsigned short keycode, lua_State* L)
@@ -190,9 +191,9 @@ void LuaProxy::InputConfig::setAltRun(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->altrun = keycode;
+        g_playerKeyboardInputs[m_index - 1].altrun = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->altrun = keycode;
+        g_playerControllerInputs[m_index - 1].altrun = keycode;
 }
 
 void LuaProxy::InputConfig::setJump(unsigned short keycode, lua_State* L)
@@ -200,9 +201,9 @@ void LuaProxy::InputConfig::setJump(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->jump = keycode;
+        g_playerKeyboardInputs[m_index - 1].jump = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->jump = keycode;
+        g_playerControllerInputs[m_index - 1].jump = keycode;
 }
 
 void LuaProxy::InputConfig::setAltJump(unsigned short keycode, lua_State* L)
@@ -210,9 +211,9 @@ void LuaProxy::InputConfig::setAltJump(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->altjump = keycode;
+        g_playerKeyboardInputs[m_index - 1].altjump = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->altjump = keycode;
+        g_playerControllerInputs[m_index - 1].altjump = keycode;
 }
 
 void LuaProxy::InputConfig::setDropItem(unsigned short keycode, lua_State* L)
@@ -220,9 +221,9 @@ void LuaProxy::InputConfig::setDropItem(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->dropitem = keycode;
+        g_playerKeyboardInputs[m_index - 1].dropitem = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->dropitem = keycode;
+        g_playerControllerInputs[m_index - 1].dropitem = keycode;
 }
 
 void LuaProxy::InputConfig::setPause(unsigned short keycode, lua_State* L)
@@ -230,15 +231,15 @@ void LuaProxy::InputConfig::setPause(unsigned short keycode, lua_State* L)
     if (!isValid_throw(L))
         return;
     if (inputType(L) == 0)
-        SMBXNativeKeyboard::Get(m_index)->pause = keycode;
+        g_playerKeyboardInputs[m_index - 1].pause = keycode;
     else
-        SMBXNativeJoystick::Get(m_index)->pause = keycode;
+        g_playerControllerInputs[m_index - 1].pause = keycode;
 }
 
 
 bool LuaProxy::InputConfig::isValid() const
 {
-    return (m_index == 1 || m_index == 2);
+    return (m_index >= 1 && m_index <= 200);
 }
 
 

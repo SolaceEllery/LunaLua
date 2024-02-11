@@ -66,9 +66,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // replace all the forward slashes with backward slashes
     replaceSubStrW(wldPathWS, L"/", L"\\");
 
-    // this is used for the FindSaves function
-    EpisodeMain episodeMainFunc;
-
     // this is used for setting up loadEpisode from lua after first booting an episode
     GameAutostart GameAutostartFunc;
 
@@ -203,13 +200,13 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     }
     
     // build the new episode list
-    episodeMainFunc.PopulateEpisodeList();
+    gEpisodeMain.PopulateEpisodeList();
 
     // get the episode idx for the new system
     EpisodeIdx = findEpisodeIDFromWorldFileAndPath(wldPathS);
     
     // make sure that the old system still has an episode entry, otherwise we'll crash
-    episodeMainFunc.WriteLegacyEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData);
+    gEpisodeMain.WriteLegacyEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData);
 
     // reset cheat status
     GM_CHEATED = COMBOOL(false);
@@ -376,7 +373,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     native_loadWorld(&fullPathVB6); //--OpenWorld SelectWorld(selWorld).WorldPath & SelectWorld(selWorld).WorldFile (line 4995)--
 
     // load the save file data
-    if (episodeMainFunc.FindSaves(fullPthNoWorldFileWithEndSlashS, GM_CUR_SAVE_SLOT) >= 0) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
+    if (gEpisodeMain.FindSaves(fullPthNoWorldFileWithEndSlashS, GM_CUR_SAVE_SLOT) >= 0) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
     {
         // blank out intro filename if the episode already has a save file and the intro was already played
         if(GM_HUB_STYLED_EPISODE == 0) //--If NoMap = False Then StartLevel = "" (line 4997)--
@@ -491,9 +488,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
 
 int EpisodeMain::FindSaves(std::string worldPathS, int saveSlot)
 {
-    // this is used for this function
-    EpisodeMain episodeMainFunc;
-
     // FileFormats SaveData, used for getting the save slot data
     GamesaveData saveData;
     

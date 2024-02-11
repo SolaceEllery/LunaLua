@@ -123,7 +123,7 @@ private:
 class LunaGameControllerManager
 {
 public:
-    const static int CONTROLLER_MAX_PLAYERS = 2;
+    const static int CONTROLLER_MAX_PLAYERS = 200;
 private:
     bool initDone;
     std::unordered_map<SDL_JoystickID, LunaGameController> controllerMap;

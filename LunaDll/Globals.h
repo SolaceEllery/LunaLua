@@ -25,6 +25,8 @@
 #include "GameConfig/GeneralLunaConfig.h"
 #include "EventStateMachine.h"
 #include "Input/LunaGameController.h"
+#include "SMBXInternal/Reconstructed/PlayerInput.h"
+#include "SMBXInternal/Reconstructed/EpisodeMain.h"
 
 class RenderOverrideManager;
 
@@ -154,8 +156,10 @@ extern bool            gDisablePlayerFilterBounceFix;
 // Other gameplay settings
 extern bool            gRightClickPaste;
 extern bool            gLavaIsWeak;
-extern bool            gLavaIsSafe;
 extern bool            gRunWhenUnfocused;
+
+// Player input settings
+extern bool            gDisablePlayerKeysLegacy;
 extern bool            gDisablePlayerKeys;
 extern bool            gDisablePlayerMovementAboveThree;
 
@@ -284,3 +288,6 @@ extern bool gEngineStarted;
 
 extern int gUnfocusTimer;
 extern int gFocusTimer;
+
+extern PlayerInput gPlayerInput;
+extern EpisodeMain gEpisodeMain;

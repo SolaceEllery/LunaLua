@@ -411,7 +411,6 @@ luabind::object LuaProxy::Misc::__getPerfTrackerData(lua_State* L)
 
 static luabind::object getAllEpisodes(lua_State *L)
 {
-    EpisodeMain episodeMainFunc;
     luabind::object outData = luabind::newtable(L);
     {
         size_t counter = 0;
