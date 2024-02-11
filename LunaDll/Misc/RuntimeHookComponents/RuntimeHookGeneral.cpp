@@ -2784,7 +2784,7 @@ void TrySkipPatch()
     PATCH(0x9B25E9).CALL(runtimeHookPlayerBoundaryRightScreen).NOP_PAD_TO_SIZE<0x4F>().Apply();
     
     // Hooks for the player death check. See RuntimeHookHooks on why it was remade
-    PATCH(0x9B7710).CALL(runtimeHookIsAnyoneAlive).Apply();
+    PATCH(0x9B7710).JMP(runtimeHookIsAnyoneAlive).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();
