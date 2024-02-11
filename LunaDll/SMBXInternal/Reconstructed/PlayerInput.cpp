@@ -33,7 +33,7 @@ bool PlayerInput::Toggle(bool enable)
     }
 }
 
-void PlayerInput::SetControllerControls(int type, int playerIdx, int controllerButton)
+void PlayerInput::SetControllerControls(int type, int playerIdx, int controllerButton, bool isPermanent)
 {
     if(type == 1)
     {
@@ -91,14 +91,24 @@ void PlayerInput::SetControllerControls(int type, int playerIdx, int controllerB
     {
         //Do nothing
     }
+
+    if(isPermanent)
+    {
+        gPlayerInput.RefreshAllInputs(true, false);
+    }
 }
 
-void PlayerInput::SetControllerIdx(int playerIdx, int controllerIdx)
+void PlayerInput::SetControllerIdx(int playerIdx, int controllerIdx, bool isPermanent)
 {
     g_playerControllerInputs[playerIdx].controllerID = controllerIdx;
+
+    if(isPermanent)
+    {
+        gPlayerInput.RefreshAllInputs(true, false);
+    }
 }
 
-void PlayerInput::SetKeyboardControls(int type, int playerIdx, int virtKey)
+void PlayerInput::SetKeyboardControls(int type, int playerIdx, int virtKey, bool isPermanent)
 {
     if(type == 1)
     {
@@ -156,11 +166,21 @@ void PlayerInput::SetKeyboardControls(int type, int playerIdx, int virtKey)
     {
         //Do nothing
     }
+
+    if(isPermanent)
+    {
+        gPlayerInput.RefreshAllInputs(true, false);
+    }
 }
 
-void PlayerInput::SetKeyboardIdx(int playerIdx, int keyboardIdx)
+void PlayerInput::SetKeyboardIdx(int playerIdx, int keyboardIdx, bool isPermanent)
 {
     g_playerKeyboardInputs[playerIdx].keyboardIdx = keyboardIdx;
+
+    if(isPermanent)
+    {
+        gPlayerInput.RefreshAllInputs(true, false);
+    }
 }
 
 bool PlayerInput::IsPressing(int type, int playerIdx)
@@ -482,75 +502,81 @@ void PlayerInput::RefreshAllInputs(bool isWritten, bool isRead)
         IniProcessing inputConfig(appDirToIni);
         forsim(i, 0, 199)
         {
-            if (inputConfig.beginGroup("Player " + std::to_string(i + 1) + " Controls"))
+            inputConfig.beginGroup("Player " + std::to_string(i + 1) + " Controls");
+            if(!isRead)
             {
-                if(!isRead)
-                {
-                    inputConfig.setValue("keyboard_up", g_playerKeyboardInputs[i].up);
-                    inputConfig.setValue("keyboard_down", g_playerKeyboardInputs[i].down);
-                    inputConfig.setValue("keyboard_left", g_playerKeyboardInputs[i].left);
-                    inputConfig.setValue("keyboard_right", g_playerKeyboardInputs[i].right);
-                    inputConfig.setValue("keyboard_jump", g_playerKeyboardInputs[i].jump);
-                    inputConfig.setValue("keyboard_run", g_playerKeyboardInputs[i].run);
-                    inputConfig.setValue("keyboard_dropitem", g_playerKeyboardInputs[i].dropitem);
-                    inputConfig.setValue("keyboard_pause", g_playerKeyboardInputs[i].pause);
-                    inputConfig.setValue("keyboard_altjump", g_playerKeyboardInputs[i].altjump);
-                    inputConfig.setValue("keyboard_altrun", g_playerKeyboardInputs[i].altrun);
-                    inputConfig.setValue("keyboard_special", g_playerKeyboardInputs[i].special);
-                    inputConfig.setValue("keyboard_leftTrigger", g_playerKeyboardInputs[i].leftTrigger);
-                    inputConfig.setValue("keyboard_rightTrigger", g_playerKeyboardInputs[i].rightTrigger);
+                inputConfig.setValue("keyboard_up", g_playerKeyboardInputs[i].up);
+                inputConfig.setValue("keyboard_down", g_playerKeyboardInputs[i].down);
+                inputConfig.setValue("keyboard_left", g_playerKeyboardInputs[i].left);
+                inputConfig.setValue("keyboard_right", g_playerKeyboardInputs[i].right);
+                inputConfig.setValue("keyboard_jump", g_playerKeyboardInputs[i].jump);
+                inputConfig.setValue("keyboard_run", g_playerKeyboardInputs[i].run);
+                inputConfig.setValue("keyboard_dropitem", g_playerKeyboardInputs[i].dropitem);
+                inputConfig.setValue("keyboard_pause", g_playerKeyboardInputs[i].pause);
+                inputConfig.setValue("keyboard_altjump", g_playerKeyboardInputs[i].altjump);
+                inputConfig.setValue("keyboard_altrun", g_playerKeyboardInputs[i].altrun);
+                inputConfig.setValue("keyboard_special", g_playerKeyboardInputs[i].special);
+                inputConfig.setValue("keyboard_leftTrigger", g_playerKeyboardInputs[i].leftTrigger);
+                inputConfig.setValue("keyboard_rightTrigger", g_playerKeyboardInputs[i].rightTrigger);
 
-                    inputConfig.setValue("controller_up", g_playerControllerInputs[i].up);
-                    inputConfig.setValue("controller_down", g_playerControllerInputs[i].down);
-                    inputConfig.setValue("controller_left", g_playerControllerInputs[i].left);
-                    inputConfig.setValue("controller_right", g_playerControllerInputs[i].right);
-                    inputConfig.setValue("controller_jump", g_playerControllerInputs[i].jump);
-                    inputConfig.setValue("controller_run", g_playerControllerInputs[i].run);
-                    inputConfig.setValue("controller_dropitem", g_playerControllerInputs[i].dropitem);
-                    inputConfig.setValue("controller_pause", g_playerControllerInputs[i].pause);
-                    inputConfig.setValue("controller_altjump", g_playerControllerInputs[i].altjump);
-                    inputConfig.setValue("controller_altrun", g_playerControllerInputs[i].altrun);
-                    inputConfig.setValue("controller_special", g_playerControllerInputs[i].special);
-                    inputConfig.setValue("controller_leftTrigger", g_playerControllerInputs[i].leftTrigger);
-                    inputConfig.setValue("controller_rightTrigger", g_playerControllerInputs[i].rightTrigger);
-                }
-                else
-                {
-                    g_playerKeyboardInputs[i].up = inputConfig.value("keyboard_up", VK_UP).toInt();
-                    g_playerKeyboardInputs[i].down = inputConfig.value("keyboard_down", VK_DOWN).toInt();
-                    g_playerKeyboardInputs[i].left = inputConfig.value("keyboard_left", VK_LEFT).toInt();
-                    g_playerKeyboardInputs[i].right = inputConfig.value("keyboard_right", VK_RIGHT).toInt();
-                    g_playerKeyboardInputs[i].jump = inputConfig.value("keyboard_jump", VK_X).toInt();
-                    g_playerKeyboardInputs[i].run = inputConfig.value("keyboard_run", VK_Z).toInt();
-                    g_playerKeyboardInputs[i].dropitem = inputConfig.value("keyboard_dropitem", VK_SHIFT).toInt();
-                    g_playerKeyboardInputs[i].pause = inputConfig.value("keyboard_pause", VK_ESCAPE).toInt();
-                    g_playerKeyboardInputs[i].altjump = inputConfig.value("keyboard_altjump", VK_A).toInt();
-                    g_playerKeyboardInputs[i].altrun = inputConfig.value("keyboard_altrun", VK_S).toInt();
-                    g_playerKeyboardInputs[i].special = inputConfig.value("keyboard_special", VK_D).toInt();
-                    g_playerKeyboardInputs[i].leftTrigger = inputConfig.value("keyboard_leftTrigger", VK_Q).toInt();
-                    g_playerKeyboardInputs[i].rightTrigger = inputConfig.value("keyboard_rightTrigger", VK_W).toInt();
+                inputConfig.setValue("keyboard_inputType", g_playerKeyboardInputs[i].keyboardIdx);
 
-                    g_playerControllerInputs[i].up = inputConfig.value("controller_up", 0).toInt();
-                    g_playerControllerInputs[i].down = inputConfig.value("controller_down", 1).toInt();
-                    g_playerControllerInputs[i].left = inputConfig.value("controller_left", 2).toInt();
-                    g_playerControllerInputs[i].right = inputConfig.value("controller_right", 3).toInt();
-                    g_playerControllerInputs[i].jump = inputConfig.value("controller_jump", 1).toInt();
-                    g_playerControllerInputs[i].run = inputConfig.value("controller_run", 2).toInt();
-                    g_playerControllerInputs[i].dropitem = inputConfig.value("controller_dropitem", 10).toInt();
-                    g_playerControllerInputs[i].pause = inputConfig.value("controller_pause", 7).toInt();
-                    g_playerControllerInputs[i].altjump = inputConfig.value("controller_altjump", 11).toInt();
-                    g_playerControllerInputs[i].altrun = inputConfig.value("controller_altrun", 3).toInt();
-                    g_playerControllerInputs[i].special = inputConfig.value("controller_special", 0).toInt();
-                    g_playerControllerInputs[i].leftTrigger = inputConfig.value("controller_leftTrigger", 4).toInt();
-                    g_playerControllerInputs[i].rightTrigger = inputConfig.value("controller_rightTrigger", 5).toInt();
-                }
+                inputConfig.setValue("controller_up", g_playerControllerInputs[i].up);
+                inputConfig.setValue("controller_down", g_playerControllerInputs[i].down);
+                inputConfig.setValue("controller_left", g_playerControllerInputs[i].left);
+                inputConfig.setValue("controller_right", g_playerControllerInputs[i].right);
+                inputConfig.setValue("controller_jump", g_playerControllerInputs[i].jump);
+                inputConfig.setValue("controller_run", g_playerControllerInputs[i].run);
+                inputConfig.setValue("controller_dropitem", g_playerControllerInputs[i].dropitem);
+                inputConfig.setValue("controller_pause", g_playerControllerInputs[i].pause);
+                inputConfig.setValue("controller_altjump", g_playerControllerInputs[i].altjump);
+                inputConfig.setValue("controller_altrun", g_playerControllerInputs[i].altrun);
+                inputConfig.setValue("controller_special", g_playerControllerInputs[i].special);
+                inputConfig.setValue("controller_leftTrigger", g_playerControllerInputs[i].leftTrigger);
+                inputConfig.setValue("controller_rightTrigger", g_playerControllerInputs[i].rightTrigger);
+                
+                inputConfig.setValue("controller_inputType", g_playerControllerInputs[i].controllerID);
             }
+            else
+            {
+                g_playerKeyboardInputs[i].up = inputConfig.value("keyboard_up", VK_UP).toInt();
+                g_playerKeyboardInputs[i].down = inputConfig.value("keyboard_down", VK_DOWN).toInt();
+                g_playerKeyboardInputs[i].left = inputConfig.value("keyboard_left", VK_LEFT).toInt();
+                g_playerKeyboardInputs[i].right = inputConfig.value("keyboard_right", VK_RIGHT).toInt();
+                g_playerKeyboardInputs[i].jump = inputConfig.value("keyboard_jump", VK_X).toInt();
+                g_playerKeyboardInputs[i].run = inputConfig.value("keyboard_run", VK_Z).toInt();
+                g_playerKeyboardInputs[i].dropitem = inputConfig.value("keyboard_dropitem", VK_SHIFT).toInt();
+                g_playerKeyboardInputs[i].pause = inputConfig.value("keyboard_pause", VK_ESCAPE).toInt();
+                g_playerKeyboardInputs[i].altjump = inputConfig.value("keyboard_altjump", VK_A).toInt();
+                g_playerKeyboardInputs[i].altrun = inputConfig.value("keyboard_altrun", VK_S).toInt();
+                g_playerKeyboardInputs[i].special = inputConfig.value("keyboard_special", VK_D).toInt();
+                g_playerKeyboardInputs[i].leftTrigger = inputConfig.value("keyboard_leftTrigger", VK_Q).toInt();
+                g_playerKeyboardInputs[i].rightTrigger = inputConfig.value("keyboard_rightTrigger", VK_W).toInt();
+
+                g_playerKeyboardInputs[i].keyboardIdx = inputConfig.value("keyboard_inputType", 0).toInt();
+
+                g_playerControllerInputs[i].up = inputConfig.value("controller_up", 0).toInt();
+                g_playerControllerInputs[i].down = inputConfig.value("controller_down", 1).toInt();
+                g_playerControllerInputs[i].left = inputConfig.value("controller_left", 2).toInt();
+                g_playerControllerInputs[i].right = inputConfig.value("controller_right", 3).toInt();
+                g_playerControllerInputs[i].jump = inputConfig.value("controller_jump", 1).toInt();
+                g_playerControllerInputs[i].run = inputConfig.value("controller_run", 2).toInt();
+                g_playerControllerInputs[i].dropitem = inputConfig.value("controller_dropitem", 10).toInt();
+                g_playerControllerInputs[i].pause = inputConfig.value("controller_pause", 7).toInt();
+                g_playerControllerInputs[i].altjump = inputConfig.value("controller_altjump", 11).toInt();
+                g_playerControllerInputs[i].altrun = inputConfig.value("controller_altrun", 3).toInt();
+                g_playerControllerInputs[i].special = inputConfig.value("controller_special", 0).toInt();
+                g_playerControllerInputs[i].leftTrigger = inputConfig.value("controller_leftTrigger", 4).toInt();
+                g_playerControllerInputs[i].rightTrigger = inputConfig.value("controller_rightTrigger", 5).toInt();
+
+                g_playerControllerInputs[i].controllerID = inputConfig.value("controller_inputType", 0).toInt();
+            }
+            inputConfig.endGroup();
         }
         if(!isRead)
         {
             inputConfig.writeIniFile();
         }
-        inputConfig.endGroup();
         inputConfig.close();
     }
 }
@@ -568,40 +594,43 @@ void PlayerInput::ResetAllInputs()
             g_playerControllerInputs[i].Reset();
             g_playerInputPressing[i].Reset();
 
-            if (inputConfig.beginGroup("Player " + std::to_string(i + 1) + " Controls"))
-            {
-                inputConfig.setValue("keyboard_up", g_playerKeyboardInputs[i].up);
-                inputConfig.setValue("keyboard_down", g_playerKeyboardInputs[i].down);
-                inputConfig.setValue("keyboard_left", g_playerKeyboardInputs[i].left);
-                inputConfig.setValue("keyboard_right", g_playerKeyboardInputs[i].right);
-                inputConfig.setValue("keyboard_jump", g_playerKeyboardInputs[i].jump);
-                inputConfig.setValue("keyboard_run", g_playerKeyboardInputs[i].run);
-                inputConfig.setValue("keyboard_dropitem", g_playerKeyboardInputs[i].dropitem);
-                inputConfig.setValue("keyboard_pause", g_playerKeyboardInputs[i].pause);
-                inputConfig.setValue("keyboard_altjump", g_playerKeyboardInputs[i].altjump);
-                inputConfig.setValue("keyboard_altrun", g_playerKeyboardInputs[i].altrun);
-                inputConfig.setValue("keyboard_special", g_playerKeyboardInputs[i].special);
-                inputConfig.setValue("keyboard_leftTrigger", g_playerKeyboardInputs[i].leftTrigger);
-                inputConfig.setValue("keyboard_rightTrigger", g_playerKeyboardInputs[i].rightTrigger);
+            inputConfig.beginGroup("Player " + std::to_string(i + 1) + " Controls");
+ 
+            inputConfig.setValue("keyboard_up", g_playerKeyboardInputs[i].up);
+            inputConfig.setValue("keyboard_down", g_playerKeyboardInputs[i].down);
+            inputConfig.setValue("keyboard_left", g_playerKeyboardInputs[i].left);
+            inputConfig.setValue("keyboard_right", g_playerKeyboardInputs[i].right);
+            inputConfig.setValue("keyboard_jump", g_playerKeyboardInputs[i].jump);
+            inputConfig.setValue("keyboard_run", g_playerKeyboardInputs[i].run);
+            inputConfig.setValue("keyboard_dropitem", g_playerKeyboardInputs[i].dropitem);
+            inputConfig.setValue("keyboard_pause", g_playerKeyboardInputs[i].pause);
+            inputConfig.setValue("keyboard_altjump", g_playerKeyboardInputs[i].altjump);
+            inputConfig.setValue("keyboard_altrun", g_playerKeyboardInputs[i].altrun);
+            inputConfig.setValue("keyboard_special", g_playerKeyboardInputs[i].special);
+            inputConfig.setValue("keyboard_leftTrigger", g_playerKeyboardInputs[i].leftTrigger);
+            inputConfig.setValue("keyboard_rightTrigger", g_playerKeyboardInputs[i].rightTrigger);
 
-                inputConfig.setValue("controller_up", g_playerControllerInputs[i].up);
-                inputConfig.setValue("controller_down", g_playerControllerInputs[i].down);
-                inputConfig.setValue("controller_left", g_playerControllerInputs[i].left);
-                inputConfig.setValue("controller_right", g_playerControllerInputs[i].right);
-                inputConfig.setValue("controller_jump", g_playerControllerInputs[i].jump);
-                inputConfig.setValue("controller_run", g_playerControllerInputs[i].run);
-                inputConfig.setValue("controller_dropitem", g_playerControllerInputs[i].dropitem);
-                inputConfig.setValue("controller_pause", g_playerControllerInputs[i].pause);
-                inputConfig.setValue("controller_altjump", g_playerControllerInputs[i].altjump);
-                inputConfig.setValue("controller_altrun", g_playerControllerInputs[i].altrun);
-                inputConfig.setValue("controller_special", g_playerControllerInputs[i].special);
-                inputConfig.setValue("controller_leftTrigger", g_playerControllerInputs[i].leftTrigger);
-                inputConfig.setValue("controller_rightTrigger", g_playerControllerInputs[i].rightTrigger);
-            }
+            inputConfig.setValue("keyboard_inputType", g_playerKeyboardInputs[i].keyboardIdx);
+
+            inputConfig.setValue("controller_up", g_playerControllerInputs[i].up);
+            inputConfig.setValue("controller_down", g_playerControllerInputs[i].down);
+            inputConfig.setValue("controller_left", g_playerControllerInputs[i].left);
+            inputConfig.setValue("controller_right", g_playerControllerInputs[i].right);
+            inputConfig.setValue("controller_jump", g_playerControllerInputs[i].jump);
+            inputConfig.setValue("controller_run", g_playerControllerInputs[i].run);
+            inputConfig.setValue("controller_dropitem", g_playerControllerInputs[i].dropitem);
+            inputConfig.setValue("controller_pause", g_playerControllerInputs[i].pause);
+            inputConfig.setValue("controller_altjump", g_playerControllerInputs[i].altjump);
+            inputConfig.setValue("controller_altrun", g_playerControllerInputs[i].altrun);
+            inputConfig.setValue("controller_special", g_playerControllerInputs[i].special);
+            inputConfig.setValue("controller_leftTrigger", g_playerControllerInputs[i].leftTrigger);
+            inputConfig.setValue("controller_rightTrigger", g_playerControllerInputs[i].rightTrigger);
+            
+            inputConfig.setValue("controller_inputType", g_playerControllerInputs[i].controllerID);
+
+            inputConfig.endGroup();
         }
-        
         inputConfig.writeIniFile();
-        inputConfig.endGroup();
         inputConfig.close();
     }
 }

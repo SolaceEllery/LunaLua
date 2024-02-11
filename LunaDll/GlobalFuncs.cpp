@@ -36,7 +36,7 @@
 #include <filesystem>
 
 #pragma comment (lib,"urlmon.lib")
-#include <libgit2/include/git2.h>
+#include <git2.h>
 #include "Misc/LoadScreen.h"
 
 #include "SMBXInternal/Reconstructed/EpisodeMain.h"

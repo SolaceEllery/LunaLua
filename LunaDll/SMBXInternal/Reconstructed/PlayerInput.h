@@ -159,11 +159,11 @@ class PlayerInput {
         PlayerInput();
         ~PlayerInput();
 
-        void SetControllerControls(int type, int playerIdx, int controllerButton);
-        void SetKeyboardControls(int type, int playerIdx, int virtKey);
+        void SetControllerControls(int type, int playerIdx, int controllerButton, bool isPermanent);
+        void SetKeyboardControls(int type, int playerIdx, int virtKey, bool isPermanent);
         
-        void SetKeyboardIdx(int playerIdx, int keyboardIdx);
-        void SetControllerIdx(int playerIdx, int controllerIdx);
+        void SetKeyboardIdx(int playerIdx, int keyboardIdx, bool isPermanent);
+        void SetControllerIdx(int playerIdx, int controllerIdx, bool isPermanent);
 
         void SetPressing(int type, int playerIdx, bool value);
         bool IsPressing(int type, int playerIdx);

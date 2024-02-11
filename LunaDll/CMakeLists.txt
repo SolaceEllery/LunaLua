@@ -6,10 +6,14 @@ add_definitions(
     -DUNICODE
     -D_UNICODE
     -DNOMINMAX
+    -DFREEI
+    -DFREEIMAGE_USE_INTERNAL_LIBJPEG
+    -DFREEIMAGE_USE_INTERNAL_LIBPNG
+    -DFREEIMAGE_LITE
 )
 
+set(CMAKE_CURRENT_LIST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /MANIFEST:NO")
-
 include(libs/PGE_File_Formats/pge_file_library.cmake)
 
 include_directories(
@@ -17,14 +21,18 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/lua/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/sdl/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/glew/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/freeimage
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/freeimage-seemod/src/Source
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libgit2/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/include
 )
 
 link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/lua/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/sdl/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/glew/lib/Release/Win32
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/freeimage
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/freeimage-seemod
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libgit2/lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/lib
 )
 
 set(LunaLua_LibsSources
@@ -80,6 +88,61 @@ set(LunaLua_LibsSources
     libs/luabind-deboostified/src/stack_content_by_name.cpp
     libs/luabind-deboostified/src/weak_ref.cpp
     libs/luabind-deboostified/src/wrapper_base.cpp
+    
+    libs/freeimage-seemod/src/Source/FreeImage/BitmapAccess.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ColorLookup.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/FreeImage.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/FreeImageIO.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/GetType.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/MemoryIO.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/PixelAccess.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Plugin.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/PluginBMP.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/PluginGIF.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/PluginICO.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/PluginPNG.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion16_555.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion16_565.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion24.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion32.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion4.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Conversion8.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionFloat.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionRGB16.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionRGBA16.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionRGBAF.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionRGBF.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionType.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ConversionUINT16.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/Halftoning.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/tmoColorConvert.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/tmoDrago03.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/tmoFattal02.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/tmoReinhard05.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ToneMapping.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/LFPQuantizer.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/NNQuantizer.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/WuQuantizer.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/CacheFile.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/MultiPage.cpp
+    libs/freeimage-seemod/src/Source/FreeImage/ZLibInterface.cpp
+    libs/freeimage-seemod/src/Source/Metadata/FIRational.cpp
+    libs/freeimage-seemod/src/Source/Metadata/FreeImageTag.cpp
+    libs/freeimage-seemod/src/Source/Metadata/IPTC.cpp
+    libs/freeimage-seemod/src/Source/Metadata/TagConversion.cpp
+    libs/freeimage-seemod/src/Source/Metadata/TagLib.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Background.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/BSplineRotate.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Channels.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/ClassicRotate.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Colors.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/CopyPaste.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Display.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Flip.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/MultigridPoissonSolver.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Rescale.cpp
+    libs/freeimage-seemod/src/Source/FreeImageToolkit/Resize.cpp
 
     ../LunaLoader/LunaLoaderPatch.cpp
 )
@@ -159,6 +222,7 @@ set(LunaLua_Sources
     LuaMain/LuaProxy.cpp
     LuaMain/LuaProxyFFI.cpp
     LuaMain/LuaProxyFFIGraphics.cpp
+    LuaMain/LuaProxyFFIPlayers.cpp
     LuaMain/LuaSharedProxy.cpp
     LuaMain/LunaLuaMain.cpp
     Main.cpp
@@ -248,6 +312,11 @@ set(LunaLua_Sources
     SMBXInternal/SMBXEvents.cpp
     SMBXInternal/Sound.cpp
     SMBXInternal/WorldLevel.cpp
+    SMBXInternal/Reconstructed/EpisodeMain.cpp
+    SMBXInternal/Reconstructed/PlayerInput.cpp
+    Misc/MonitorSystem.cpp
+    Misc/BootSystem.cpp
+    Misc/AsmPatch.cpp
     UserSaves/UserSaving.cpp
     VersionString.cpp
     LunaDll.rc
@@ -258,6 +327,8 @@ add_library(LunaLuaLibShared MODULE
     ${LunaLua_LibsSources}
     ${PGE_FILE_LIBRARY_SRCS}
 )
+
+target_link_libraries(LunaLuaLibShared ${CMAKE_CURRENT_SOURCE_DIR}/libs/freeimage-seemod/src/Source)
 
 set_target_properties(LunaLuaLibShared PROPERTIES
     OUTPUT_NAME LunaDll
@@ -281,6 +352,7 @@ target_compile_definitions(LunaLuaLibShared PRIVATE
 
 target_link_libraries(LunaLuaLibShared
     FreeImageLite
+    FreeImageLite-static
     SDL2
     SDL2main
     SDL2_mixer_ext
@@ -308,4 +380,5 @@ target_link_libraries(LunaLuaLibShared
     comsuppw
     opengl32
     delayimp
+    git2
 )

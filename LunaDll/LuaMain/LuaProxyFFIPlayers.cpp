@@ -17,27 +17,27 @@ extern "C" {
     }
 
     // Input configuration (Keyboard)
-    FFI_EXPORT(void) LunaLuaChangePlayerKeysKeyboard(int type, int playerIdx, int virtKey)
+    FFI_EXPORT(void) LunaLuaChangePlayerKeysKeyboard(int type, int playerIdx, int virtKey, bool isPermanent)
     {
-        gPlayerInput.SetKeyboardControls(type, playerIdx, virtKey);
+        gPlayerInput.SetKeyboardControls(type, playerIdx, virtKey, isPermanent);
     }
 
     // Input configuration (Controller)
-    FFI_EXPORT(void) LunaLuaChangePlayerKeysController(int type, int playerIdx, int controllerIdx)
+    FFI_EXPORT(void) LunaLuaChangePlayerKeysController(int type, int playerIdx, int controllerIdx, bool isPermanent)
     {
-        gPlayerInput.SetControllerControls(type, playerIdx, controllerIdx);
+        gPlayerInput.SetControllerControls(type, playerIdx, controllerIdx, isPermanent);
     }
 
     // Input keyboard idx changing
-    FFI_EXPORT(void) LunaLuaChangePlayerKeyboard(int playerIdx, int keyboardIdx)
+    FFI_EXPORT(void) LunaLuaChangePlayerKeyboard(int playerIdx, int keyboardIdx, bool isPermanent)
     {
-        gPlayerInput.SetKeyboardIdx(playerIdx, keyboardIdx);
+        gPlayerInput.SetKeyboardIdx(playerIdx, keyboardIdx, isPermanent);
     }
 
     // Input controller idx changing
-    FFI_EXPORT(void) LunaLuaChangePlayerController(int playerIdx, int controllerIdx)
+    FFI_EXPORT(void) LunaLuaChangePlayerController(int playerIdx, int controllerIdx, bool isPermanent)
     {
-        gPlayerInput.SetControllerIdx(playerIdx, controllerIdx);
+        gPlayerInput.SetControllerIdx(playerIdx, controllerIdx, isPermanent);
     }
 
     // Is the player pressing a key?

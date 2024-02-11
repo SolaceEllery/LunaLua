@@ -1,0 +1,10 @@
+set(LIBGIT2_SRCS)
+
+file(GLOB LIBGIT2_HEADS
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/git2/*.h
+)
+
+list(APPEND LIBGIT2_SRCS ${LIBGIT2_HEADS})
+
+add_definitions(-DLIBGIT2)
+list(APPEND LIBGIT2_SRCS LunaLua_LibsSources)
