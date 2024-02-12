@@ -1556,7 +1556,7 @@ extern void __stdcall RenderLevelHook()
     g_renderDoneCameraUpdate = 0;
     RenderLevelReal();
 
-    //gPlayerInput.Update();
+    gPlayerInput.Update();
 
     MusicManager::update();
 
@@ -1634,7 +1634,7 @@ extern void __stdcall RenderWorldHook()
     g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
 
-    //gPlayerInput.Update();
+    gPlayerInput.Update();
 
     MusicManager::update();
 
