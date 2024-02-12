@@ -456,6 +456,8 @@ void __stdcall runtimeHookLegacyTitleScreenMouseUp(void);
 void __stdcall runtimeHookLegacyTitleScreenMouseDown(void);
 void __stdcall runtimeHookLegacyTitleScreenMouseMove(void);
 
+void __stdcall runtimeHookGrabbedNPCCollisionGroup(void);
+
 void __stdcall runtimeHookCheckInputRaw(void);
 
 void __stdcall runtimeHookSetHDCRaw(void);

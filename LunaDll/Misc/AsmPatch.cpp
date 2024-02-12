@@ -3,8 +3,10 @@
 #include <cinttypes>
 #include "AsmPatch.h"
 
-/*static*/ std::map<std::pair<const char*, uintptr_t>, AsmRange*> AsmRange::mCache;
-/*static*/ AsmRange* AsmRange::mFirst = nullptr;
+/*static*/ std::vector<AsmRange> AsmRange::mAlloc;
+/*static*/ std::map<std::pair<const char*, uintptr_t>, std::intptr_t> AsmRange::mCache;
+/*static*/ std::intptr_t AsmRange::mFirstIdx = -1;
+/*static*/ bool AsmRange::mStartChecks = false;
 
 /*static*/ bool MemoryUnlock::UnProtect(void* addr, std::size_t size, unsigned long* oldFlags)
 {
