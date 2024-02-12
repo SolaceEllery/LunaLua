@@ -689,7 +689,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     {
         if (keyDown)
         {
-            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardIdx + 1);
+            ProcessRawKeyPress(vkey, scanCode, repeated, keyboardIdx);
         }
     }
 }
