@@ -1088,7 +1088,8 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                     //Refresh all devices, if any has been connected or disconnected
                     HID_RefreshDevices();
                 }
-                break;
+
+                return DefWindowProcW(hwnd, uMsg, wParam, lParam);
             }
             case WM_MOUSEMOVE:
                 gMouseHandler.OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), wParam);
@@ -1447,7 +1448,7 @@ void HID_GetAllRawMouses()
     // If we have more than 10 keyboards inserted, let the player know
     if(numberOfMouses > 9)
     {
-        numberOfMouses = 10;
+        numberOfMouses = 9;
         error = "Unfortunately, only 10 mice can be connected at maximum for the engine. Please disconnect an extra mouse, then refresh the device status again.";
         MessageBoxA(NULL, error.c_str(), "Mouse Error", NULL);
     }
@@ -1467,7 +1468,7 @@ void HID_GetAllRawMouses()
 
 int HID_GetMouseCount()
 {
-    return (int)numberOfMouses;
+    return (int)numberOfMouses + 1;
 }
 
 // -----------
@@ -1477,10 +1478,13 @@ int HID_GetMouseCount()
 bool HID_RegisterDevices()
 {
     // Set up the keyboard system
-    UINT numKeyBoards = numberOfKeyboards;
-    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
+    static const UINT realKeyCount = HID_GetKeyboardCount() - 1;
+    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[realKeyCount];
+    int success = 0;
+    UINT* cbSize = new UINT[realKeyCount];
+    UINT totalCbSize = 0;
     
-    for(int i = 0; i <= numberOfKeyboards; i++)
+    for(int i = 0; i <= realKeyCount; i++)
     {
         // Set HID_USAGE_PAGE_GENERIC
         rid[i].usUsagePage = 0x01;
@@ -1488,18 +1492,25 @@ bool HID_RegisterDevices()
         // Set HID_USAGE_GENERIC_KEYBOARD
         rid[i].usUsage = 0x06;
 
-        // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
+        // Set the flags for keyboards
         rid[i].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
 
         // Set the SMBX window as our target
         rid[i].hwndTarget = gMainWindowHwnd;
+
+        if(realKeyCount >= i)
+        {
+            totalCbSize = totalCbSize + sizeof(rid[i]);
+            break;
+        }
     }
-
+    
     // Register all keyboards
-    int success = RegisterRawInputDevices(rid, numberOfKeyboards, sizeof(rid));
+    success = RegisterRawInputDevices(rid, HID_GetKeyboardCount(), totalCbSize);
 
-    // Delete the rid
+    // Delete what is still stored in memory
     delete [] rid;
+    delete [] cbSize;
 
     // Return it
     return success;
@@ -1571,8 +1582,8 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Override window proc
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
-                // Get all the raw keyboards
-                HID_GetAllRawKeyboards();
+                // Get all the raw devices
+                HID_RefreshDevices();
 
                 // Register for the raw input API for keyboards, as well as register for input connection detection
                 HID_RegisterDevices();
@@ -1583,7 +1594,7 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Set initial window title right away, since we blocked what was causing VB to set it
                 SetWindowTextW(gMainWindowHwnd, GM_GAMETITLE_1.ptr);
                 
-                // Finally, resize the window and resolution if set
+                // Finally, resize the window and resolution if the episode sets to do so
                 if(gEpisodeSettings.episodeWidth != 800 || gEpisodeSettings.episodeHeight != 600)
                 {
                     auto obj = std::make_shared<GLEngineCmd_SetFramebufferSize>();
@@ -2777,17 +2788,17 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    //PATCH(0x9B26B9).CALL(runtimeHookPlayerBoundaryBottomSection).NOP_PAD_TO_SIZE<100>().Apply();
-    //PATCH(0x9A0C67).CALL(runtimeHookPlayerBoundaryLeftSection).NOP_PAD_TO_SIZE<91>().Apply();
-    //PATCH(0x9A0CF1).CALL(runtimeHookPlayerBoundaryRightSection).NOP_PAD_TO_SIZE<65>().Apply();
-    //PATCH(0x9A0E0C).CALL(runtimeHookPlayerBoundaryTopSection).NOP_PAD_TO_SIZE<93>().Apply();
+    PATCH(0x9B26B9).PUSH_IMM32(0x9B271E).JMP(runtimeHookPlayerBoundaryBottomSection).Apply();
+    PATCH(0x9A0C67).PUSH_IMM32(0x9A0CC0).JMP(runtimeHookPlayerBoundaryLeftSection).Apply();
+    PATCH(0x9A0CF1).PUSH_IMM32(0x9A0D33).JMP(runtimeHookPlayerBoundaryRightSection).Apply();
+    PATCH(0x9A0E0C).PUSH_IMM32(0x9A0E51).JMP(runtimeHookPlayerBoundaryTopSection).Apply();
 
     // Hooks for when a player hits a screen edge
-    //PATCH(0x9B2540).CALL(runtimeHookPlayerBoundaryLeftScreen).NOP_PAD_TO_SIZE<105>().Apply();
-    //PATCH(0x9B25E9).CALL(runtimeHookPlayerBoundaryRightScreen).NOP_PAD_TO_SIZE<79>().Apply();
+    PATCH(0x9B2540).PUSH_IMM32(0x9B25AA).JMP(runtimeHookPlayerBoundaryLeftScreen).Apply();
+    PATCH(0x9B25E9).PUSH_IMM32(0x9B2639).JMP(runtimeHookPlayerBoundaryRightScreen).Apply();
     
     // Hooks for the player death check. See RuntimeHookHooks on why it was remade
-    //PATCH(0x9B7710).JMP(runtimeHookIsAnyoneAlive).Apply();
+    PATCH(0x9B7710).PUSH_IMM32(0x9B7775).JMP(runtimeHookIsAnyoneAlive).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();
