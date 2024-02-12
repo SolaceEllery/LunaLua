@@ -389,8 +389,8 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
 {
     static WCHAR unicodeData[32] = { 0 };
 
-    bool ctrlPressed = (gKeyState[keyboardIdx][VK_CONTROL] & 0x80) != 0;
-    bool altPressed = (gKeyState[keyboardIdx][VK_MENU] & 0x80) != 0;
+    bool ctrlPressed = (gKeyState[keyboardIdx - 1][VK_CONTROL] & 0x80) != 0;
+    bool altPressed = (gKeyState[keyboardIdx - 1][VK_MENU] & 0x80) != 0;
     bool plainPress = (!repeated) && (!altPressed) && (!ctrlPressed);
     
     // Notify game controller manager and player input overhaul system
@@ -413,7 +413,7 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         ) {
         std::shared_ptr<Event> keyboardPressEvent = std::make_shared<Event>("onKeyboardPress", false);
 
-        int unicodeRet = ToUnicode(virtKey, scanCode, gKeyState[keyboardIdx], unicodeData, 32, 0);
+        int unicodeRet = ToUnicode(virtKey, scanCode, gKeyState[keyboardIdx - 1], unicodeData, 32, 0);
 
         if (unicodeRet > 0)
         {
@@ -546,7 +546,7 @@ static void SendLuaRawKeyEventRepeated(uint32_t virtKey, bool isDown, int keyboa
         if (cKey != 0) {
             gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx + 1);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
         }
     }
 }
@@ -559,18 +559,18 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
         if (cKey != 0) {
             gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx + 1);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
         }
     }
 }
 
 static int GetKeyboardIDListing(int id)
 {
-    for(int i = 0; i <= 9; i++)
+    for(int i = 1; i <= HID_GetKeyboardCount(); i++)
     {
-        if(keyboardDeviceList[i].keyboardID == id)
+        if(keyboardDeviceList[i - 1].keyboardID == id)
         {
-            return i - 1;
+            return i;
         }
     }
     return -1;
@@ -580,11 +580,11 @@ static int GetKeyboardToPressKeysWith(HANDLE hDevice)
 {
     int finalKey = -1;
     int hDeviceInt = (int)hDevice;
-    for(int i = 0; i <= 9; i++)
+    for(int i = 1; i <= HID_GetKeyboardCount(); i++)
     {
-        if(keyboardDeviceList[i].keyboardID == hDeviceInt)
+        if(keyboardDeviceList[i - 1].keyboardID == hDeviceInt)
         {
-            finalKey = keyboardDeviceList[i].keyboardID;
+            finalKey = keyboardDeviceList[i - 1].keyboardID;
         }
     }
     return finalKey;
@@ -600,36 +600,36 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
         case VK_CONTROL:
             if (prefixFlag == 0)
             {
-                gKeyState[keyboardIdx][VK_LCONTROL] = -1;
+                gKeyState[keyboardIdx - 1][VK_LCONTROL] = -1;
                 vkey = VK_LCONTROL;
             }
             else if (prefixFlag == RI_KEY_E0)
             {
-                gKeyState[keyboardIdx][VK_RCONTROL] = -1;
+                gKeyState[keyboardIdx - 1][VK_RCONTROL] = -1;
                 vkey = VK_RCONTROL;
             }
             break;
         case VK_MENU:
             if (prefixFlag == 0)
             {
-                gKeyState[keyboardIdx][VK_LMENU] = -1;
+                gKeyState[keyboardIdx - 1][VK_LMENU] = -1;
                 vkey = VK_LMENU;
             }
             else if (prefixFlag == RI_KEY_E0)
             {
-                gKeyState[keyboardIdx][VK_RMENU] = -1;
+                gKeyState[keyboardIdx - 1][VK_RMENU] = -1;
                 vkey = VK_RMENU;
             }
             break;
         case VK_SHIFT:
             if ((scanCode == 0x2a) && (prefixFlag == 0))
             {
-                gKeyState[keyboardIdx][VK_LSHIFT] = -1;
+                gKeyState[keyboardIdx - 1][VK_LSHIFT] = -1;
                 vkey = VK_LSHIFT;
             }
             else if ((scanCode == 0x36) && (prefixFlag == 0))
             {
-                gKeyState[keyboardIdx][VK_RSHIFT] = -1;
+                gKeyState[keyboardIdx - 1][VK_RSHIFT] = -1;
                 vkey = VK_RSHIFT;
             }
             break;
@@ -638,7 +638,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     }
     
     // Generate previous key state and repeat flags
-    bool keyWasDown = (gKeyState[keyboardIdx][vkey]) & 0x80 != 0;
+    bool keyWasDown = (gKeyState[keyboardIdx - 1][vkey]) & 0x80 != 0;
     bool repeated = keyDown && keyWasDown;
 
     // Update key state
@@ -646,7 +646,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     if ((vkey == VK_CAPITAL) || (vkey == VK_NUMLOCK) || (vkey == VK_SCROLL))
     {
         // Special case to keep track of toggle state
-        // Note: Theoretically we should be able to use gKeyState[keyboardIdx][vkey] instead of
+        // Note: Theoretically we should be able to use gKeyState[keyboardIdx - 1][vkey] instead of
         //       GetKeyState(vkey) as long as we initilize the toggle state when first running
         //       however let's just use GetKeyState(vkey) to avoid needing to do that and maybe
         //       avoid a risk of getting out of sync (though I don't think it'd be possible)
@@ -654,22 +654,22 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
         // Compensate for how this runs before the GetKeyState state is updated
         u8NewState ^= (keyDown && !repeated) ? 0x01 : 0x00;
     }
-    gKeyState[keyboardIdx][vkey] = (int)(u8NewState);
+    gKeyState[keyboardIdx - 1][vkey] = (int)(u8NewState);
 
     // For key states that should or go together from left and right, handle that
     switch (vkey)
     {
         case VK_LCONTROL:
         case VK_RCONTROL:
-            gKeyState[keyboardIdx][VK_CONTROL] = COMBOOL((gKeyState[keyboardIdx][VK_LCONTROL] || gKeyState[keyboardIdx][VK_RCONTROL]));
+            gKeyState[keyboardIdx - 1][VK_CONTROL] = COMBOOL((gKeyState[keyboardIdx - 1][VK_LCONTROL] || gKeyState[keyboardIdx - 1][VK_RCONTROL]));
             break;
         case VK_LMENU:
         case VK_RMENU:
-            gKeyState[keyboardIdx][VK_MENU] = COMBOOL((gKeyState[keyboardIdx][VK_LMENU] || vkey == gKeyState[keyboardIdx][VK_RMENU]));
+            gKeyState[keyboardIdx - 1][VK_MENU] = COMBOOL((gKeyState[keyboardIdx - 1][VK_LMENU] || vkey == gKeyState[keyboardIdx - 1][VK_RMENU]));
             break;
         case VK_LSHIFT:
         case VK_RSHIFT:
-            gKeyState[keyboardIdx][VK_SHIFT] = COMBOOL((gKeyState[keyboardIdx][VK_LSHIFT] || gKeyState[keyboardIdx][VK_RSHIFT]));
+            gKeyState[keyboardIdx - 1][VK_SHIFT] = COMBOOL((gKeyState[keyboardIdx - 1][VK_LSHIFT] || gKeyState[keyboardIdx - 1][VK_RSHIFT]));
             break;
         default:
             break;
@@ -678,12 +678,12 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     // Send lua onRawKeyPress/Release events
     if (!repeated)
     {
-        SendLuaRawKeyEvent(vkey, keyDown, keyboardIdx + 1);
+        SendLuaRawKeyEvent(vkey, keyDown, keyboardIdx);
     }
     else
     {
         // Send lua onRawKeyDown/Up events
-        SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx + 1);
+        SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx);
     }
     // If window is focused, and key is down, run keypress handling
     if (haveFocus)
@@ -1480,10 +1480,11 @@ bool HID_RegisterDevices()
     HID_RefreshDevices();
 
     // Set up the keyboard system
-    static const UINT realKeyCount = HID_GetKeyboardCount() - 1;
+    static UINT realKeyCount = HID_GetKeyboardCount() - 1;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[realKeyCount];
+
     int success = 0;
-    UINT* cbSize = new UINT[realKeyCount];
+
     UINT totalCbSize = 0;
     
     for(int i = 0; i <= realKeyCount; i++)
@@ -1500,7 +1501,7 @@ bool HID_RegisterDevices()
         // Set the SMBX window as our target
         rid[i].hwndTarget = gMainWindowHwnd;
 
-        if(realKeyCount >= i)
+        if(i >= realKeyCount)
         {
             totalCbSize = totalCbSize + sizeof(rid[i]);
             break;
@@ -1512,7 +1513,6 @@ bool HID_RegisterDevices()
 
     // Delete what is still stored in memory
     delete [] rid;
-    delete [] cbSize;
 
     // Return it
     return success;
