@@ -403,7 +403,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
             SMBXPath::Get(i)->visible = COMBOOL(true); //--WorldPath(A).Active = True (line 5009)--
 
             // now get sceneries
-            for(int i = 1; i <= GM_SCENERY_COUNT; i++) //--For B = 1 To numScenes (line 5010)--
+            for(int j = 1; j <= GM_SCENERY_COUNT; j++) //--For B = 1 To numScenes (line 5010)--
             {
                 // check the collision of paths and sceneries
                 if(CheckCollision(tempLocation, SMBXScenery::Get(j)->momentum)) //--If CheckCollision(tempLocation, Scene(B).Location) Then Scene(B).Active = False (line 5011)--
