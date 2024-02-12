@@ -243,12 +243,6 @@ void LunaDLLInit()
     
     // Reset all inputs if inputs.ini is not found
     gPlayerInput.ResetAllInputs();
-    // Read the inputs from inputs.ini
-    gPlayerInput.RefreshAllInputs(false, true);
-
-    // Set to disable all the legacy player keys and toggle the input overhaul
-    gDisablePlayerKeysLegacy = true;
-    gPlayerInputOverhaulToggled = true;
 
     TrySkipPatch();
 
@@ -359,6 +353,13 @@ int OnLvlLoad() {
     //PGE DBG STUFF
     //readAndWriteNPCSettings();
     //overwriteFunc();
+
+    // Read the inputs from inputs.ini
+    gPlayerInput.RefreshAllInputs(false, true);
+
+    // Set to disable all the legacy player keys and toggle the input overhaul
+    gDisablePlayerKeysLegacy = true;
+    gPlayerInputOverhaulToggled = true;
 
     return 0;
 }

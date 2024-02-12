@@ -2813,7 +2813,7 @@ void __stdcall runtimeHookLoadDefaultControls(void)
     // Draw replacement splash screen if we have one
     if(gEpisodeSettings.useLegacyBootScreen)
     {
-        //drawReplacementSplashScreen();
+        drawReplacementSplashScreen();
     }
     
     // Run the regular load default controls...
