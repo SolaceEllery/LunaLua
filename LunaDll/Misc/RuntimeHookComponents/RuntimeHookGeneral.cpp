@@ -1468,7 +1468,7 @@ void HID_GetAllRawMouses()
 
 int HID_GetMouseCount()
 {
-    return (int)numberOfMouses + 1;
+    return (int)numberOfMouses;
 }
 
 // -----------
@@ -1516,26 +1516,10 @@ bool HID_RegisterDevices()
     return success;
 }
 
-void HID_UnregisterDevices()
-{
-    RAWINPUTDEVICE rid;
-    rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-    rid.usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
-    rid.dwFlags = RIDEV_REMOVE;
-    rid.hwndTarget = NULL;
-
-    RegisterRawInputDevices(&rid, 1, sizeof(rid));
-}
-
 void HID_RefreshDevices()
 {
     HID_GetAllRawKeyboards();
     HID_GetAllRawMouses();
-}
-
-void HID_QuitDevices()
-{
-    //HID_UnregisterDevices();
 }
 
 //----

@@ -126,9 +126,7 @@ extern int HID_GetMouseCount();
 
 
 extern bool HID_RegisterDevices();
-extern void HID_UnregisterDevices();
 extern void HID_RefreshDevices();
-extern void HID_QuitDevices();
 
 
 
