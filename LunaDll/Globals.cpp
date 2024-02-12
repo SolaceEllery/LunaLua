@@ -45,7 +45,7 @@ bool gLavaIsWeak = false;
 bool gRunWhenUnfocused = false;
 
 // Player input settings
-bool gDisablePlayerKeysLegacy = true;
+bool gDisablePlayerKeysLegacy = false;
 bool gDisablePlayerKeys = false;
 bool gDisablePlayerMovementAboveThree = true;
 

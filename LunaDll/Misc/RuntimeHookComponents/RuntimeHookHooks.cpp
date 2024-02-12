@@ -870,14 +870,14 @@ extern void __stdcall runtimeHookUpdateInput()
 {
     if (gMainWindowFocused)
     {
-        if(!gDisablePlayerKeys)
-        {
-            // If player keys are disabled, the following won't happen
-            gLunaGameControllerManager.pollInputs();
-            gEscPressedRegistered = gEscPressed;
-            gEscPressed = false;
-            updateInput_Orig();
-        }
+        //if(!gDisablePlayerKeys)
+        //{
+        // If player keys are disabled, the following won't happen
+        gLunaGameControllerManager.pollInputs();
+        gEscPressedRegistered = gEscPressed;
+        gEscPressed = false;
+        updateInput_Orig();
+        //}
     }
 }
 
@@ -1553,7 +1553,7 @@ extern void __stdcall RenderLevelHook()
     g_renderDoneCameraUpdate = 0;
     RenderLevelReal();
 
-    gPlayerInput.Update();
+    //gPlayerInput.Update();
 
     MusicManager::update();
 
@@ -1631,7 +1631,7 @@ extern void __stdcall RenderWorldHook()
     g_EventHandler.hookWorldRenderStart();
     RenderWorldReal();
 
-    gPlayerInput.Update();
+    //gPlayerInput.Update();
 
     MusicManager::update();
 

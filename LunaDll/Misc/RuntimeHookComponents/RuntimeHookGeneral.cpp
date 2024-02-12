@@ -737,14 +737,14 @@ static void ProcessRawInput(HWND hwnd, HRAWINPUT hRawInput, bool haveFocus)
     int keyboardIdx = GetKeyboardIDListing(keyboardID);
     int hDeviceInt = (int)hDevice;
     
-    if(hDeviceInt == keyboardID)
-    {
-        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
-    }
-    else
-    {
-        ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
-    }
+    //if(hDeviceInt == keyboardID)
+    //{
+        //ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, keyboardID, keyboardIdx, keyDown, haveFocus);
+    //}
+    //else
+    //{
+    ProcessRawInput_OrigFunc(vkey, scanCode, prefixFlag, 0, 0, keyDown, haveFocus);
+    //}
 }
 
 static int UpdateWindowSizeForDPI(int currentDpi, int newDpi, SIZE* pSize)
@@ -1477,28 +1477,30 @@ bool HID_RegisterDevices()
 {
     // Set up the keyboard system
     UINT numKeyBoards = numberOfKeyboards;
-    RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
+    //RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[numKeyBoards];
+
+    RAWINPUTDEVICE rid;
     
-    forsim(i, 0, numberOfKeyboards)
-    {
-        // Set HID_USAGE_PAGE_GENERIC
-        rid[i].usUsagePage = 0x01;
+    //forsim(i, 0, numberOfKeyboards)
+    //{
+    // Set HID_USAGE_PAGE_GENERIC
+    rid.usUsagePage = 0x01;
 
-        // Set HID_USAGE_GENERIC_KEYBOARD
-        rid[i].usUsage = 0x06;
+    // Set HID_USAGE_GENERIC_KEYBOARD
+    rid.usUsage = 0x06;
 
-        // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
-        rid[i].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+    // Set 2 flags for keyboards: One will recieve input, and the other will notify for any input changes.
+    rid.dwFlags = RIDEV_INPUTSINK;// | RIDEV_DEVNOTIFY;
 
-        // Set the SMBX window as our target
-        rid[i].hwndTarget = gMainWindowHwnd;
-    }
+    // Set the SMBX window as our target
+    rid.hwndTarget = gMainWindowHwnd;
+    //}
 
     // Register all keyboards
-    int success = RegisterRawInputDevices(rid, numKeyBoards, sizeof(rid));
+    int success = RegisterRawInputDevices(&rid, 1, sizeof(rid));
 
     // Delete the rid
-    delete [] rid;
+    //delete [] rid;
 
     // Return it
     return success;

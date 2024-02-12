@@ -358,8 +358,8 @@ int OnLvlLoad() {
     gPlayerInput.RefreshAllInputs(false, true);
 
     // Set to disable all the legacy player keys and toggle the input overhaul
-    gDisablePlayerKeysLegacy = true;
-    gPlayerInputOverhaulToggled = true;
+    //gDisablePlayerKeysLegacy = true;
+    //gPlayerInputOverhaulToggled = true;
 
     return 0;
 }

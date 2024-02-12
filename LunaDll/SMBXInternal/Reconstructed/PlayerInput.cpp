@@ -23,12 +23,14 @@ bool PlayerInput::Toggle(bool enable)
 {
     if(enable)
     {
-        gDisablePlayerKeys = true;
+        gDisablePlayerKeysLegacy = true;
+        gPlayerInputOverhaulToggled = true;
         return true;
     }
     else
     {
-        gDisablePlayerKeys = false;
+        gDisablePlayerKeysLegacy = false;
+        gPlayerInputOverhaulToggled = false;
         return false;
     }
 }
@@ -335,61 +337,61 @@ void PlayerInput::Update()
 
             if(upPressing)
             {
-                p->keymap.upKeyState = COMBOOL(true);
+                p->keymap.upKeyState = -1;
                 g_playerInputPressing[playerIdxC].upPressing = true;
             }
             
             if(downPressing)
             {
-                p->keymap.downKeyState = COMBOOL(true);
+                p->keymap.downKeyState = -1;
                 g_playerInputPressing[playerIdxC].downPressing = true;
             }
             
             if(leftPressing)
             {
-                p->keymap.leftKeyState = COMBOOL(true);
+                p->keymap.leftKeyState = -1;
                 g_playerInputPressing[playerIdxC].leftPressing = true;
             }
             
             if(rightPressing)
             {
-                p->keymap.rightKeyState = COMBOOL(true);
+                p->keymap.rightKeyState = -1;
                 g_playerInputPressing[playerIdxC].rightPressing = true;
             }
             
             if(jumpPressing)
             {
-                p->keymap.jumpKeyState = COMBOOL(true);
+                p->keymap.jumpKeyState = -1;
                 g_playerInputPressing[playerIdxC].jumpPressing = true;
             }
 
             if(altJumpPressing)
             {
-                p->keymap.altJumpKeyState = COMBOOL(true);
+                p->keymap.altJumpKeyState = -1;
                 g_playerInputPressing[playerIdxC].altjumpPressing = true;
             }
 
             if(runPressing)
             {
-                p->keymap.runKeyState = COMBOOL(true);
+                p->keymap.runKeyState = -1;
                 g_playerInputPressing[playerIdxC].runPressing = true;
             }
 
             if(altRunPressing)
             {
-                p->keymap.altRunKeyState = COMBOOL(true);
+                p->keymap.altRunKeyState = -1;
                 g_playerInputPressing[playerIdxC].altrunPressing = true;
             }
 
             if(dropItemPressing)
             {
-                p->keymap.dropItemKeyState = COMBOOL(true);
+                p->keymap.dropItemKeyState = -1;
                 g_playerInputPressing[playerIdxC].dropitemPressing = true;
             }
 
             if(pausePressing)
             {
-                p->keymap.pauseKeyState = COMBOOL(true);
+                p->keymap.pauseKeyState = -1;
                 g_playerInputPressing[playerIdxC].pausePressing = true;
             }
 
@@ -413,61 +415,61 @@ void PlayerInput::Update()
 
             if(!upPressing)
             {
-                p->keymap.upKeyState = COMBOOL(false);
+                p->keymap.upKeyState = 0;
                 g_playerInputPressing[playerIdxC].upPressing = false;
             }
             
             if(!downPressing)
             {
-                p->keymap.downKeyState = COMBOOL(false);
+                p->keymap.downKeyState = 0;
                 g_playerInputPressing[playerIdxC].downPressing = false;
             }
             
             if(!leftPressing)
             {
-                p->keymap.leftKeyState = COMBOOL(false);
+                p->keymap.leftKeyState = 0;
                 g_playerInputPressing[playerIdxC].leftPressing = false;
             }
             
             if(!rightPressing)
             {
-                p->keymap.rightKeyState = COMBOOL(false);
+                p->keymap.rightKeyState = 0;
                 g_playerInputPressing[playerIdxC].rightPressing = false;
             }
             
             if(!jumpPressing)
             {
-                p->keymap.jumpKeyState = COMBOOL(false);
+                p->keymap.jumpKeyState = 0;
                 g_playerInputPressing[playerIdxC].jumpPressing = false;
             }
 
             if(!altJumpPressing)
             {
-                p->keymap.altJumpKeyState = COMBOOL(false);
+                p->keymap.altJumpKeyState = 0;
                 g_playerInputPressing[playerIdxC].altjumpPressing = false;
             }
 
             if(!runPressing)
             {
-                p->keymap.runKeyState = COMBOOL(false);
+                p->keymap.runKeyState = 0;
                 g_playerInputPressing[playerIdxC].runPressing = false;
             }
 
             if(!altRunPressing)
             {
-                p->keymap.altRunKeyState = COMBOOL(false);
+                p->keymap.altRunKeyState = 0;
                 g_playerInputPressing[playerIdxC].altrunPressing = false;
             }
 
             if(!dropItemPressing)
             {
-                p->keymap.dropItemKeyState = COMBOOL(false);
+                p->keymap.dropItemKeyState = 0;
                 g_playerInputPressing[playerIdxC].dropitemPressing = false;
             }
 
             if(!pausePressing)
             {
-                p->keymap.pauseKeyState = COMBOOL(false);
+                p->keymap.pauseKeyState = 0;
                 g_playerInputPressing[playerIdxC].pausePressing = false;
             }
 
