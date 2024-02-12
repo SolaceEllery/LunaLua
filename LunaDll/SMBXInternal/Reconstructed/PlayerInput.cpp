@@ -23,13 +23,13 @@ bool PlayerInput::Toggle(bool enable)
 {
     if(enable)
     {
-        gDisablePlayerKeysLegacy = true;
+        gDisablePlayerKeysLegacy = false;
         gPlayerInputOverhaulToggled = true;
         return true;
     }
     else
     {
-        gDisablePlayerKeysLegacy = false;
+        gDisablePlayerKeysLegacy = true;
         gPlayerInputOverhaulToggled = false;
         return false;
     }
@@ -315,7 +315,7 @@ void PlayerInput::Update()
 {
     if(gPlayerInputOverhaulToggled)
     {
-        forsim(i, 1, GM_PLAYERS_COUNT)
+        for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
         {
             PlayerMOB* p = Player::Get(i);
             int playerIdxC = i - 1;
@@ -502,7 +502,7 @@ void PlayerInput::RefreshAllInputs(bool isWritten, bool isRead)
     if(file_existsX(appDirToIni))
     {
         IniProcessing inputConfig(appDirToIni);
-        forsim(i, 0, 199)
+        for(int i = 0; i <= 199; i++)
         {
             inputConfig.beginGroup("Player " + std::to_string(i + 1) + " Controls");
             if(!isRead)
@@ -590,7 +590,7 @@ void PlayerInput::ResetAllInputs()
     {
         std::wstring appDirToIniWS = Str2WStr(appDirToIni);
         IniProcessing inputConfig(appDirToIni);
-        forsim(i, 0, 199)
+        for(int i = 0; i <= 199; i++)
         {
             g_playerKeyboardInputs[i].Reset();
             g_playerControllerInputs[i].Reset();

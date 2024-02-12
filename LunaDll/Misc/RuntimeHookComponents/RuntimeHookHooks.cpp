@@ -870,14 +870,17 @@ extern void __stdcall runtimeHookUpdateInput()
 {
     if (gMainWindowFocused)
     {
-        //if(!gDisablePlayerKeys)
-        //{
-        // If player keys are disabled, the following won't happen
-        gLunaGameControllerManager.pollInputs();
-        gEscPressedRegistered = gEscPressed;
-        gEscPressed = false;
-        updateInput_Orig();
-        //}
+        if(!gDisablePlayerKeys)
+        {
+            // If player keys are disabled, the following won't happen
+            gLunaGameControllerManager.pollInputs();
+            gEscPressedRegistered = gEscPressed;
+            gEscPressed = false;
+        }
+        if(!gDisablePlayerKeysLegacy)
+        {
+            updateInput_Orig();
+        }
     }
 }
 
@@ -4773,7 +4776,7 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
 {
     // This was remade to configure how far the player falls down until dying
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4787,7 +4790,7 @@ void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4801,7 +4804,7 @@ void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4815,7 +4818,7 @@ void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4831,7 +4834,7 @@ void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4845,7 +4848,7 @@ void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
 void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    forsim(i, 1, 200)
+    for(int i = 1; i <= 200; i++)
     {
         PlayerMOB* p = Player::Get(i);
         short* currentSection(&p->CurrentSection);
@@ -4863,7 +4866,7 @@ int16_t __stdcall runtimeHookIsAnyoneAlive()
 {
     if(GM_PLAYERS_COUNT > 0 && gEpisodeLoadedOnBoot)
     {
-        forsim(i, 1, GM_PLAYERS_COUNT)
+        for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
         {
             PlayerMOB* p = Player::Get(i);
             if(p->DeathState == 0)

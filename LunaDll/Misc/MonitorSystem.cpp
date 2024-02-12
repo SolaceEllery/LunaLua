@@ -43,7 +43,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
 
 void MonitorSystem::SetupMonitors()
 {
-    forsim(i, 0, 9)
+    for(int i = 0; i <= 9; i++)
     {
         monitorInformation[i].Reset();
     }
