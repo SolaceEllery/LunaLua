@@ -682,6 +682,7 @@ static void ProcessRawInput_OrigFunc(uint16_t vkey, uint16_t scanCode, uint8_t p
     }
     else
     {
+        // Send lua onRawKeyDown/Up events
         SendLuaRawKeyEventRepeated(vkey, keyDown, keyboardIdx + 1);
     }
     // If window is focused, and key is down, run keypress handling
@@ -1495,7 +1496,7 @@ bool HID_RegisterDevices()
     }
 
     // Register all keyboards
-    int success = RegisterRawInputDevices(&rid, numberOfKeyboards, sizeof(rid));
+    int success = RegisterRawInputDevices(rid, numberOfKeyboards, sizeof(rid));
 
     // Delete the rid
     delete [] rid;
