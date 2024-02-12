@@ -1477,6 +1477,8 @@ int HID_GetMouseCount()
 
 bool HID_RegisterDevices()
 {
+    HID_RefreshDevices();
+
     // Set up the keyboard system
     static const UINT realKeyCount = HID_GetKeyboardCount() - 1;
     RAWINPUTDEVICE* rid = new RAWINPUTDEVICE[realKeyCount];
@@ -1566,10 +1568,7 @@ LRESULT CALLBACK MsgHOOKProc(int nCode, WPARAM wParam, LPARAM lParam)
                 // Override window proc
                 gMainWindowProc = (WNDPROC)SetWindowLongPtrW(gMainWindowHwnd, GWLP_WNDPROC, (LONG_PTR)HandleWndProc);
 
-                // Get all the raw devices
-                HID_RefreshDevices();
-
-                // Register for the raw input API for keyboards, as well as register for input connection detection
+                // Get all the raw devices, AND Register for the raw input API for keyboards, as well as register for input connection detection
                 HID_RegisterDevices();
                 
                 // Setup the monitors for the many SEE Mod functions
