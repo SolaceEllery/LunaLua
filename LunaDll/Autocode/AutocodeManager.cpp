@@ -151,17 +151,17 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
         lineNum++;
 
         // Is it a comment?
-        char *commentLine = SDL_strstr(wbuf, "//");
+        char *commentLine = SDL_strstr((char*)wbuf, "//");
         if(commentLine != nullptr)
         {
             commentLine[0] = '\0'; // Cut the comment line here
         }
         
         // Does this line contain anything useful?
-        size_t wbuflen = SDL_strlen(wbuf);
+        size_t wbuflen = SDL_strlen((char*)wbuf);
         while(wbuflen > 0)
         {
-            auto c = wbuf[wbuflen - 1]
+            auto c = wbuf[wbuflen - 1];
             if(c != L'\n' && c != L'\r' && c != L'\t' && c != L' ')
                 break;
             wbuf[wbuflen - 1] = '\0';
