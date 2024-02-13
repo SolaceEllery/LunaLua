@@ -97,13 +97,26 @@ void DeathCounter::Save()
     lunaDLLConfig.close();
 }
 
+int DeathCounter::CheckLiving()
+{
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
+    {
+        PlayerMOB* demo = Player::Get(i);
+        if(demo->DeathTimer == 0 && demo->DeathState == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void DeathCounter::UpdateDeaths(bool isSaved)
 {
-    if(!SMBX13::Functions::LivingPlayers())
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
-        for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
+        PlayerMOB* demo = Player::Get(i);
+        if(gDeathCounter.CheckLiving() == 0)
         {
-            PlayerMOB* demo = Player::Get(i);
             if(demo->DeathTimer == 50)
             {
                 gDeathCounter.CurrentDeaths++;

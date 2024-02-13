@@ -21,6 +21,7 @@ struct DeathCounter
     void Draw();
     void Quit();
 
+    int CheckLiving();
     void SaveLevelRecord(std::wstring levelFilename, IniProcessing currentIniFile);
     void UpdateDeaths(bool isSaved);
     void Recount();
