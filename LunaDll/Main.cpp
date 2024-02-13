@@ -144,6 +144,9 @@ static void Episode_SetEpisodeIni()
             
             // Automatically resizes the camera to the framebuffer on every level load. This might cause issues, which is why this is set to false by default.
             gEpisodeSettings.resizeMainCamera = episodeConfig.value("autoresize-camera-to-framebuffer", false).toBool();
+
+            // Can the game, when unfocused, show a paused overlay on the middle of the window?
+            gEpisodeSettings.showPauseOverlay = episodeConfig.value("show-unfocused-pause-overlay", true).toBool();
         }
         episodeConfig.endGroup();
     }
@@ -353,13 +356,6 @@ int OnLvlLoad() {
     //PGE DBG STUFF
     //readAndWriteNPCSettings();
     //overwriteFunc();
-
-    // Read the inputs from inputs.ini
-    gPlayerInput.RefreshAllInputs(false, true);
-
-    // Set to disable all the legacy player keys and toggle the input overhaul
-    gDisablePlayerKeysLegacy = true;
-    gPlayerInputOverhaulToggled = true;
 
     return 0;
 }

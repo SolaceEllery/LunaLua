@@ -728,13 +728,13 @@ void __stdcall runtimeHookPlayerNPCCollisionCheck9AE8FA(void);
 void __stdcall runtimeHookPlayerNPCCollisionCheck9ABC0B(void);
 void __stdcall runtimeHookPlayerPlayerInteraction(void);
 
-void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID);
-void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID);
-void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID);
-void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryBottomSection(void);
+void __stdcall runtimeHookPlayerBoundaryLeftSection(void);
+void __stdcall runtimeHookPlayerBoundaryRightSection(void);
+void __stdcall runtimeHookPlayerBoundaryTopSection(void);
 
-void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID);
-void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID);
+void __stdcall runtimeHookPlayerBoundaryLeftScreen(void);
+void __stdcall runtimeHookPlayerBoundaryRightScreen(void);
 
 void __stdcall runtimeHookBlockNPCFilter(void);
 void __stdcall runtimeHookNPCCollisionGroup(void);
@@ -745,7 +745,7 @@ void __stdcall runtimeHookPlayerHarm(void);
 void __stdcall runtimeHookPlayerKill(short* playerIdxPtr);
 void __stdcall runtimeHookPlayerKillEnd(short* playerIdx);
 
-int16_t __stdcall runtimeHookIsAnyoneAlive(void);
+uint16_t __stdcall runtimeHookIsAnyoneAlive(void);
 
 void __stdcall runtimeHookWarpEnter(void);
 void __stdcall runtimeHookWarpInstant(void);

@@ -238,6 +238,7 @@ void LunaGameControllerManager::handleInputs()
                 players[playerNum - 1].joyId = selectedController->getJoyId();
                 players[playerNum - 1].haveKeyboard = false;
                 players[playerNum - 1].haveController = true;
+                g_playerControllerInputs[playerNum - 1].controllerID = playerNum;
 
                 g_playerInputPressing[playerNum - 1].currentInputType = playerNum; // Set player n input type to 'joystick n'
                 #if defined(CONTROLLER_DEBUG)
@@ -258,12 +259,12 @@ void LunaGameControllerManager::handleInputs()
         }
 
         // Nothing for further(?) players
-        for (int playerNum = playerCount + 1; playerNum <= CONTROLLER_MAX_PLAYERS; playerNum++)
+        /*for (int playerNum = playerCount + 1; playerNum <= CONTROLLER_MAX_PLAYERS; playerNum++)
         {
             players[playerNum - 1].haveKeyboard = false;
             players[playerNum - 1].haveController = false;
             players[playerNum - 1].joyId = 0;
-        }
+        }*/
     }
 
     // Update controller state for each player

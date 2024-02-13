@@ -110,6 +110,8 @@ struct EpisodeSettings
     int episodeHeight;
     bool resizeMainCamera;
     
+    bool showPauseOverlay;
+    
     EpisodeSettings() :
         episodeDirectory(L""), episodeDirectoryWithoutRoot(L""),
         usingCustomSplash(false), episodeBootImage(L""),
@@ -117,7 +119,8 @@ struct EpisodeSettings
         displayOriginalCredits(false), display13Credits(false), useEpisodeDirectoryForCredits(false),
         creditsLvlFile(L"outro.lvlx"),
         canSaveEpisode(true), canCheatAndSave(false),
-        episodeWidth(800), episodeHeight(600), resizeMainCamera(false)
+        episodeWidth(800), episodeHeight(600), resizeMainCamera(false),
+        showPauseOverlay(true)
     {
     }
 };

@@ -1001,7 +1001,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 int keyboardIdx = GetKeyboardIDListing(keyboardID);
 
                 // Allow free sizing when CTRL is held
-                if ((gKeyState[keyboardIdx][VK_CONTROL] & 0x80) != 0)
+                if ((gKeyState[keyboardIdx - 1][VK_CONTROL] & 0x80) != 0)
                 {
                     break;
                 }
@@ -2771,17 +2771,17 @@ void TrySkipPatch()
     PATCH(0x9D7037).JMP(runtimeHookWarpDoor).NOP_PAD_TO_SIZE<6>().Apply();
     
     // Hooks for when the player hits a boundary
-    PATCH(0x9B26B9).PUSH_IMM32(0x9B271E).JMP(runtimeHookPlayerBoundaryBottomSection).Apply();
-    PATCH(0x9A0C67).PUSH_IMM32(0x9A0CC0).JMP(runtimeHookPlayerBoundaryLeftSection).Apply();
-    PATCH(0x9A0CF1).PUSH_IMM32(0x9A0D33).JMP(runtimeHookPlayerBoundaryRightSection).Apply();
-    PATCH(0x9A0E0C).PUSH_IMM32(0x9A0E51).JMP(runtimeHookPlayerBoundaryTopSection).Apply();
+    //PATCH(0x9B26CB).PUSH_IMM32(0x9B271E).JMP(runtimeHookPlayerBoundaryBottomSection).Apply();
+    //PATCH(0x9A0C6F).PUSH_IMM32(0x9A0CC0).JMP(runtimeHookPlayerBoundaryLeftSection).Apply();
+    //PATCH(0x9A0CC7).PUSH_IMM32(0x9A0D00).JMP(runtimeHookPlayerBoundaryRightSection).Apply();
+    //PATCH(0x9A0E1A).PUSH_IMM32(0x9A0E51).JMP(runtimeHookPlayerBoundaryTopSection).Apply();
 
     // Hooks for when a player hits a screen edge
-    PATCH(0x9B2540).PUSH_IMM32(0x9B25AA).JMP(runtimeHookPlayerBoundaryLeftScreen).Apply();
-    PATCH(0x9B25E9).PUSH_IMM32(0x9B2639).JMP(runtimeHookPlayerBoundaryRightScreen).Apply();
+    //PATCH(0x9B2540).PUSH_IMM32(0x9B25AA).JMP(runtimeHookPlayerBoundaryLeftScreen).Apply();
+    //PATCH(0x9B25E9).PUSH_IMM32(0x9B2639).JMP(runtimeHookPlayerBoundaryRightScreen).Apply();
     
     // Hooks for the player death check. See RuntimeHookHooks on why it was remade
-    PATCH(0x9B7710).PUSH_IMM32(0x9B7775).JMP(runtimeHookIsAnyoneAlive).Apply();
+    //PATCH(0x9B7710).PUSH_IMM32(0x9B7767).JMP(runtimeHookIsAnyoneAlive).Apply();
 
     // Hooks for populating world map
     PATCH(0x8E35E0).JMP(runtimeHookLoadWorldList).NOP_PAD_TO_SIZE<6>().Apply();

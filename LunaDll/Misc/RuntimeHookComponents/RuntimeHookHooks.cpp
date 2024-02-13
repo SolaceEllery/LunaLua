@@ -55,6 +55,8 @@
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
 #include "../../Misc/VB6Bool.h"
+#include "../../SMBXInternal/Functions.h"
+#include "../../SMBXInternal/Types.h"
 
 void CheckIPCQuitRequest();
 
@@ -212,6 +214,8 @@ extern int __stdcall LoadWorld()
             gPlayerStoredCharacters[i-1] = Player::Get(i)->Identity;
         }
     }
+    
+    gPlayerInput.RefreshAllInputs(false, true);
 
     short plValue = GM_PLAYERS_COUNT;
 #ifndef __MINGW32__
@@ -1557,7 +1561,6 @@ extern void __stdcall RenderLevelHook()
     RenderLevelReal();
 
     gPlayerInput.Update();
-
     MusicManager::update();
 
     g_renderDoneCameraUpdate = oldRenderDoneCameraUpdate;
@@ -1635,7 +1638,6 @@ extern void __stdcall RenderWorldHook()
     RenderWorldReal();
 
     gPlayerInput.Update();
-
     MusicManager::update();
 
     if (g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
@@ -3142,51 +3144,60 @@ _declspec(naked) void __stdcall runtimeHookStoreCustomMusicPathWrapper(void)
 
 void __stdcall runtimeHookCheckWindowFocus()
 {
-    if (!gMainWindowFocused && !LunaLoadScreenIsActive() && !gRunWhenUnfocused)
+    if(!gRunWhenUnfocused && !LunaLoadScreenIsActive())
     {
-        if(gUnfocusTimer > 0)
+        if(!gMainWindowFocused)
         {
-            gUnfocusTimer--;
-        }
-        if(gUnfocusTimer == 1)
-        {
-            gFocusTimer = 2;
-            if (gLunaLua.isValid()) {
-                std::shared_ptr<Event> unfocusedEvent = std::make_shared<Event>("onUnfocusWindow", false);
-                unfocusedEvent->setDirectEventName("onUnfocusWindow");
-                unfocusedEvent->setLoopable(false);
-                gLunaLua.callEvent(unfocusedEvent);
-            }
-        }
-        else if(gUnfocusTimer <= 0)
-        {
-            // During this block of code, pause music if it was playing
-            PGE_MusPlayer::DeferralLock musicPauseLock(true);
-
-            // Wait for focus
-            TestModeSendNotification("suspendWhileUnfocusedNotification");
-            while (!gMainWindowFocused && !LunaLoadScreenIsActive())
+            if(gUnfocusTimer > 0)
             {
-                Sleep(100);
-                LunaDllWaitFrame(false);
+                gFocusTimer = 2;
+                gUnfocusTimer--;
             }
-            TestModeSendNotification("resumeAfterUnfocusedNotification");
+            if(gUnfocusTimer == 1)
+            {
+                if (gLunaLua.isValid()) {
+                    std::shared_ptr<Event> unfocusedEvent = std::make_shared<Event>("onUnfocusWindow", false);
+                    unfocusedEvent->setDirectEventName("onUnfocusWindow");
+                    unfocusedEvent->setLoopable(false);
+                    gLunaLua.callEvent(unfocusedEvent);
+                }
+            }
+            if(gUnfocusTimer <= 0)
+            {
+                // During this block of code, pause music if it was playing
+                PGE_MusPlayer::DeferralLock musicPauseLock(true);
+
+                // Show pause overlay if the episode has it on
+                if(gEpisodeSettings.showPauseOverlay)
+                {
+                    g_GLEngine.EndFrame(nullptr, false, true, false, true);
+                }
+
+                // Wait for focus
+                TestModeSendNotification("suspendWhileUnfocusedNotification");
+                while (!gMainWindowFocused && !LunaLoadScreenIsActive())
+                {
+                    Sleep(100);
+                    LunaDllWaitFrame(false);
+                }
+                TestModeSendNotification("resumeAfterUnfocusedNotification");
+            }
         }
-    }
-    else if (gMainWindowFocused && !LunaLoadScreenIsActive())
-    {
-        if(gFocusTimer > 0)
+        else if(gMainWindowFocused)
         {
-            gFocusTimer--;
-        }
-        if(gFocusTimer == 1)
-        {
-            gUnfocusTimer = 2;
-            if (gLunaLua.isValid()) {
-                std::shared_ptr<Event> focusedEvent = std::make_shared<Event>("onFocusWindow", false);
-                focusedEvent->setDirectEventName("onFocusWindow");
-                focusedEvent->setLoopable(false);
-                gLunaLua.callEvent(focusedEvent);
+            if(gFocusTimer > 0)
+            {
+                gFocusTimer--;
+                gUnfocusTimer = 2;
+            }
+            if(gFocusTimer == 1)
+            {
+                if (gLunaLua.isValid()) {
+                    std::shared_ptr<Event> focusedEvent = std::make_shared<Event>("onFocusWindow", false);
+                    focusedEvent->setDirectEventName("onFocusWindow");
+                    focusedEvent->setLoopable(false);
+                    gLunaLua.callEvent(focusedEvent);
+                }
             }
         }
     }
@@ -4662,8 +4673,7 @@ static void __stdcall playerBoundaryBottom(int playerIdx)
             gLunaLua.callEvent(playerBoundsBottom, playerIdx, 4);
         }
 
-        short* playerIdxPtr = (short*)(playerIdx + (PlayerMOB*)GM_PLAYERS_PTR);
-        runtimeHookPlayerKill(playerIdxPtr);
+        SMBX13::Functions::PlayerDead(playerIdx);
     }
 }
 
@@ -4773,107 +4783,84 @@ static void __stdcall playerBoundaryRight(bool isScreen, int playerIdx)
 
 //----
 
-void __stdcall runtimeHookPlayerBoundaryBottomSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryBottomSection()
 {
     // This was remade to configure how far the player falls down until dying
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryBottom(i);
-        }
+        playerBoundaryBottom(i);
     }
 }
 
-void __stdcall runtimeHookPlayerBoundaryLeftSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryLeftSection()
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryLeft(false, i);
-        }
+        playerBoundaryLeft(false, i);
     }
 }
 
-void __stdcall runtimeHookPlayerBoundaryRightSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryRightSection()
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryRight(false, i);
-        }
+        playerBoundaryRight(false, i);
     }
 }
 
-void __stdcall runtimeHookPlayerBoundaryTopSection(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryTopSection()
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryTop(i);
-        }
+        playerBoundaryTop(i);
     }
 }
 
 //----
 
-void __stdcall runtimeHookPlayerBoundaryLeftScreen(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryLeftScreen()
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryLeft(true, i);
-        }
+        playerBoundaryLeft(true, i);
     }
 }
 
-void __stdcall runtimeHookPlayerBoundaryRightScreen(short* playerSectionID)
+void __stdcall runtimeHookPlayerBoundaryRightScreen()
 {
     // This was remade to configure how far the player can go left from touching the left boundary
-    for(int i = 1; i <= 200; i++)
+    for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
         PlayerMOB* p = Player::Get(i);
-        short* currentSection(&p->CurrentSection);
-        if(currentSection == playerSectionID)
-        {
-            playerBoundaryRight(true, i);
-        }
+        playerBoundaryRight(true, i);
     }
 }
 
 //----
 
 // Apparently, the engine is crashing when the boundary checks are active when 0x8CA3A2 is calling LivingPlayers(), so I remade LivingPlayers()...
-int16_t __stdcall runtimeHookIsAnyoneAlive()
+uint16_t __stdcall runtimeHookIsAnyoneAlive()
 {
-    if(GM_PLAYERS_COUNT > 0 && gEpisodeLoadedOnBoot)
+    if(GM_PLAYERS_COUNT > 0)
     {
         for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
         {
             PlayerMOB* p = Player::Get(i);
-            if(p->DeathState == 0)
+            if(p->DeathState <= 0)
             {
                 return -1;
             }
         }
+        return 0;
     }
     return 0;
 }

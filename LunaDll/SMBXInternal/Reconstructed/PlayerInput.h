@@ -71,8 +71,6 @@ struct NewSMBXInputKeyboard
     int special;
     int leftTrigger;
     int rightTrigger;
-    
-    
 
     int keyboardIdx;
 
@@ -99,7 +97,7 @@ struct NewSMBXInputKeyboard
         leftTrigger = VK_Q;
         rightTrigger = VK_W;
 
-        keyboardIdx = 0;
+        keyboardIdx = 1;
     }
 };
 
@@ -130,8 +128,6 @@ struct NewSMBXInputController
     // Reset function
     void Reset()
     {
-        controllerID = 0;
-
         up = 0;
         down = 1;
         left = 2;
@@ -146,6 +142,8 @@ struct NewSMBXInputController
         special = 0;
         leftTrigger = 4;
         rightTrigger = 5;
+
+        controllerID = 1;
     }
 };
 
@@ -164,6 +162,8 @@ class PlayerInput {
         
         void SetKeyboardIdx(int playerIdx, int keyboardIdx, bool isPermanent);
         void SetControllerIdx(int playerIdx, int controllerIdx, bool isPermanent);
+        int GetKeyboardIdx(int playerIdx);
+        int GetControllerIdx(int playerIdx);
 
         void SetPressing(int type, int playerIdx, bool value);
         bool IsPressing(int type, int playerIdx);

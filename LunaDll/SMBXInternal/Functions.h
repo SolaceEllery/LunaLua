@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "../Misc/VB6StrPtr.h"
 #include "../Misc/VB6Bool.h"
+#include "Types.h"
 
 namespace SMBX13 {
     namespace Types {

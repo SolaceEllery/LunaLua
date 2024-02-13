@@ -39,6 +39,18 @@ extern "C" {
     {
         gPlayerInput.SetControllerIdx(playerIdx, controllerIdx, isPermanent);
     }
+    
+    // Input keyboard idx getting
+    FFI_EXPORT(int) LunaLuaGetPlayerKeyboard(int playerIdx, int keyboardIdx, bool isPermanent)
+    {
+        return gPlayerInput.GetKeyboardIdx(playerIdx);
+    }
+
+    // Input controller idx getting
+    FFI_EXPORT(int) LunaLuaGetPlayerController(int playerIdx, int controllerIdx, bool isPermanent)
+    {
+        return gPlayerInput.GetControllerIdx(playerIdx);
+    }
 
     // Is the player pressing a key?
     FFI_EXPORT(bool) LunaLuaGetPlayerPressing(int type, int playerIdx)
