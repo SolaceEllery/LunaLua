@@ -97,8 +97,8 @@ void CameraMan::GetVScreenAverage()
     using namespace SMBX13::Vars;
     /*int16_t A = 0;
     int16_t B = 0;
-    auto& level = level;
     auto& p1 = Player[1];
+    auto& level = level[p1.Section];
 
     for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
     {
