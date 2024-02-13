@@ -58,6 +58,7 @@
 #include "../../Misc/VB6Bool.h"
 #include "../../SMBXInternal/Functions.h"
 #include "../../SMBXInternal/Types.h"
+#include "../../SMBXInternal/Variables.h"
 
 #include "../../Autocode/AutocodeCounter.h"
 
@@ -1582,13 +1583,16 @@ extern void __stdcall RenderLevelHook()
     }
     g_EventHandler.hookLevelRenderEnd();
     Renderer::Get().EndFrameRender();
-    for(int i = 1; i <= 255; i++)
+
+    using namespace SMBX13::Types;
+    using namespace SMBX13::Vars;
+    using namespace SMBX13::Functions;
+
+    for(int i = 0; i <= 254; i++)
     {
-        SMBXEvent* event = SMBXEvent::Get(i);
-        std::string eventName = (std::string)event->pName;
-        if(EventHasTriggered[SMBXEvents::GetNumberFromName(Str2WStr(eventName))])
+        if(EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)Events[i].Name)])
         {
-            EventHasTriggered[SMBXEvents::GetNumberFromName(Str2WStr(eventName))] = false;
+            EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)Events[i].Name)] = false;
         }
     }
 }
