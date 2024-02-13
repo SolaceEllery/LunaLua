@@ -921,6 +921,8 @@ namespace LuaProxy {
         void registerCharacterId(const luabind::object& namedArgs, lua_State* L);
         std::string showRichDialog(const std::string& title, const std::string& rtfText, bool isReadOnly);
         luabind::object getEpisodeList(lua_State *L);
+        int getEpisodeCount();
+        int getEpisodeIdx();
 
         // Internal use profiler functions
         void __enablePerfTracker();

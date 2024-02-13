@@ -704,8 +704,8 @@ void CLunaLua::bindAll()
             
             namespace_("Episode")[
                 def("getList", &LuaProxy::Misc::getEpisodeList),
-                def("count", (int(*)()) &EpisodeCount),
-                def("idx", (int(*)()) &EpisodeIdx)
+                def("count", (int(*)()) &LuaProxy::Misc::getEpisodeCount),
+                def("idx", (int(*)()) &LuaProxy::Misc::getEpisodeIdx)
             ],
 
             namespace_("Misc")[

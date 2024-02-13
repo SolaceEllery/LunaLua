@@ -399,10 +399,10 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         gLunaGameControllerManager.notifyKeyboardPress(virtKey);
 
         // Dumb fix for the test mode pause menu when using the player keys recode
-        /*if(TestModeIsEnabled() && gDisablePlayerKeysLegacy && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
+        if(TestModeIsEnabled() && gDisablePlayerKeysLegacy && virtKey == VK_ESCAPE && !testModeMenuIsSkipTickPending())
         {
             testModePauseMenu(true, false);
-        }*/
+        }
     }
 
     // Notify Lua code

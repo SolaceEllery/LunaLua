@@ -433,4 +433,14 @@ luabind::object LuaProxy::Misc::getEpisodeList(lua_State *L)
     return getAllEpisodes(L);
 }
 
+int LuaProxy::Misc::getEpisodeCount()
+{
+    return gEpisodeMain.GetEpisodeCount();
+}
+
+int LuaProxy::Misc::getEpisodeIdx()
+{
+    return gEpisodeMain.GetEpisodeIdx();
+}
+
 

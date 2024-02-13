@@ -45,6 +45,9 @@ class EpisodeMain {
         void WriteLegacyEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData);
         
         void PopulateEpisodeList();
+        
+        int GetEpisodeCount();
+        int GetEpisodeIdx();
 };
 
 #endif

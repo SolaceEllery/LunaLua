@@ -696,3 +696,13 @@ void EpisodeMain::PopulateEpisodeList()
         }
     }
 }
+
+int EpisodeMain::GetEpisodeCount()
+{
+    return EpisodeCount;
+}
+
+int EpisodeMain::GetEpisodeIdx()
+{
+    return EpisodeIdx;
+}
