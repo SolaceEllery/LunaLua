@@ -49,6 +49,17 @@ bool SMBXEvents::EventWasTriggered(std::wstring eventName)
     return false;
 }
 
+void SMBXEvents::UpdateEventTriggers()
+{
+    for(int i = 0; i <= 255; i++)
+    {
+        if(EventHasTriggered[i])
+        {
+            EventHasTriggered[i] = false;
+        }
+    }
+}
+
 void SMBXEvents::CancelNewEvent(std::wstring str)
 {
     int eventID = SMBXEvents::GetNumberFromName(str);

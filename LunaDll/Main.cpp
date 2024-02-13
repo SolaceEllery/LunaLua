@@ -360,6 +360,12 @@ int OnLvlLoad() {
         InitLevel();
         gAutoMan.m_Hearts = 2;
     }
+    
+    if(gEpisodeSettings.enableLunaDLLDeathsCounter)
+    {
+        gDeathCounter.Init();
+        gDeathCounter.Recount();
+    }
 
     //PGE DBG STUFF
     //readAndWriteNPCSettings();
@@ -398,6 +404,7 @@ int TestFunc()
     }
 
     Blocks::DoSortingIfRequired();
+    //SMBXEvents::UpdateEventTriggers();
 
     return 0;
 }

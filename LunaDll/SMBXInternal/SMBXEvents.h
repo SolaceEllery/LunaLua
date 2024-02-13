@@ -153,6 +153,7 @@ namespace SMBXEvents {
     void TriggerEvent(std::wstring eventName, short forceNoSmoke);
 
     bool EventWasTriggered(std::wstring eventName);
+    void UpdateEventTriggers();
     
     void CancelNewEvent(std::wstring str);
 
