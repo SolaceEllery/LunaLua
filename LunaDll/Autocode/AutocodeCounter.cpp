@@ -168,6 +168,9 @@ void DeathCounter::Draw()
     printTextCounterOp->m_renderPriority = 5;
     Renderer::Get().AddOp(printTextCounterOp);
     
+    delete [] printTextDemosOp;
+    delete [] printTextCounterOp;
+    
     gDeathCounter.UpdateDeaths(true);
 }
 

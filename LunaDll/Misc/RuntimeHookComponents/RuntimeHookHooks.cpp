@@ -1585,9 +1585,10 @@ extern void __stdcall RenderLevelHook()
     for(int i = 1; i <= 255; i++)
     {
         SMBXEvent* event = SMBXEvent::Get(i);
-        if(EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)event->pName)])
+        std::string eventName = (std::string)event->pName;
+        if(EventHasTriggered[SMBXEvents::GetNumberFromName(Str2WStr(eventName))])
         {
-            EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)event->pName)] = false;
+            EventHasTriggered[SMBXEvents::GetNumberFromName(Str2WStr(eventName))] = false;
         }
     }
 }
