@@ -32,6 +32,7 @@
 #include "../Rendering/GL/GLEngine.h"
 #include "../Rendering/GL/GLEngineProxy.h"
 #include "../Misc/CollisionMatrix.h"
+#include "../SMBXInternal/Ports.h"
 
 #include "../Misc/MonitorSystem.h"
 
@@ -578,6 +579,11 @@ typedef struct ExtendedPlayerFields_\
         } else {
             gFenceFixes.Unapply();
         }
+    }
+
+    FFI_EXPORT(void) LunaLuaSetPowerupPowerdownPositionFix(bool enable)
+    {
+        SMBX13::Ports::_enablePowerupPowerdownPositionFixes = enable;
     }
 
     FFI_EXPORT(void) LunaLuaSetFrameTiming(double value)
