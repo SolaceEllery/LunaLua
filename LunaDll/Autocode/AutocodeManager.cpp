@@ -4,8 +4,8 @@
 #include "../Misc/MiscFuncs.h"
 #include "../GlobalFuncs.h"
 #include "../SMBXInternal/Level.h"
-#include "AutocodeCounter.h"
 #include <SDL2/SDL_stdinc.h>
+
 
 using namespace std;
 
@@ -148,26 +148,23 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
         bparam3 = 0;
         blength = 0;
         code_file->getline(wbuf, 2000);
-
-        if(!std::fgets((char*)wbuf, 2000, (FILE*)code_file))
-            break; // End of the file has been reached
         lineNum++;
 
         // Is it a comment?
-        char *commentLine = SDL_strstr((char*)wbuf, "//");
+        char *commentLine = SDL_strstr(wbuf, "//");
         if(commentLine != nullptr)
         {
             commentLine[0] = '\0'; // Cut the comment line here
         }
         
         // Does this line contain anything useful?
-        size_t wbuflen = SDL_strlen((char*)wbuf);
+        size_t wbuflen = SDL_strlen(wbuf);
         while(wbuflen > 0)
         {
-            auto c = wbuf[wbuflen - 1];
+            auto c = wbuf[wbuflen - 1]
             if(c != L'\n' && c != L'\r' && c != L'\t' && c != L' ')
                 break;
-            wbuf[wbuflen - 1] = L'\0';
+            wbuf[wbuflen - 1] = '\0';
             wbuflen--;
         }
         
@@ -177,23 +174,13 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
 
         // Is it a new section header?
         if(wbuf[0] == L'#') {
-            char endKey = (char)wbuf + 1;
-            char* endKeyFinal = &endKey;
+
             // Is it the level load header?
-            if(wbuf[1] == L'-')
+            if(wbuf[1] == L'-') {
                 cur_section = -1;
-            else if(SDL_strncasecmp(endKeyFinal, "end", sizeof(wbuf) - 1) == 0)
-                continue; // "END" keyword, do nothing
-            else // Else, parse the section number
-            { 
-                try
-                {
-                    cur_section = _wtoi(&wbuf[1]);
-                }
-                catch (const std::exception &e)
-                {
-                    makeMessageBoxS("Bad section format:\n\nLine Number: " + std::to_string(lineNum), "LunaDLL Error");
-                }
+            }
+            else { // Else, parse the section number
+                cur_section = _wtoi(&wbuf[1]);
             }
         }
         else { // Else, parse as a command
@@ -201,9 +188,7 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
             // Is there a variable reference marker?
             if(wbuf[0] == L'$') {
                 int i = 1;
-                while(wbuf[i] != L',' && wbuf[i] != '\x0D' && wbuf[i] != '\x0A' && i < 126)
-                {
-                    ++i;					
+                for(i = 1; wbuf[i] != L',' && wbuf[i] != '\x0D' && wbuf[i] != '\x0A' && i < 126; i++) {					
                 }				
                 wbuf[i] = L'\x00'; // Turn the comma into a null terminator
                 wcscpy_s(wrefbuf, &wbuf[1]); // Copy new string into wrefbuf
@@ -220,30 +205,24 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
 
             // Check for formatting failure
             if(hits < 3 && bhits < 3) {
-                makeMessageBoxS("Bad line format:\n\nLine Number: " + std::to_string(lineNum), "LunaDLL Error");
                 continue;
             }
 
             // Check for hexadecimal inputs			
-            {
-                if(target == 0 && btarget != 0)
-                {
+            if(true) {
+                if(target == 0 && btarget != 0){
                     target = btarget;					
                 }
-                if(param1 == 0 && bparam1 != 0)
-                {					
+                if(param1 == 0 && bparam1 != 0) {					
                     param1 = bparam1;
                 }
-                if(param2 == 0 && bparam2 != 0)
-                {					
+                if(param2 == 0 && bparam2 != 0) {					
                     param2 = bparam2;
                 }
-                if(param3 == 0 && bparam3 != 0)
-                {					
+                if(param3 == 0 && bparam3 != 0) {					
                     param3 = bparam3;
                 }
-                if(length == 0 && blength != 0)
-                {					
+                if(length == 0 && blength != 0) {					
                     length = blength;
                 }
             }
@@ -256,26 +235,18 @@ void AutocodeManager::Parse(wifstream* code_file, bool add_to_globals) {
             std::wstring ref_str = std::wstring(wrefbuf); // Get var reference string if any
 
             Autocode* newcode = new Autocode(ac_type, target, param1, param2, param3, ac_str, length, cur_section, ref_str);
-            if(!add_to_globals)
-            {
-                if(newcode->m_Type < 10000 || newcode->MyRef.length() > 0)
-                {
+            if(!add_to_globals) {
+                if(newcode->m_Type < 10000 || newcode->MyRef.length() > 0) {
                     m_Autocodes.push_back(newcode);
-                }
-                else // Sprite components (type 10000+) with no reference go into callable component list
-                { 
+                } else { // Sprite components (type 10000+) with no reference go into callable component list
                     gSpriteMan.m_ComponentList.push_back(Autocode::GenerateComponent(newcode));
                 }
-            }
-            else
-            {
+            } else {
                 if(newcode->m_Type < 10000)
-                {
                     m_GlobalCodes.push_back(newcode);
-                }
             }
         }
-    }
+    }//while
 }
 
 // DO EVENTS
