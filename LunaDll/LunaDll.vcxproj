@@ -287,6 +287,7 @@
     <ClInclude Include="CustomSprites\Hitbox\Hitbox.h" />
     <ClInclude Include="Input\Input.h" />
     <ClInclude Include="SMBXInternal\Ports.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\CameraMan.h" />
     <ClInclude Include="SMBXInternal\Types.h" />
     <ClInclude Include="SMBXInternal\Variables.h" />
     <ClInclude Include="SMBXInternal\Musicbox.h" />
@@ -559,6 +560,7 @@
     <ClCompile Include="SdlMusic\MusicDefList.cpp" />
     <ClCompile Include="SdlMusic\MusicManager.cpp" />
     <ClCompile Include="SdlMusic\SdlMusPlayer.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\CameraMan.cpp" />
     <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp" />
     <ClCompile Include="SMBXInternal\Reconstructed\PlayerInput.cpp" />
     <ClCompile Include="SMBXInternal\Ports\modPlayer.cpp" />

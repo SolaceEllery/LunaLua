@@ -751,6 +751,9 @@
     <ClInclude Include="Misc\RuntimeHookComponents\CharacterIdExtension.h">
       <Filter>Misc\RuntimeHookComponents</Filter>
     </ClInclude>
+    <ClInclude Include="SMBXInternal\Reconstructed\CameraMan.h">
+      <Filter>SMBXInternal\Reconstructed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LuaMain\LuaHelper.cpp">
@@ -1406,9 +1409,6 @@
     <ClCompile Include="libs\luabind-deboostified\src$filename">
       <Filter>libs\luabind-deboostified</Filter>
     </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\WindowSizeHandler.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -1510,6 +1510,9 @@
     </ClCompile>
     <ClCompile Include="SMBXInternal\Ports\modPlayer.cpp">
       <Filter>SMBXInternal\Ports</Filter>
+    </ClCompile>
+    <ClCompile Include="SMBXInternal\Reconstructed\CameraMan.cpp">
+      <Filter>SMBXInternal\Reconstructed</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

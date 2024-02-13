@@ -62,6 +62,8 @@
 
 #include "../../Autocode/AutocodeCounter.h"
 
+#include "../../SMBXInternal/Reconstructed/CameraMan.h"
+
 void CheckIPCQuitRequest();
 
 extern HHOOK HookWnd;
@@ -803,6 +805,68 @@ extern BOOL __stdcall BitBltHook(
     return BitBlt(hdcDest, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, dwRop);
 }
 
+/*static void renderPlayerScreen(int playerID, int xOff, int yOff)
+{
+    g_GLEngine.RenderCameraToScreen(1, 0 + xOff, 0 + yOff, g_GLContextManager.GetMainFBWidth(), g_GLContextManager.GetMainFBHeight());
+}
+
+static void renderPlayerScreen2Player(int playerID, int xOff, int yOff)
+{
+    // Player 1
+    if(playerID == 1)
+    {
+        g_GLEngine.RenderCameraToScreen(1, 0 + xOff, 0 + yOff, g_GLContextManager.GetMainFBWidth() / 2, g_GLContextManager.GetMainFBHeight());
+    }
+    // Player 2
+    else if(playerID == 2)
+    {
+        g_GLEngine.RenderCameraToScreen(2, (g_GLContextManager.GetMainFBWidth() / 2) + xOff, 0 + yOff, (g_GLContextManager.GetMainFBWidth() / 2), g_GLContextManager.GetMainFBHeight());
+    }
+}
+
+static void renderPlayerScreen3Player(int playerID, int xOff, int yOff)
+{
+    // Player 1
+    if(playerID == 1)
+    {
+        g_GLEngine.RenderCameraToScreen(1, 0 + xOff, 0 + yOff, g_GLContextManager.GetMainFBWidth() / 2, g_GLContextManager.GetMainFBHeight() / 2);
+    }
+    // Player 2
+    else if(playerID == 2)
+    {
+        g_GLEngine.RenderCameraToScreen(2, (g_GLContextManager.GetMainFBWidth() / 2) + xOff, 0 + yOff, (g_GLContextManager.GetMainFBWidth() / 2), g_GLContextManager.GetMainFBHeight() / 2);
+    }
+    // Player 3
+    else if(playerID == 3)
+    {
+        g_GLEngine.RenderCameraToScreen(3, 0 + xOff, (g_GLContextManager.GetMainFBHeight() / 2) + yOff, g_GLContextManager.GetMainFBWidth(), g_GLContextManager.GetMainFBHeight() / 2);
+    }
+}
+
+static void renderPlayerScreen4Player(int playerID, int xOff, int yOff)
+{
+    // Player 1
+    if(playerID == 1)
+    {
+        g_GLEngine.RenderCameraToScreen(1, 0 + xOff, 0 + yOff, g_GLContextManager.GetMainFBWidth() / 2, g_GLContextManager.GetMainFBHeight() / 2);
+    }
+    // Player 2
+    else if(playerID == 2)
+    {
+        g_GLEngine.RenderCameraToScreen(2, (g_GLContextManager.GetMainFBWidth() / 2) + xOff, 0 + yOff, (g_GLContextManager.GetMainFBWidth() / 2), g_GLContextManager.GetMainFBHeight() / 2);
+    }
+    // Player 3
+    else if(playerID == 3)
+    {
+        g_GLEngine.RenderCameraToScreen(3, 0 + xOff, (g_GLContextManager.GetMainFBHeight() / 2) + yOff, (g_GLContextManager.GetMainFBWidth() / 2), g_GLContextManager.GetMainFBHeight() / 2);
+    }
+    // Player 4
+    else if(playerID == 4)
+    {
+        g_GLEngine.RenderCameraToScreen(4, (g_GLContextManager.GetMainFBWidth() / 2) + xOff, (g_GLContextManager.GetMainFBHeight() / 2) + yOff, (g_GLContextManager.GetMainFBWidth() / 2), g_GLContextManager.GetMainFBHeight() / 2);
+    }
+}*/
+
 extern BOOL __stdcall StretchBltHook(
     HDC hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest,
     HDC hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc,
@@ -821,11 +885,6 @@ extern BOOL __stdcall StretchBltHook(
     // If we're copying from our rendering screen, we're done with the frame
     if (hdcSrc == (HDC)GM_SCRN_HDC && g_GLEngine.IsEnabled() && !Renderer::IsAltThreadActive())
     {
-
-        int cameraIdx = Renderer::Get().GetCameraIdx();
-        SMBX_CameraInfo* cam = SMBX_CameraInfo::Get(cameraIdx);
-        if (cam == NULL) return FALSE;
-
         int xOff = 0;
         int yOff = 0;
         if (GM_EARTHQUAKE)
@@ -833,6 +892,43 @@ extern BOOL __stdcall StretchBltHook(
             xOff = static_cast<int>(VB6RNG::generateNumber() * GM_EARTHQUAKE * 4) - GM_EARTHQUAKE * 2;
             yOff = static_cast<int>(VB6RNG::generateNumber() * GM_EARTHQUAKE * 4) - GM_EARTHQUAKE * 2;
         }
+
+        int cameraIdx = Renderer::Get().GetCameraIdx();
+        SMBX_CameraInfo* cam = SMBX_CameraInfo::Get(cameraIdx);
+        if (cam == NULL) return FALSE;
+
+        /*for(int i = 1; i <= GM_PLAYERS_COUNT; i++)
+        {
+            // Only draw separate cameras for players less than 5
+            if(GM_PLAYERS_COUNT > 4)
+            {
+                gCameraMan.GetVScreenAverage();
+                renderPlayerScreen(1, xOff, yOff);
+            }
+            else if(GM_PLAYERS_COUNT == 4)
+            {
+                int16_t& idx = (int16_t&)i;
+                gCameraMan.GetVScreen(idx);
+                renderPlayerScreen4Player(i, xOff, yOff);
+            }
+            else if(GM_PLAYERS_COUNT == 3)
+            {
+                int16_t& idx = (int16_t&)i;
+                gCameraMan.GetVScreen(idx);
+                renderPlayerScreen3Player(i, xOff, yOff);
+            }
+            else if(GM_PLAYERS_COUNT == 2)
+            {
+                int16_t& idx = (int16_t&)i;
+                gCameraMan.GetVScreen(idx);
+                renderPlayerScreen2Player(i, xOff, yOff);
+            }
+            else
+            {
+                gCameraMan.GetVScreenAverage();
+                renderPlayerScreen(1, xOff, yOff);
+            }
+        }*/
 
         g_GLEngine.RenderCameraToScreen(cameraIdx, cam->renderX + xOff, cam->renderY + yOff, cam->width, cam->height);
 
