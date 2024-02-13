@@ -146,12 +146,20 @@ namespace SMBXEvents {
 
     SMBXEvent* Get(int index);
     SMBXEvent* GetByName(std::wstring Name);
+    int GetNumberFromName(std::wstring Name);
     short Count();
 
     void TriggerEvent(int Index, int UnknownArg); // doesn't work yet
     void TriggerEvent(std::wstring eventName, short forceNoSmoke);
 
+    bool EventWasTriggered(std::wstring eventName);
+    
+    void CancelNewEvent(std::wstring str);
+
 }
+
+extern bool EventHasTriggered[255];
+extern bool EventSetToCancel[255];
 
 inline short SMBXEvents::Count() { return GM_EVENT_COUNT; }
 

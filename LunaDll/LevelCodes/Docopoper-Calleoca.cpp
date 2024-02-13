@@ -245,102 +245,105 @@ void Phase4()
 
 void CalleocaCode()
 {
-    demo = Player::Get(1);
-    
-    demo->Identity = CHARACTER_MARIO;
-
-    if (calleoca_npc2 == NULL && init_doonce)
+    if(gEpisodeSettings.enableLunaDLLInternalLevelCodes)
     {
-        if (win_timer > 0)
-            win_timer--;
-        else
+        demo = Player::Get(1);
+        
+        demo->Identity = CHARACTER_MARIO;
+
+        if (calleoca_npc2 == NULL && init_doonce)
         {
-            goal_npc = FindNPC(NPC_GOAL);
-            if (goal_npc != NULL)
+            if (win_timer > 0)
+                win_timer--;
+            else
             {
-                goal_npc->momentum.x = demo->momentum.x;
-                goal_npc->momentum.y = demo->momentum.y;
+                goal_npc = FindNPC(NPC_GOAL);
+                if (goal_npc != NULL)
+                {
+                    goal_npc->momentum.x = demo->momentum.x;
+                    goal_npc->momentum.y = demo->momentum.y;
+                }
             }
+            
+            return; //boss beaten
         }
         
-        return; //boss beaten
+        if (!init_doonce)
+        {
+            calleoca_npc1 = FindNPC(NPC_SIGN);
+            calleoca_npc2 = FindNPC(NPC_COIN);
+            hurt_npc	  = FindNPC(NPC_FIREBAR);
+
+            calleoca_x = calleoca_npc1->momentum.x;
+            calleoca_y = calleoca_npc1->momentum.y;
+            storage_x  = calleoca_npc2->momentum.x;
+            storage_y  = calleoca_npc2->momentum.y;
+
+            thwomp_height = calleoca_y - 64 * 6 + 16;
+            thwomp_bottom = calleoca_y + 128;
+
+            missile_top = calleoca_y - 64 * 7 - 16;
+            missile_bottom = calleoca_y + 180;
+
+            init_doonce = true;
+        }
+
+        if (calleoca_npc1->id != NPC_SIGN)
+            calleoca_npc1 = FindNPC(NPC_SIGN);
+
+        if (calleoca_npc2->id != NPC_COIN)
+            calleoca_npc2 = FindNPC(NPC_COIN);
+
+        if (hurt_npc->id != NPC_FIREBAR)
+            hurt_npc = FindNPC(NPC_FIREBAR);
+
+        hurt_npc->momentum.x = demo->momentum.x;
+        hurt_npc->momentum.y = demo->momentum.y - 128;
+
+        switch (phase)
+        {
+            case 0: //Standing there
+                Phase0();
+            break;
+
+            case 1: //Thwomp rising
+                Phase1();
+            break;
+
+            case 2: //Thwomp attacking
+                Phase2();
+            break;
+
+            case 3: //Missile
+                Phase3();
+            break;
+
+            case 4: //Fishing Boo
+                Phase4();
+            break;
+        }
+
+        if (calleoca_npc2 == NULL)
+            return; //boss beaten
+
+        if (phase < 4)
+        {
+            calleoca_npc1->momentum.x = calleoca_x;
+            calleoca_npc1->momentum.y = calleoca_y;
+            calleoca_npc2->momentum.x = storage_x;
+            calleoca_npc2->momentum.y = storage_y;
+        }
+        else
+        {
+            calleoca_npc2->momentum.x = calleoca_x;
+            calleoca_npc2->momentum.y = calleoca_y;
+            calleoca_npc1->momentum.x = storage_x;
+            calleoca_npc1->momentum.y = storage_y;
+        }
+
+        //Renderer::Get().SafePrint(std::wstring(L"FUEL: " + std::to_wstring(missile_fuel)), 3, 0, 256);
+        //Renderer::Get().SafePrint(std::wstring(L"DEMO X: " + std::to_wstring(demo->CurYPos)), 3, 0, 256 + 32);
     }
-    
-    if (!init_doonce)
-    {
-        calleoca_npc1 = FindNPC(NPC_SIGN);
-        calleoca_npc2 = FindNPC(NPC_COIN);
-        hurt_npc	  = FindNPC(NPC_FIREBAR);
-
-        calleoca_x = calleoca_npc1->momentum.x;
-        calleoca_y = calleoca_npc1->momentum.y;
-        storage_x  = calleoca_npc2->momentum.x;
-        storage_y  = calleoca_npc2->momentum.y;
-
-        thwomp_height = calleoca_y - 64 * 6 + 16;
-        thwomp_bottom = calleoca_y + 128;
-
-        missile_top = calleoca_y - 64 * 7 - 16;
-        missile_bottom = calleoca_y + 180;
-
-        init_doonce = true;
-    }
-
-    if (calleoca_npc1->id != NPC_SIGN)
-        calleoca_npc1 = FindNPC(NPC_SIGN);
-
-    if (calleoca_npc2->id != NPC_COIN)
-        calleoca_npc2 = FindNPC(NPC_COIN);
-
-    if (hurt_npc->id != NPC_FIREBAR)
-        hurt_npc = FindNPC(NPC_FIREBAR);
-
-    hurt_npc->momentum.x = demo->momentum.x;
-    hurt_npc->momentum.y = demo->momentum.y - 128;
-
-    switch (phase)
-    {
-        case 0: //Standing there
-            Phase0();
-        break;
-
-        case 1: //Thwomp rising
-            Phase1();
-        break;
-
-        case 2: //Thwomp attacking
-            Phase2();
-        break;
-
-        case 3: //Missile
-            Phase3();
-        break;
-
-        case 4: //Fishing Boo
-            Phase4();
-        break;
-    }
-
-    if (calleoca_npc2 == NULL)
-        return; //boss beaten
-
-    if (phase < 4)
-    {
-        calleoca_npc1->momentum.x = calleoca_x;
-        calleoca_npc1->momentum.y = calleoca_y;
-        calleoca_npc2->momentum.x = storage_x;
-        calleoca_npc2->momentum.y = storage_y;
-    }
-    else
-    {
-        calleoca_npc2->momentum.x = calleoca_x;
-        calleoca_npc2->momentum.y = calleoca_y;
-        calleoca_npc1->momentum.x = storage_x;
-        calleoca_npc1->momentum.y = storage_y;
-    }
-
-    //Renderer::Get().SafePrint(std::wstring(L"FUEL: " + std::to_wstring(missile_fuel)), 3, 0, 256);
-    //Renderer::Get().SafePrint(std::wstring(L"DEMO X: " + std::to_wstring(demo->CurYPos)), 3, 0, 256 + 32);
 }
 
 NPCMOB* FindNPC(short identity)

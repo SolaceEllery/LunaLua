@@ -170,6 +170,9 @@
     <ClInclude Include="Autocode\AutocodeManager.h">
       <Filter>Autocode</Filter>
     </ClInclude>
+    <ClInclude Include="Autocode\AutocodeCounter.h">
+      <Filter>Autocode</Filter>
+    </ClInclude>
     <ClInclude Include="SMBXInternal\Blocks.h">
       <Filter>SMBXInternal</Filter>
     </ClInclude>
@@ -763,6 +766,9 @@
       <Filter>Autocode</Filter>
     </ClCompile>
     <ClCompile Include="Autocode\AutocodeManager.cpp">
+      <Filter>Autocode</Filter>
+    </ClCompile>
+    <ClCompile Include="Autocode\AutocodeCounter.cpp">
       <Filter>Autocode</Filter>
     </ClCompile>
     <ClCompile Include="Autocode\Commands\AC_LunaControl.cpp">

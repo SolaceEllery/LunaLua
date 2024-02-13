@@ -14,6 +14,13 @@
 #include "../Rendering/RenderOps/RenderStringOp.h"
 #include "../GlobalFuncs.h"
 
+#include "../SMBXInternal/Functions.h"
+#include "../SMBXInternal/Types.h"
+#include "../SdlMusic/SdlMusPlayer.h"
+#include "../SdlMusic/MusicManager.h"
+#include <SDL2/SDL_mixer_ext.h>
+#include "AutocodeCounter.h"
+
 using namespace std;
 
 // CTORS
@@ -230,14 +237,79 @@ void Autocode::Do(bool init) {
                     if(MyString.length() > 0) {
                         //char* dbg = "CUSTOM SOUND PLAY DBG";
                         std::wstring full_path = getCustomFolderPath() + MyString;
-                        PlaySound(full_path.c_str(), 0, SND_FILENAME | SND_ASYNC);
+                        Mix_Chunk* chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
+                        if (chunk)
+                        {
+                            bool success = (Mix_PlayChannelTimedVolume(-1, chunk, 0, -1, MIX_MAX_VOLUME) != -1);
+                        }
+                        Mix_FreeChunk(chunk);
                     }
 
                 }
                 Expired = true;
             }
             break;
-                     }
+        }
+        
+        case AT_PlaySFX:
+        {
+            if(this->Length <= 1) // Play once when delay runs out
+            {
+                // Play built in sound
+                if(Param1 > 0)
+                    SMBXSound::PlaySFX((int)Param1); //, (int)Param2, (int)(Param3 <= 0.0 ? 128 : Param3));
+                else
+                {
+                    // Sound from level folder
+                    if(MyString.length() > 0)
+                    {
+                        //char* dbg = "CUSTOM SOUND PLAY DBG";
+                        std::wstring full_path = getCustomFolderPath() + MyString;
+                        Mix_Chunk* chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
+                        if (chunk)
+                        {
+                            bool success = (Mix_PlayChannelTimedVolume(-1, chunk, 0, (int)Param2, (int)(Param3 <= 0.0 ? 128 : Param3)) != -1);
+                        }
+                        Mix_FreeChunk(chunk);
+                    }
+
+                }
+                Expired = true;
+            }
+            break;
+        }
+
+        case AT_StopSFX:
+        {
+            if(this->Length <= 1) // Stop once when delay runs out
+            {
+                // Sound from level folder
+                if(MyString.length() > 0)
+                {
+                    //char* dbg = "CUSTOM SOUND STOP DBG";
+                    std::wstring full_path = getCustomFolderPath() + MyString;
+                    // Chunks are loaded and freed afterwards here, so until I add stuff to PGE_Sounds for this to work, this'll do nothing
+                }
+                Expired = true;
+            }
+            break;
+        }
+
+        case AT_SFXPreLoad:
+        {
+            if(this->Length <= 1) // Preload custom SFX file
+            {
+                // Sound from level folder
+                if(MyString.length() > 0)
+                {
+                    //char* dbg = "CUSTOM SOUND PLAY DBG";
+                    std::wstring full_path = getCustomFolderPath() + MyString;
+                    // Better to just use PlaySFX, or just SFX for now
+                }
+                Expired = true;
+            }
+            break;
+        }
 
         case AT_SetMusic: {
             SMBXSound::SetMusic((int)Param1, (int)Target-1);
@@ -841,7 +913,28 @@ void Autocode::Do(bool init) {
         case AT_TriggerSMBXEvent: {
             SMBXEvents::TriggerEvent(MyString, (int)Param1);
             break;
-                                  }
+        }
+        
+        case AT_OnEvent:
+        {
+            if(SMBXEvents::EventWasTriggered(MyString))
+            {
+                gAutoMan.ActivateCustomEvents(0, (int)Param3);
+                if(Param2 != 0)
+                    Expired = true;
+            }
+            break;
+        }
+
+        case AT_CancelSMBXEvent:
+        {
+            if(Length <= 1) // Cancel event after delay
+            {
+                SMBXEvents::CancelNewEvent(MyString);
+                Expired = true;
+            }
+            break;
+        }
 
 
         // PREDICATES

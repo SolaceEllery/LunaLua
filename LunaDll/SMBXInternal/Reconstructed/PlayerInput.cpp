@@ -22,6 +22,7 @@ PlayerInput::PlayerInput()
     // Set to disable all the legacy player keys
     gDisablePlayerKeysLegacy = true;
     gPlayerInputOverhaulToggled = true;
+    gDisablePlayerMovementAboveThree = true;
 }
 
 PlayerInput::~PlayerInput() {}
@@ -580,7 +581,7 @@ void PlayerInput::RefreshAllInputs(bool isWritten, bool isRead)
                     g_playerKeyboardInputs[i].leftTrigger = inputConfig.value("keyboard_leftTrigger", VK_Q).toInt();
                     g_playerKeyboardInputs[i].rightTrigger = inputConfig.value("keyboard_rightTrigger", VK_W).toInt();
 
-                    g_playerKeyboardInputs[i].keyboardIdx = inputConfig.value("keyboard_inputType", 0).toInt();
+                    g_playerKeyboardInputs[i].keyboardIdx = inputConfig.value("keyboard_inputType", 1).toInt();
 
                     g_playerControllerInputs[i].up = inputConfig.value("controller_up", 0).toInt();
                     g_playerControllerInputs[i].down = inputConfig.value("controller_down", 1).toInt();
@@ -596,7 +597,7 @@ void PlayerInput::RefreshAllInputs(bool isWritten, bool isRead)
                     g_playerControllerInputs[i].leftTrigger = inputConfig.value("controller_leftTrigger", 4).toInt();
                     g_playerControllerInputs[i].rightTrigger = inputConfig.value("controller_rightTrigger", 5).toInt();
 
-                    g_playerControllerInputs[i].controllerID = inputConfig.value("controller_inputType", 0).toInt();
+                    g_playerControllerInputs[i].controllerID = inputConfig.value("controller_inputType", 1).toInt();
                 }
             }
             inputConfig.endGroup();

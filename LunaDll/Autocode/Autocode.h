@@ -92,10 +92,15 @@ enum AutocodeType {
     AT_ForceFacing,				//1: NpcID  2: Section		3: 				4:			5: Active time	6:
 
     AT_SFX,						//1:		2: Index		3:				4:			5: Delay		6:
+    AT_PlaySFX,                 //1:        2: Index        3: Loops        4: Volume   5: Delay        6:
+    AT_StopSFX,                 //1:        2: Index        3:              4:          5: Delay        6:
+    AT_SFXPreLoad,              //1:        2: Index        3:              4:          5: Delay        6:
     AT_SetMusic,				//1: Section2: Music #		3:				4:			5: Active time	6: Optional file name
     AT_PlayMusic,				//1:		2: Section		3:				4:			5: Delay		6:
         
     AT_TriggerSMBXEvent,		//1:		2: Arg			3:				4:			5: Active time	6: Name of event
+    AT_OnEvent,                 //1:        2:              3: Only once?   4: Event    5: Active time  6: Name of event
+    AT_CancelSMBXEvent,         //1:        2: Arg          3:              4:          5: Active time  6: Name of event
 
     AT_Hurt,					//1: Target 2:				3: 				4:			5: Active time	6: Option
     AT_Kill,					//1: Target 2:				3: 				4:			5: Active time	6: Option

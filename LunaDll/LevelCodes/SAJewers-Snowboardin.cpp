@@ -23,24 +23,26 @@ namespace SAJSnowbordin
 
     void SnowbordinCode()
     {
-        NPCMOB *shell_npc;
-        shell_npc = FindNPC(NPC_SHELL);
-        
-        if (shell_npc == NULL)
-            return;
-
-        int *shell_kills = (int*)((char*)(shell_npc) + 0x24);
-
-        if (*shell_kills >= 9)
+        if(gEpisodeSettings.enableLunaDLLInternalLevelCodes)
         {
-            if (combo_start < 6)
-                combo_start += 2;
+            NPCMOB *shell_npc;
+            shell_npc = FindNPC(NPC_SHELL);
+            
+            if (shell_npc == NULL)
+                return;
 
-            *shell_kills = combo_start;
+            int *shell_kills = (int*)((char*)(shell_npc) + 0x24);
+
+            if (*shell_kills >= 9)
+            {
+                if (combo_start < 6)
+                    combo_start += 2;
+
+                *shell_kills = combo_start;
+            }
+
+            //Renderer::Get().SafePrint(std::wstring(L"KILLS: " + std::to_wstring(*shell_kills)), 3, 0, 256);
         }
-
-        //Renderer::Get().SafePrint(std::wstring(L"KILLS: " + std::to_wstring(*shell_kills)), 3, 0, 256);
-
     }
 
     NPCMOB* FindNPC(short identity)

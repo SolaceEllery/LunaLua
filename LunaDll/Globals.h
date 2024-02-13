@@ -112,6 +112,10 @@ struct EpisodeSettings
     
     bool showPauseOverlay;
     
+    bool enableLunaDLLDeathsCounter;
+    bool enableLunaDLLInternalLevelCodes;
+    std::wstring demosCounterTitle;
+    
     EpisodeSettings() :
         episodeDirectory(L""), episodeDirectoryWithoutRoot(L""),
         usingCustomSplash(false), episodeBootImage(L""),
@@ -120,7 +124,8 @@ struct EpisodeSettings
         creditsLvlFile(L"outro.lvlx"),
         canSaveEpisode(true), canCheatAndSave(false),
         episodeWidth(800), episodeHeight(600), resizeMainCamera(false),
-        showPauseOverlay(true)
+        showPauseOverlay(true),
+        enableLunaDLLDeathsCounter(false), enableLunaDLLInternalLevelCodes(false), demosCounterTitle(L"DEMOS")
     {
     }
 };

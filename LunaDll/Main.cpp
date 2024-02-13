@@ -38,6 +38,8 @@ using std::max;
 #include "SMBXInternal/Reconstructed/PlayerInput.h"
 #include "SMBXInternal/CameraInfo.h"
 #include "Rendering/GL/GLContextManager.h"
+#include "Autocode/AutocodeCounter.h"
+#include "SMBXInternal/SMBXEvents.h"
 
 static bool LevelCustomSounds = false;
 
@@ -85,7 +87,7 @@ static void Episode_SetEpisodeIni()
     if(file_existsX(episodePathToIni))
     {
         IniProcessing episodeConfig(episodePathToIni);
-        if (episodeConfig.beginGroup("boot-settings"))
+        if(episodeConfig.beginGroup("boot-settings"))
         {
             // The boot image to use for the episode.
             std::string bootImageCheck = episodeConfig.value("boot-image", "").toString();
@@ -118,7 +120,7 @@ static void Episode_SetEpisodeIni()
             gEpisodeSettings.useLegacyBootScreen = episodeConfig.value("enable-legacy-bootscreen", false).toBool();
         }
         episodeConfig.endGroup();
-        if (episodeConfig.beginGroup("credits-settings"))
+        if(episodeConfig.beginGroup("credits-settings"))
         {
             // Show the X2 credits?
             gEpisodeSettings.displayOriginalCredits = episodeConfig.value("show-x2-credits", false).toBool();
@@ -130,7 +132,7 @@ static void Episode_SetEpisodeIni()
             gEpisodeSettings.creditsLvlFile = Str2WStr(episodeConfig.value("credits-level-file", "outro.lvlx").toString());
         }
         episodeConfig.endGroup();
-        if (episodeConfig.beginGroup("episode-settings"))
+        if(episodeConfig.beginGroup("episode-settings"))
         {
             // Can the episode save? Can be used for episodes that have a custom save data system.
             gEpisodeSettings.canSaveEpisode = episodeConfig.value("can-save-episode", true).toBool();
@@ -149,6 +151,12 @@ static void Episode_SetEpisodeIni()
             gEpisodeSettings.showPauseOverlay = episodeConfig.value("show-unfocused-pause-overlay", true).toBool();
         }
         episodeConfig.endGroup();
+        if(episodeConfig.beginGroup("lunadll-settings"))
+        {
+            gEpisodeSettings.enableLunaDLLInternalLevelCodes = episodeConfig.value("enable-internal-level-codes", false).toBool();
+            gEpisodeSettings.enableLunaDLLDeathsCounter = episodeConfig.value("enable-death-counter", false).toBool();
+            gEpisodeSettings.demosCounterTitle = Str2WStr(episodeConfig.value("demos-counter-title", "DEMOS").toString());
+        }
     }
 }
 
@@ -432,57 +440,60 @@ void TestFrameCode() {
 }
 
 // LEVEL FRAME CODE - This will be run every frame of leveltime. Currently a low-cost enumeration switch based on the loaded level
-void LevelFrameCode() {
-
-    switch(gLevelEnum)
+void LevelFrameCode()
+{
+    if(gEpisodeSettings.enableLunaDLLInternalLevelCodes)
     {
+        switch(gLevelEnum)
+        {
 
-    case DllTestLvl:
-        dlltestlvlCode();
-        break;
+        case DllTestLvl:
+            dlltestlvlCode();
+            break;
 
-    case QraestoliaCaverns:
-        QraestoliaCavernsCode();
-        break;
+        case QraestoliaCaverns:
+            QraestoliaCavernsCode();
+            break;
 
-    case TheFloorIsLava:
-        TheFloorisLavaCode();
-        break;
+        case TheFloorIsLava:
+            TheFloorisLavaCode();
+            break;
 
-    case Calleoca:
-        CalleocaCode();
-        break;
+        case Calleoca:
+            CalleocaCode();
+            break;
 
-    case Snowbordin:
-        SAJSnowbordin::SnowbordinCode();
-        break;
+        case Snowbordin:
+            SAJSnowbordin::SnowbordinCode();
+            break;
 
-    case Science:
-        ScienceBattle::ScienceCode();
+        case Science:
+            ScienceBattle::ScienceCode();
 
-    case CurtainTortoise:
-        //CurtainTortoiseCode();
-        break;
+        case CurtainTortoise:
+            //CurtainTortoiseCode();
+            break;
 
-    case AbstractAssault:
-        AbstractAssaultCode();
-        break;
+        case AbstractAssault:
+            AbstractAssaultCode();
+            break;
 
-    case DemosBrain:
-        DemosBrainCode();
-        break;
+        case DemosBrain:
+            DemosBrainCode();
+            break;
 
-    case EuroShellRandD:
-        //EuroShellRandDCode();
-        break;
+        case EuroShellRandD:
+            //EuroShellRandDCode();
+            break;
 
-    case ThouStartsANewVideo:
-        KilArmoryCode();
-        break;
+        case ThouStartsANewVideo:
+            KilArmoryCode();
+            break;
 
-    case Invalid:
-    default:
-        break;
+        case Invalid:
+        default:
+            break;
+        }
     }
 }
 

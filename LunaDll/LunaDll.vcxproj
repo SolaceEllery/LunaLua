@@ -261,6 +261,7 @@
     <ClInclude Include="SMBXInternal\Animation.h" />
     <ClInclude Include="Autocode\Autocode.h" />
     <ClInclude Include="Autocode\AutocodeManager.h" />
+    <ClInclude Include="Autocode\AutocodeCounter.h" />
     <ClInclude Include="SMBXInternal\BGOs.h" />
     <ClInclude Include="SMBXInternal\Blocks.h" />
     <ClInclude Include="CellManager\CellManager.h" />
@@ -487,6 +488,7 @@
     <ClCompile Include="SMBXInternal\Animation.cpp" />
     <ClCompile Include="Autocode\Autocode.cpp" />
     <ClCompile Include="Autocode\AutocodeManager.cpp" />
+    <ClCompile Include="Autocode\AutocodeCounter.cpp" />
     <ClCompile Include="SMBXInternal\Blocks.cpp" />
     <ClCompile Include="CellManager\CellManager.cpp" />
     <ClCompile Include="libs\stackwalker\StackWalker.cpp" />

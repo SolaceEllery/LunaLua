@@ -28,6 +28,7 @@
 #include "../../SMBXInternal/Blocks.h"
 #include "../../SMBXInternal/Level.h"
 #include "../../SMBXInternal/Sound.h"
+#include "../../SMBXInternal/SMBXEvents.h"
 
 #include "../PerfTracker.h"
 
@@ -57,6 +58,8 @@
 #include "../../Misc/VB6Bool.h"
 #include "../../SMBXInternal/Functions.h"
 #include "../../SMBXInternal/Types.h"
+
+#include "../../Autocode/AutocodeCounter.h"
 
 void CheckIPCQuitRequest();
 
@@ -659,6 +662,13 @@ extern int __stdcall __vbaStrCmp_TriggerSMBXEventHook(BSTR nullStr, BSTR eventNa
 
         // Mark next render frame as the 'first'
         g_GLEngine.SetFirstFramePending();
+    }
+    
+    int eventID = SMBXEvents::GetNumberFromName(eventName);
+    if(EventSetToCancel[eventID])
+    {
+        EventSetToCancel[eventID] = false;
+        return 0;
     }
 
     std::shared_ptr<Event> triggerEventData = std::make_shared<Event>("onEvent", true);
@@ -1562,6 +1572,7 @@ extern void __stdcall RenderLevelHook()
 
     gPlayerInput.Update();
     MusicManager::update();
+    gDeathCounter.Draw();
 
     g_renderDoneCameraUpdate = oldRenderDoneCameraUpdate;
 
@@ -1571,6 +1582,14 @@ extern void __stdcall RenderLevelHook()
     }
     g_EventHandler.hookLevelRenderEnd();
     Renderer::Get().EndFrameRender();
+    for(int i = 1; i <= 255; i++)
+    {
+        SMBXEvent* event = SMBXEvent::Get(i);
+        if(EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)event->pName)])
+        {
+            EventHasTriggered[SMBXEvents::GetNumberFromName((std::wstring)event->pName)] = false;
+        }
+    }
 }
 
 // Hook to restart the camera loop in RenderLevel to allow updating all cameras
@@ -2449,6 +2468,7 @@ void __stdcall runtimeHookSaveGame()
         
         if(!isCancelled)
         {
+            gDeathCounter.Save();
             saveGame_OrigFunc();
         }
     }
