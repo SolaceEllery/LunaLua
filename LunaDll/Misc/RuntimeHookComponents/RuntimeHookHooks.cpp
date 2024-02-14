@@ -3224,7 +3224,7 @@ void __stdcall runtimeHookCheckWindowFocus()
 {
     if(!gRunWhenUnfocused && !LunaLoadScreenIsActive())
     {
-        if(!gMainWindowFocused)
+        if(gMainWindowUnfocusPending)
         {
             if(gUnfocusTimer > 0)
             {
@@ -3278,6 +3278,8 @@ void __stdcall runtimeHookCheckWindowFocus()
                 }
             }
         }
+        TestModeSendNotification("resumeAfterUnfocusedNotification");
+        gMainWindowUnfocusPending = false;
     }
 }
 
@@ -5758,6 +5760,20 @@ void __stdcall runtimeHookMushBugEvent()
     }
 }
 
+// Function to retore GeyKeyState call to functionality if it's one we care about
+SHORT __stdcall runtimeHookGetKeyStateRetore(int vk)
+{
+    for(int i = 0; i <= 9; i++)
+    {
+        int keyboardID = GetKeyboardToPressKeysWith(keyboardDevices[i].keyboardHandle);
+        int keyboardIdx = GetKeyboardIDListing(keyboardID);
+        if(gKeyState[keyboardIdx][vk] > 0x00)
+        {
+            return (gKeyState[keyboardIdx][vk] & 0x80) ? 0xF000 : 0;
+        }
+    }
+    return 0;
+}
 
 // close the game
 // don't bother with preserving cpu state or anything, since we'll never return from here...

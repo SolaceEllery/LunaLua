@@ -455,6 +455,12 @@ static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeate
         }
     }
 
+    // Process ESC key press
+    if ((virtKey == VK_ESCAPE) && plainPress)
+    {
+        gEscPressed = true;
+    }
+
     // Process the F12 key for screenshots
     if ((virtKey == VK_F12) && plainPress && g_GLEngine.IsEnabled())
     {
@@ -1071,6 +1077,15 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             case WM_INPUT:
             {
                 bool haveFocus = (wParam == RIM_INPUT);
+
+                // We'll need to do some additional stuff just to get the keyboard handle
+                HANDLE hDevice = getTheHandleForWndProc(reinterpret_cast<HRAWINPUT>(lParam));
+                int keyboardID = GetKeyboardToPressKeysWith(hDevice);
+                int keyboardIdx = GetKeyboardIDListing(keyboardID);
+                if(keyboardID == (int)hDevice)
+                {
+                    keyboardDevices[keyboardIdx].keyboardHandle = hDevice;
+                }
 
                 // Process the raw input
                 bool mainWindowFocus = haveFocus && gMainWindowFocused;
@@ -2809,6 +2824,28 @@ void TrySkipPatch()
     // Replace PlayerEffects function
     PATCH(SMBX13::modPlayer_Private::_PlayerEffects_ptr).JMP(&SMBX13::Ports::PlayerEffects).NOP_PAD_TO_SIZE<6>().Apply();
 
+    // Restore GetKeyState for some pause related calls
+    // GameLoop:
+    PATCH(0x8CA3D4).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8CA45D).CALL(runtimeHookGetKeyStateRetore).Apply();
+    // WorldLoop:
+    PATCH(0x8E0E2C).CALL(runtimeHookGetKeyStateRetore).Apply();
+    // PauseGame:
+    PATCH(0x8E5AA6).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5AB8).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5AC3).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5ACE).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5ADA).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5B25).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5BD0).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E5C1F).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E61E7).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E61F3).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E64DE).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E64F0).CALL(runtimeHookGetKeyStateRetore).Apply();
+    PATCH(0x8E64FB).CALL(runtimeHookGetKeyStateRetore).Apply();
+
+    
     /************************************************************************/
     /* Import Table Patch                                                   */
     /************************************************************************/

@@ -15,6 +15,8 @@ HINSTANCE gHInstance;
 
 HWND gMainWindowHwnd = NULL;
 bool gMainWindowFocused = false;
+bool gMainWindowUnfocusPending = false;
+bool gMainWindowUnfocusOverlay = false;
 
 // Global settings
 bool gLunaEnabled;
