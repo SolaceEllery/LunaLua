@@ -335,7 +335,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     GM_CUR_SAVE_SLOT = GM_CUR_MENUCHOICE + 1; //--selSave = MenuCursor + 1 (line 4983)--
     GM_STAR_COUNT = 0; //--numStars = 0 (4984)--
     GM_COINS = 0; //--Coins = 0 (line 4985)--
-    GM_UNK_B2C8E4 = 0; //--Score = 0 (line 4986)--
+    GM_SCORE = 0; //--Score = 0 (line 4986)--
     GM_PLAYER_LIVES = 3; //--Lives = 3 (line 4987)--
     
     // set that we're on map
@@ -402,7 +402,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
                 if(CheckCollision(tempLocation, SMBXScenery::Get(j)->momentum)) //--If CheckCollision(tempLocation, Scene(B).Location) Then Scene(B).Active = False (line 5011)--
                 {
                     // make any scenery if collided invisible if true
-                    SMBXScenery::Get(j)->field_32 = COMBOOL(false);
+                    SMBXScenery::Get(j)->visible = COMBOOL(false);
                 }
             } //--Next B (line 5012)--
         } //--Next A (line 5013)--
