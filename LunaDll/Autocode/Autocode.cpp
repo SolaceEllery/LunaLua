@@ -228,14 +228,17 @@ void Autocode::Do(bool init) {
         // Show level's internal name (or show the filename if empty)
         case AT_ShowLevelName:
         {
-            Renderer::Get().AddOp(new RenderStringOp(GM_LVLNAME_PTR.empty() ? GM_LVLFILENAME_PTR : GM_LVLNAME_PTR, (int)Param3, (float)Param1, (float)Param2));
+            std::wstring lvlName = GM_LVLNAME_PTR;
+            std::wstring lvlFilename = GM_LVLFILENAME_PTR;
+            Renderer::Get().AddOp(new RenderStringOp(lvlName.empty() ? lvlFilename : lvlName, (int)Param3, (float)Param1, (float)Param2));
             break;
         }
 
         // Show level's file name (without extension)
         case AT_ShowLevelFile:
         {
-            std::wstring noExtensionFile = RemoveExtension(GM_LVLFILENAME_PTR)
+            std::wstring lvlFilename = GM_LVLFILENAME_PTR;
+            std::wstring noExtensionFile = RemoveExtension(lvlFilename);
             Renderer::Get().AddOp(new RenderStringOp(noExtensionFile, (int)Param3, (float)Param1, (float)Param2));
             break;
         }
