@@ -2840,7 +2840,6 @@ void TrySkipPatch()
     PATCH(0x8E64F0).CALL(runtimeHookGetKeyStateRetore).Apply();
     PATCH(0x8E64FB).CALL(runtimeHookGetKeyStateRetore).Apply();
 
-    
     /************************************************************************/
     /* Import Table Patch                                                   */
     /************************************************************************/

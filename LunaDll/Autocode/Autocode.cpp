@@ -231,8 +231,8 @@ void Autocode::Do(bool init) {
         // Show level's internal name (or show the filename if empty)
         case AT_ShowLevelName:
         {
-            std::wstring lvlName = GM_LVLNAME_PTR;
-            std::wstring lvlFilename = GM_LVLFILENAME_PTR;
+            std::wstring lvlName = (std::wstring)GM_LVLNAME_PTR;
+            std::wstring lvlFilename = (std::wstring)GM_LVLFILENAME_PTR;
             Renderer::Get().AddOp(new RenderStringOp(lvlName.empty() ? lvlFilename : lvlName, (int)Param3, (float)Param1, (float)Param2));
             break;
         }
@@ -240,7 +240,7 @@ void Autocode::Do(bool init) {
         // Show level's file name (without extension)
         case AT_ShowLevelFile:
         {
-            std::wstring lvlFilename = GM_LVLFILENAME_PTR;
+            std::wstring lvlFilename = (std::wstring)GM_LVLFILENAME_PTR;
             std::wstring noExtensionFile = RemoveExtension(lvlFilename);
             Renderer::Get().AddOp(new RenderStringOp(noExtensionFile, (int)Param3, (float)Param1, (float)Param2));
             break;
@@ -814,7 +814,7 @@ void Autocode::Do(bool init) {
 
         case AT_RunCheat:
         {
-            if(Length == 1) // Play once when delay runs out
+            if(Length <= 1) // Play once when delay runs out
             {
                 GM_INPUTSTR_BUF_PTR = WStr2Str(MyString);
                 Expired = true;
