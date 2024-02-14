@@ -23,7 +23,7 @@
 
 using namespace std;
 
-AutocodeSFXs AutocodeSFXCache[500];
+AutocodeSFXs AutocodeSFXCache[20];
 int AutocodeSFXCacheCount = 0;
 
 // CTORS
@@ -262,17 +262,17 @@ void Autocode::Do(bool init) {
                     if(MyString.length() > 0)
                     {
                         std::wstring full_path = getCustomFolderPath() + MyString;
-                        if(AutocodeSFXCacheCount > 500)
+                        if(AutocodeSFXCacheCount > 20)
                         {
                             // Overwrite starting from 0
                             AutocodeSFXCacheCount = 0;
-                            for(int i = 0; i <= 498; i++)
+                            for(int i = 0; i <= 18; i++)
                             {
                                 // Reset everything from 0 up to 498. The last two will be kept in case if they're still playing and everything else needs to be reset.
                                 AutocodeSFXCache[i].Reset();
                             }
                         }
-                        for(int i = 0; i <= 500; i++)
+                        for(int i = 0; i <= 20; i++)
                         {
                             if(!AutocodeSFXCache[i].IsUsed)
                             {
@@ -306,17 +306,17 @@ void Autocode::Do(bool init) {
                     {
                         std::wstring full_path = getCustomFolderPath() + MyString;
                         //char* dbg = "CUSTOM SOUND PLAY DBG";
-                        if(AutocodeSFXCacheCount > 500)
+                        if(AutocodeSFXCacheCount > 20)
                         {
                             // Overwrite starting from 0
                             AutocodeSFXCacheCount = 0;
-                            for(int i = 0; i <= 498; i++)
+                            for(int i = 0; i <= 18; i++)
                             {
                                 // Reset everything from 0 up to 498. The last two will be kept in case if they're still playing and everything else needs to be reset.
                                 AutocodeSFXCache[i].Reset();
                             }
                         }
-                        for(int i = 0; i <= 500; i++)
+                        for(int i = 0; i <= 20; i++)
                         {
                             if(!AutocodeSFXCache[i].IsUsed)
                             {
@@ -345,7 +345,7 @@ void Autocode::Do(bool init) {
                 {
                     //char* dbg = "CUSTOM SOUND STOP DBG";
                     std::wstring full_path = getCustomFolderPath() + MyString;
-                    for(int i = 0; i <= 500; i++)
+                    for(int i = 0; i <= 20; i++)
                     {
                         if(AutocodeSFXCache[i].FullPath == WStr2Str(full_path))
                         {

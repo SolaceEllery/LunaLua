@@ -29,7 +29,7 @@ struct AutocodeSFXs {
     }
 };
 
-extern AutocodeSFXs AutocodeSFXCache[500];
+extern AutocodeSFXs AutocodeSFXCache[20];
 extern int AutocodeSFXCacheCount;
 
 enum LunaControlAct {
