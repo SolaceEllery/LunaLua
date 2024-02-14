@@ -60,7 +60,6 @@ struct keyboardDevices
     int keyboardSubtype;
     int index;
     int keyboardID;
-    HANDLE keyboardHandle;
 
     // Constructor
     keyboardDevices()
@@ -80,7 +79,6 @@ struct keyboardDevices
         keyboardSubtype = 0;
         index = 0;
         keyboardID = 0;
-        keyboardHandle = NULL;
     }
 };
 extern keyboardDevices keyboardDeviceList[9];

@@ -5848,16 +5848,12 @@ void __stdcall runtimeHookMushBugEvent()
 // Function to retore GeyKeyState call to functionality if it's one we care about
 SHORT __stdcall runtimeHookGetKeyStateRetore(int vk)
 {
+    SHORT state = 0x00;
     for(int i = 0; i <= 9; i++)
     {
-        int keyboardID = GetKeyboardToPressKeysWith(keyboardDeviceList[i].keyboardHandle);
-        int keyboardIdx = GetKeyboardIDListing(keyboardID);
-        if(gKeyState[keyboardIdx][vk] > 0x00)
-        {
-            return (gKeyState[keyboardIdx][vk] & 0x80) ? 0xF000 : 0;
-        }
+        state = (gKeyState[i][vk] & 0x80) ? 0xF000 : 0;
     }
-    return 0;
+    return state;
 }
 
 // close the game

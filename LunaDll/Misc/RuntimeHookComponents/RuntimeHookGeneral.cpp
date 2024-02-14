@@ -1078,15 +1078,6 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             {
                 bool haveFocus = (wParam == RIM_INPUT);
 
-                // We'll need to do some additional stuff just to get the keyboard handle
-                HANDLE hDevice = getTheHandleForWndProc(reinterpret_cast<HRAWINPUT>(lParam));
-                int keyboardID = GetKeyboardToPressKeysWith(hDevice);
-                int keyboardIdx = GetKeyboardIDListing(keyboardID);
-                if(keyboardID == (int)hDevice)
-                {
-                    keyboardDeviceList[keyboardIdx].keyboardHandle = hDevice;
-                }
-
                 // Process the raw input
                 bool mainWindowFocus = haveFocus && gMainWindowFocused;
                 ProcessRawInput(hwnd, reinterpret_cast<HRAWINPUT>(lParam), mainWindowFocus);
