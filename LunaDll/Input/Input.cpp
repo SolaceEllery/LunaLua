@@ -22,9 +22,9 @@ void Input::CheckSpecialCheats() {
     int sought_len = wcslen(FULL_LUNA_TOGGLE_CHT);
     if(org_len >= sought_len && curbuf.substr(org_len - sought_len, sought_len) == FULL_LUNA_TOGGLE_CHT) {
         if(gLunaEnabled)
-            gLunaEnabled = 0;
+            gLunaEnabled = false;
         else
-            gLunaEnabled = 1;
+            gLunaEnabled = true;
         SMBXSound::PlaySFX(36);
         ClearInputStringBuffer();
         return;

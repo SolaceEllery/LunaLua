@@ -45,10 +45,6 @@
 extern PlayerMOB* getTemplateForCharacterWithDummyFallback(int id);
 extern "C" void __cdecl LunaLuaSetGameData(const char* dataPtr, int dataLen);
 
-// Patch to allow exiting the pause menu. Apply when the vanilla pause/textbox
-// should be instantly exited always. Unapply when this should not be the case.
-static auto exitPausePatch = PATCH(0x8E6564).NOP().NOP().NOP().NOP().NOP().NOP();
-
 EpisodeMain::EpisodeMain()
 {}
 
@@ -174,9 +170,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // when the episode has loaded successfully after boot, we'll need to do some extra things in order for this to work
     if(gEpisodeLoadedOnBoot)
     {
-        // force-unpause the game
-        exitPausePatch.Apply();
-
         // exit lua
         gLunaLua.exitContext();
 
@@ -475,8 +468,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     {
         gEpisodeLoadedOnBoot = true;
     }
-
-    exitPausePatch.Unapply();
 
     // hide loadscreen
     LunaLoadScreenKill();

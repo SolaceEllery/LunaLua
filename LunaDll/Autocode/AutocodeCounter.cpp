@@ -19,44 +19,40 @@ DeathCounter gDeathCounter;
 // CTOR
 DeathCounter::DeathCounter()
 {
-    if(gEpisodeSettings.enableLunaDLLDeathsCounter)
-    {
-        gDeathCounter.Enabled = true;
-    }
-    else
-    {
-        gDeathCounter.Enabled = false;
-    }
+    
 }
 
 DeathCounter::~DeathCounter()
 {
-    gDeathCounter.Enabled = false;
+    
 }
 
 void DeathCounter::Init()
 {
-    bool noLunaDLLFile = false;
-    std::string episodeDirToIni = WStr2Str(gEpisodeSettings.episodeDirectory) + "\\LunaDLL.ini";
-    IniProcessing lunaDLLConfig(episodeDirToIni);
-    // If there's no death counter information, create a file with default values in it
-    if(!lunaDLLConfig.beginGroup("demos-counter"))
+    if(gEpisodeSettings.enableLunaDLLDeathsCounter)
     {
-        noLunaDLLFile = true;
-        lunaDLLConfig.setValue("deaths", 0);
-        lunaDLLConfig.setValue("fails", 0);
+        bool noLunaDLLFile = false;
+        std::string episodeDirToIni = WStr2Str(gEpisodeSettings.episodeDirectory) + "\\LunaDLL.ini";
+        IniProcessing lunaDLLConfig(episodeDirToIni);
+        // If there's no death counter information, create a file with default values in it
+        if(!lunaDLLConfig.beginGroup("demos-counter"))
+        {
+            noLunaDLLFile = true;
+            lunaDLLConfig.setValue("deaths", 0);
+            lunaDLLConfig.setValue("fails", 0);
+        }
+        else // else just read the values from the file
+        {
+            gDeathCounter.CurrentDeaths = lunaDLLConfig.value("deaths", 0).toInt();
+            gDeathCounter.CurrentFails = lunaDLLConfig.value("fails", 0).toInt();
+        }
+        lunaDLLConfig.endGroup();
+        if(noLunaDLLFile)
+        {
+            lunaDLLConfig.writeIniFile();
+        }
+        lunaDLLConfig.close();
     }
-    else // else just read the values from the file
-    {
-        gDeathCounter.CurrentDeaths = lunaDLLConfig.value("deaths", 0).toInt();
-        gDeathCounter.CurrentFails = lunaDLLConfig.value("fails", 0).toInt();
-    }
-    lunaDLLConfig.endGroup();
-    if(noLunaDLLFile)
-    {
-        lunaDLLConfig.writeIniFile();
-    }
-    lunaDLLConfig.close();
 }
 
 void DeathCounter::SaveLevelRecord(std::wstring levelFilename, IniProcessing currentIniFile)
@@ -132,7 +128,7 @@ void DeathCounter::UpdateDeaths(bool isSaved)
 
 void DeathCounter::Recount()
 {
-    if(!gDeathCounter.Enabled && !gIsLevel)
+    if(!gEpisodeSettings.enableLunaDLLDeathsCounter && !gIsLevel)
     {
         return;
     }
@@ -152,7 +148,7 @@ void DeathCounter::Recount()
 
 void DeathCounter::Draw()
 {
-    if(!gDeathCounter.Enabled && !gIsLevel)
+    if(!gEpisodeSettings.enableLunaDLLDeathsCounter && !gIsLevel)
     {
         return;
     }
@@ -173,5 +169,5 @@ void DeathCounter::Draw()
 
 void DeathCounter::Quit()
 {
-    gDeathCounter.Enabled = false;
+    
 }

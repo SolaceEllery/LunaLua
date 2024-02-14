@@ -223,7 +223,22 @@ void Autocode::Do(bool init) {
                 Renderer::Get().AddOp(new RenderStringOp(L"?", 3, (float)Param1, (float)Param2));
             }
             break;
-                            }
+        }
+
+        // Show level's internal name (or show the filename if empty)
+        case AT_ShowLevelName:
+        {
+            Renderer::Get().AddOp(new RenderStringOp(GM_LVLNAME_PTR.empty() ? GM_LVLFILENAME_PTR : GM_LVLNAME_PTR, (int)Param3, (float)Param1, (float)Param2));
+            break;
+        }
+
+        // Show level's file name (without extension)
+        case AT_ShowLevelFile:
+        {
+            std::wstring noExtensionFile = RemoveExtension(GM_LVLFILENAME_PTR)
+            Renderer::Get().AddOp(new RenderStringOp(noExtensionFile, (int)Param3, (float)Param1, (float)Param2));
+            break;
+        }
 
         // AUDIO
         case AT_SFX: {
@@ -739,13 +754,23 @@ void Autocode::Do(bool init) {
                     this->Expired = true;
             }
             break;
-                               }
+        }
 
         case AT_ClearInputString: {
             //wchar_t* dbg = L"ClearInputString debug";
             Input::ClearInputStringBuffer();
             break;
-                                  }
+        }
+
+        case AT_RunCheat:
+        {
+            if(Length == 1) // Play once when delay runs out
+            {
+                GM_INPUTSTR_BUF_PTR = WStr2Str(MyString);
+                Expired = true;
+            }
+            break;
+        }
 
         case AT_DeleteEventsFrom: {
             gAutoMan.ForceExpire((int)Target);
