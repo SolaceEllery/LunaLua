@@ -85,6 +85,9 @@ struct keyboardDevices
 };
 extern keyboardDevices keyboardDeviceList[9];
 extern keyboardDevices keyboardDevice;
+extern int GetKeyboardIDListing(int id);
+extern int GetKeyboardToPressKeysWith(HANDLE hDevice);
+
 
 
 

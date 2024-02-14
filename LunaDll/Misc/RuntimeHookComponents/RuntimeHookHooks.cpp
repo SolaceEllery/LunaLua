@@ -5765,7 +5765,7 @@ SHORT __stdcall runtimeHookGetKeyStateRetore(int vk)
 {
     for(int i = 0; i <= 9; i++)
     {
-        int keyboardID = GetKeyboardToPressKeysWith(keyboardDevices[i].keyboardHandle);
+        int keyboardID = GetKeyboardToPressKeysWith(keyboardDeviceList[i].keyboardHandle);
         int keyboardIdx = GetKeyboardIDListing(keyboardID);
         if(gKeyState[keyboardIdx][vk] > 0x00)
         {

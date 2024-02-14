@@ -572,7 +572,7 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
     }
 }
 
-static int GetKeyboardIDListing(int id)
+int GetKeyboardIDListing(int id)
 {
     for(int i = 1; i <= HID_GetKeyboardCount(); i++)
     {
@@ -584,7 +584,7 @@ static int GetKeyboardIDListing(int id)
     return -1;
 }
 
-static int GetKeyboardToPressKeysWith(HANDLE hDevice)
+int GetKeyboardToPressKeysWith(HANDLE hDevice)
 {
     int finalKey = -1;
     int hDeviceInt = (int)hDevice;
@@ -1084,7 +1084,7 @@ LRESULT CALLBACK HandleWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 int keyboardIdx = GetKeyboardIDListing(keyboardID);
                 if(keyboardID == (int)hDevice)
                 {
-                    keyboardDevices[keyboardIdx].keyboardHandle = hDevice;
+                    keyboardDeviceList[keyboardIdx].keyboardHandle = hDevice;
                 }
 
                 // Process the raw input
