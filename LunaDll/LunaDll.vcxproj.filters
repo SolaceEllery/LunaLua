@@ -1,1565 +1,475 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Misc">
-      <UniqueIdentifier>{31594c82-2c70-47d7-8f94-aeab75eb2906}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LevelCodes">
-      <UniqueIdentifier>{5c5967e6-b4e1-419a-a995-ed2a01e18c54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering">
-      <UniqueIdentifier>{c5f40672-3206-43b1-9cc9-bde849893bf3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Autocode">
-      <UniqueIdentifier>{c9bf9cf4-9398-45ed-b4fb-b1b7de72c151}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Autocode\Commands">
-      <UniqueIdentifier>{35e56b17-c07a-44c7-90bc-9504bff9570f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{7355c692-c445-440b-81d2-6abe60fd7051}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\RenderOps">
-      <UniqueIdentifier>{bc8d7f50-4c07-47e3-9677-38aa03081cff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Shaders">
-    </Filter>
-    <Filter Include="PerformanceTimer">
-      <UniqueIdentifier>{f1f71b76-ea37-465a-9e66-873a202fe7bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CellManager">
-      <UniqueIdentifier>{09b072dc-ab35-4c99-af25-ddfcb6524686}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Minigames">
-      <UniqueIdentifier>{2f91a5ba-ae47-418a-b9ff-ac359a032c1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Minigames\CGUI">
-      <UniqueIdentifier>{4b967018-632b-43a0-8477-923c7a17613e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain">
-      <UniqueIdentifier>{73ab09f3-d5ee-4d34-bb48-e256fd1a29e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UserSaves">
-      <UniqueIdentifier>{5ffce8e1-f367-4b21-ad3e-e2b529b20551}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SMBXInternal">
-      <UniqueIdentifier>{70bdd782-5d49-4a55-a8d9-a470fd505f4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs">
-    </Filter>
-    <Filter Include="libs\stackwalker">
-    </Filter>
-    <Filter Include="libs\luasocket">
-    </Filter>
-    <Filter Include="SdlMusic">
-      <UniqueIdentifier>{93991f96-d10e-48c6-9e09-9c8bc9d6c451}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MciEmulator">
-      <UniqueIdentifier>{6fa4bca1-d668-4d26-9f2c-5a24cddda3fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HardcodedGraphics">
-      <UniqueIdentifier>{1027b6d8-6102-4902-88fe-3e2a69c3d6ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain\LuaProxyComponent">
-      <UniqueIdentifier>{3c5c273e-0210-44ee-92fd-0d9857bfe836}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\RuntimeHookComponents">
-      <UniqueIdentifier>{7fe805c0-8b82-466c-9330-213a4a32c632}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions">
-      <UniqueIdentifier>{d9197f0d-581d-4438-95b6-4e01fc6bba07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\Gui">
-      <UniqueIdentifier>{ec3acb73-5a65-4d13-95ec-4fd46441f1b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SMBXInternal\Reconstructed">
-      <UniqueIdentifier>{5fd3c3a0-12a5-40e8-b460-4421e764474b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SMBXInternal\Reconstructed\Util">
-      <UniqueIdentifier>{69360985-d306-4c26-ae4e-631b886fba00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\MemoryScanner">
-      <UniqueIdentifier>{48dca8f9-ecf9-46bd-9ef7-a969b2124ff9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameConfig">
-      <UniqueIdentifier>{757faf1a-e7b6-4b48-ae27-01df41d001f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\RuntimeHookUtils">
-      <UniqueIdentifier>{4d72dffc-f1e1-4224-b611-0ffbf60b3c7c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\RuntimeHookManagers">
-      <UniqueIdentifier>{d4e2ea0a-7d76-40e6-a6c6-c3d4e7681e60}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc\FreeImageUtils">
-    </Filter>
-    <Filter Include="libs\simpleini">
-    </Filter>
-    <Filter Include="Rendering\GL">
-      <UniqueIdentifier>{56db33a4-2b5e-4d78-9f38-d622cfc903d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IPC">
-      <UniqueIdentifier>{230f7155-7710-423e-b01c-3c8ae5762ffd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\PGE_File_Formats">
-      <UniqueIdentifier>{d4e89256-a839-4fdb-b4dc-62144a84939d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FileManager">
-      <UniqueIdentifier>{c2655aeb-6086-4624-a167-d60761e77941}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain\LuaProxyComponent\CustomSprites">
-      <UniqueIdentifier>{964b4b3e-3507-4d37-8826-0e95cac2998f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain\LuaProxyComponent\CustomSprites\SpritesFuncs">
-      <UniqueIdentifier>{c8aabf8d-5bc6-42b4-9791-c2bfc7d35eaf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaMain\LuaProxyComponent\CustomSprites\Hitbox">
-      <UniqueIdentifier>{a0baf83b-5d12-413f-9ea1-0d4108d7c0fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\IniProcessor">
-      <UniqueIdentifier>{5d3963c9-d5be-462e-97d6-fa2bfa9d77f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\DirManager">
-      <UniqueIdentifier>{8bfb1473-0003-4960-bf11-2e4879fdac27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\fmt">
-      <UniqueIdentifier>{cfc4bb68-d728-4637-8cf6-dc97aeaa9a78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\Utils">
-      <UniqueIdentifier>{46bcc0c2-7970-4297-a586-3d7a9820e328}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\json">
-      <UniqueIdentifier>{35f2e9ba-fba0-48ac-ae82-40ba81b273f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\luabind-deboostified">
-    </Filter>
-    <Filter Include="libs\luabind-deboostified\src">
-    </Filter>
-    <Filter Include="LunaLoader">
-      <UniqueIdentifier>{bfb6190e-4738-4465-8020-4a003075249a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SMBXInternal\Ports">
-      <UniqueIdentifier>{35e43447-c308-4ec8-88b4-4a39a45a3489}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="LuaMain\LuaHelper.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LuaProxy.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LunaLuaMain.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="SdlMusic\SdlMusPlayer.h">
-      <Filter>SdlMusic</Filter>
-    </ClInclude>
-    <ClInclude Include="SdlMusic\MusicManager.h">
-      <Filter>SdlMusic</Filter>
-    </ClInclude>
-    <ClInclude Include="SdlMusic\MusicManager.h">
-      <Filter>SdlMusic</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Animation.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Autocode\Autocode.h">
-      <Filter>Autocode</Filter>
-    </ClInclude>
-    <ClInclude Include="Autocode\AutocodeManager.h">
-      <Filter>Autocode</Filter>
-    </ClInclude>
-    <ClInclude Include="Autocode\AutocodeCounter.h">
-      <Filter>Autocode</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Blocks.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="CellManager\CellManager.h">
-      <Filter>CellManager</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSprites\CSprite.h">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSprites\CSpriteManager.h">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSprites\SpriteComponent.h">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSprites\Hitbox\Hitbox.h">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites\Hitbox</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomSprites\SpritesFuncs\SpriteFuncs.h">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites\SpritesFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="HardcodedGraphics\HardcodedGraphicsManager.h">
-      <Filter>HardcodedGraphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Input\Input.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Layer.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Level.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="MciEmulator\mciEmulator.h">
-      <Filter>MciEmulator</Filter>
-    </ClInclude>
-    <ClInclude Include="Minigames\CGUI\CGUI.h">
-      <Filter>Minigames\CGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Minigames\Minigames.h">
-      <Filter>Minigames</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\MiscFuncs.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHook.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\CollisionMatrix.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\NPCs.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\PlayerMOB.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Rendering.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderRectOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderEffectOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderBitmapOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\SMBXEvents.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Sound.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="UserSaves\UserSaving.h">
-      <Filter>UserSaves</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\WorldLevel.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Overworld.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelCodes\LevelCodes.h">
-      <Filter>LevelCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="Minigames\GameboyRPG.h">
-      <Filter>Minigames</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LuabindIncludes.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LuaSharedProxy.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\VB6StrPtr.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LuaProxyComponent\LuaProxyAudio.h">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\Playground.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\ErrorReporter.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\stackwalker\StackWalker.h">
-      <Filter>libs\stackwalker</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Warp.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\BGOs.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Water.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\Gui\GuiCrashNotify.h">
-      <Filter>Misc\Gui</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Reconstructed\ReconstructedDefines.h">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Reconstructed\Util\NpcToCoins.h">
-      <Filter>SMBXInternal\Reconstructed\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderUtils.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\ThreadedCmdQueue.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\auxiliar.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\buffer.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\except.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\inet.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\io.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\mime.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\options.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\pierror.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\select.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\socket.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\tcp.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\timeout.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\udp.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\wsocket.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\luasocket\luasocket.h">
-      <Filter>libs\luasocket</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\MemoryScanner\MemoryScanner.h">
-      <Filter>Misc\MemoryScanner</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\MemoryScanner\MemoryScannerDefines.h">
-      <Filter>Misc\MemoryScanner</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderGLOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="GameConfig\GameConfiguration.h">
-      <Filter>GameConfig</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Menu.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="GameConfig\GameAutostart.h">
-      <Filter>GameConfig</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\NativeInput.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RunningStat.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\CameraInfo.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\CustomGraphics.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\FreeImageUtils\FreeImageInit.h">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\FreeImageUtils\FreeImageData.h">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\FreeImageUtils\FreeImageGifData.h">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\FreeImageUtils\FreeImageHelper.h">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\simpleini\SimpleIni.h">
-      <Filter>libs\simpleini</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHookUtils\APIHook.h">
-      <Filter>Misc\RuntimeHookUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHookUtils\CmnHdr.h">
-      <Filter>Misc\RuntimeHookUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHookUtils\Toolhelp.h">
-      <Filter>Misc\RuntimeHookUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\RenderOps\RenderStringOp.h">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShader.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\VariantHelper.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\win32_Unicode.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\TypeLib.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\SafeFPUControl.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\CollectedStarRecord.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Path.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Tile.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Scenery.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Musicbox.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="GameConfig\GeneralLunaConfig.h">
-      <Filter>GameConfig</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\AsyncHTTPClient.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\AsmPatch.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHookManagers\LevelHUDController.h">
-      <Filter>Misc\RuntimeHookManagers</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h" />
-    <ClInclude Include="GlobalFuncs.h" />
-    <ClInclude Include="Globals.h" />
-    <ClInclude Include="httprequest.h" />
-    <ClInclude Include="Main.h" />
-    <ClInclude Include="version.h" />
-    <ClInclude Include="EventStateMachine.h" />
-    <ClInclude Include="Misc\PerfTracker.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLCompat.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLContextManager.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLDraw.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLEngine.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLEngineCmds.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLEngineProxy.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLInitTest.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLSplitSprite.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLSprite.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLTextureStore.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\BitBltEmulation.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\AsyncGifRecorder.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\BaseItemArray.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\HardcodedGraphicsAccess.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\TestMode.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\GL\GLFramebuffer.h">
-      <Filter>Rendering\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\FrameCapture.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\UniPath.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="IPC\IPCPipeServer.h">
-      <Filter>IPC</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\WaitForTickEnd.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\TestModeMenu.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\PGEEditorCmdSender.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Misc\Gui\RichTextDialog.h">
-      <Filter>Misc\Gui</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShaderVariableInfo.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShaderUniformInfo.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShaderAttributeInfo.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShaderVariableEntry.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Shaders\GLShaderVariableType.h">
-      <Filter>Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\ImageLoader.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\ResourceFileMapper.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\SMBXImageCategories.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\LunaImage.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\SRect.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\NpcIdExtender.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LuaProxyFFIGraphics.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\AsyncGifRecorderImgs.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\LoadScreen.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\charsetconvert.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\ConvertUTF.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\CSVReader.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\CSVReaderPGE.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\CSVUtils.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\file_formats.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\file_strlist.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\lvl_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\meta_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\npc_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\pge_file_lib_globs.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\pge_file_lib_sys.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\pge_x.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\pge_x_macro.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\save_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\smbx64.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\smbx64_cnf_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\smbx64_macro.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\wld_filedata.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\pge_ff_units.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\PGE_File_Formats\smbx38a_private.h">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager\SMBXFileManager.h">
-      <Filter>FileManager</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager\CustomParamStore.h">
-      <Filter>FileManager</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\IniProcessor\ini_processing.h">
-      <Filter>libs\IniProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\IniProcessor\ini_processing_variant.h">
-      <Filter>libs\IniProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\DirManager\dirman_private.h">
-      <Filter>libs\DirManager</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\DirManager\dirman.h">
-      <Filter>libs\DirManager</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_ostream.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_posix.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_printf.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_qformat.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_string.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_time.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_container.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\fmt\fmt_format.h">
-      <Filter>libs\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\Utils\strings.h">
-      <Filter>libs\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\Utils\vptrlist.h">
-      <Filter>libs\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\Utils\files.h">
-      <Filter>libs\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager\config_manager.h">
-      <Filter>FileManager</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\json\json.hpp">
-      <Filter>libs\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\LunaLoader\LunaLoaderPatch.h">
-      <Filter>LunaLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="Input\LunaGameController.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMain\LunaPathValidator.h">
-      <Filter>LuaMain</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\WindowSizeHandler.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Input\MouseHandler.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\VB6RNG.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\Gui\GuiUtils.h">
-      <Filter>Misc\Gui</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Reconstructed\EpisodeMain.h">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Reconstructed\PlayerInput.h">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\MonitorSystem.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Functions.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Variables.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Types.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\VB6Logic.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Ports.h">
-      <Filter>SMBXInternal</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\VB6Array.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\RuntimeHookComponents\CharacterIdExtension.h">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="SMBXInternal\Reconstructed\CameraMan.h">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldMap.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc\SaveData.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager\LoadFile_Save.h">
-      <Filter>FileManager</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="LuaMain\LuaHelper.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxy.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LunaLuaMain.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="SdlMusic\SdlMusPlayer.cpp">
-      <Filter>SdlMusic</Filter>
-    </ClCompile>
-    <ClCompile Include="SdlMusic\MusicManager.cpp">
-      <Filter>SdlMusic</Filter>
-    </ClCompile>
-    <ClCompile Include="SdlMusic\MusicManager.cpp">
-      <Filter>SdlMusic</Filter>
-    </ClCompile>
-    <ClCompile Include="SdlMusic\MusicDefList.cpp">
-      <Filter>SdlMusic</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Animation.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\Autocode.cpp">
-      <Filter>Autocode</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\AutocodeManager.cpp">
-      <Filter>Autocode</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\AutocodeCounter.cpp">
-      <Filter>Autocode</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\Commands\AC_LunaControl.cpp">
-      <Filter>Autocode\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\Commands\AC_HeartSystem.cpp">
-      <Filter>Autocode\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\Commands\EnumCmd.cpp">
-      <Filter>Autocode\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Autocode\Commands\GenComp.cpp">
-      <Filter>Autocode\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Blocks.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="CellManager\CellManager.cpp">
-      <Filter>CellManager</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\CSprite.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\CSpriteManager.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\SpriteComponent.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\Hitbox\Hitbox.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites\Hitbox</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\SpritesFuncs\SpriteBehaviorFuncs.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites\SpritesFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomSprites\SpritesFuncs\SpriteDrawFuncs.cpp">
-      <Filter>LuaMain\LuaProxyComponent\CustomSprites\SpritesFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="HardcodedGraphics\HardcodedGraphicsManager.cpp">
-      <Filter>HardcodedGraphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Input\Input.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Layer.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Level.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\dlltestlvlCode.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\Docopoper-AbstractAssault.lvl.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\Docopoper-Calleoca.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\Docopoper-TheFloorisLava.lvl..cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\EuroShellRandD.lvl.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\KilArmoryCode.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\Kil-DemosBrain.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\JosephStaleknight-CurtainTortoise.lvl.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\SAJewers-QraestoliaCaverns.lvl.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\SAJewers-Snowboardin.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelCodes\Talkhaus-Science_Final_Battle.cpp">
-      <Filter>LevelCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="MciEmulator\mciEmulator.cpp">
-      <Filter>MciEmulator</Filter>
-    </ClCompile>
-    <ClCompile Include="Minigames\CGUI\CGUIContainer.cpp">
-      <Filter>Minigames\CGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\MiscFuncs.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\CollisionMatrix.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHook.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\NPCs.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\PlayerMOB.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Rendering.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderOps\RenderRectOp.cpp">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderOps\RenderEffectOp.cpp">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderOps\RenderBitmapOp.cpp">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\SMBXEvents.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Sound.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="UserSaves\UserSaving.cpp">
-      <Filter>UserSaves</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\WorldLevel.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Overworld.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWorldLevel.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWorld.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxySection.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxySaveBank.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyNPC.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyLayer.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyBlock.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAnimation.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Minigames\GameboyRPG.cpp">
-      <Filter>Minigames</Filter>
-    </ClCompile>
-    <ClCompile Include="Minigames\Minigames.cpp">
-      <Filter>Minigames</Filter>
-    </ClCompile>
-    <ClCompile Include="HardcodedGraphics\HardocodeGFXMap.cpp">
-      <Filter>HardcodedGraphics</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaSharedProxy.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyData.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\VB6StrPtr.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAudio.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\Playground.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookHooks.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookFixups.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookGeneral.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\ErrorReporter.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\stackwalker\StackWalker.cpp">
-      <Filter>libs\stackwalker</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncLevel.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncMisc.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncNative.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncText.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncEffects.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncGraphics.cpp">
-      <Filter>LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\Gui\GuiCrashNotify.cpp">
-      <Filter>Misc\Gui</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Reconstructed\Util\NpcToCoins.cpp">
-      <Filter>SMBXInternal\Reconstructed\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderUtils.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\auxiliar.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\buffer.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\except.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\inet.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\io.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\options.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\select.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\tcp.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\timeout.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\udp.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\wsocket.c">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\luasocket.cpp">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luasocket\mime.cpp">
-      <Filter>libs\luasocket</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\MemoryScanner\MemoryScanner.cpp">
-      <Filter>Misc\MemoryScanner</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\RenderOps\RenderGLOp.cpp">
-      <Filter>Rendering\RenderOps</Filter>
-    </ClCompile>
-    <ClCompile Include="GameConfig\GameConfiguration.cpp">
-      <Filter>GameConfig</Filter>
-    </ClCompile>
-    <ClCompile Include="GameConfig\GameAutostart.cpp">
-      <Filter>GameConfig</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWarp.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\CustomGraphics.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\FreeImageUtils\FreeImageInit.cpp">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\FreeImageUtils\FreeImageData.cpp">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\FreeImageUtils\FreeImageGifData.cpp">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\FreeImageUtils\FreeImageHelper.cpp">
-      <Filter>Misc\FreeImageUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookUtils\APIHook.cpp">
-      <Filter>Misc\RuntimeHookUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\VariantHelper.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\win32_Unicode.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\TypeLib.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyPlayerSettings.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyConsole.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyNativeInput.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyLogger.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\SafeFPUControl.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="GameConfig\GeneralLunaConfig.cpp">
-      <Filter>GameConfig</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\AsyncHTTPClient.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookManagers\LevelHUDController.cpp">
-      <Filter>Misc\RuntimeHookManagers</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAsyncHTTPRequest.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyMusicbox.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyPath.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyScenery.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyTile.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shaders\GLShader.cpp">
-      <Filter>Rendering\Shaders</Filter>
-    </ClCompile>
+    <ClCompile Include="..\LunaLoader\LunaLoaderPatch.cpp" />
+    <ClCompile Include="EventStateMachine.cpp" />
+    <ClCompile Include="FileManager\config_manager.cpp" />
+    <ClCompile Include="FileManager\CustomParamStore.cpp" />
+    <ClCompile Include="FileManager\LoadFile_Level.cpp" />
+    <ClCompile Include="FileManager\LoadFile_World.cpp" />
+    <ClCompile Include="FileManager\SMBXFileManager.cpp" />
+    <ClCompile Include="Input\LunaGameController.cpp" />
+    <ClCompile Include="Input\MouseHandler.cpp" />
+    <ClCompile Include="libs\DirManager\dirman.cpp" />
+    <ClCompile Include="libs\DirManager\dirman_winapi.cpp" />
+    <ClCompile Include="libs\fmt\fmt_format.cpp" />
+    <ClCompile Include="libs\fmt\fmt_ostream.cpp" />
+    <ClCompile Include="libs\fmt\fmt_posix.cpp" />
+    <ClCompile Include="libs\fmt\fmt_printf.cpp" />
+    <ClCompile Include="libs\IniProcessor\ini_processing.cpp" />
+    <ClCompile Include="libs\Utils\files.cpp" />
+    <ClCompile Include="libs\Utils\strings.cpp" />
+    <ClCompile Include="LoadFile_Save.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyFileFormats.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyFFIGraphics.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp" />
+    <ClCompile Include="LuaMain\LunaPathValidator.cpp" />
+    <ClCompile Include="Misc\AsmPatch.cpp" />
+    <ClCompile Include="Misc\CollisionMatrix.cpp" />
+    <ClCompile Include="Misc\Gameover.cpp" />
+    <ClCompile Include="Misc\BootSystem.cpp" />
+    <ClCompile Include="Misc\LoadScreen.cpp" />
+    <ClCompile Include="Misc\MonitorSystem.cpp" />
+    <ClCompile Include="Misc\NpcIdExtender.cpp" />
+    <ClCompile Include="Misc\ResourceFileMapper.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookDefines.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNpcHarm.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNPCTransform.cpp" />
+    <ClCompile Include="Misc\SaveData.cpp" />
+    <ClCompile Include="Rendering\ImageLoader.cpp" />
+    <ClCompile Include="Rendering\LunaImage.cpp" />
+    <ClCompile Include="Rendering\Shaders\GLShaderVariableEntry.cpp" />
+    <ClCompile Include="Rendering\Shaders\GLShaderAttributeInfo.cpp" />
+    <ClCompile Include="Rendering\Shaders\GLShaderUniformInfo.cpp" />
+    <ClCompile Include="Rendering\Shaders\GLShaderVariableInfo.cpp" />
+    <ClCompile Include="IPC\IPCPipeServer.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyShader.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\ConvertUTF_PGEFF.c" />
+    <ClCompile Include="libs\PGE_File_Formats\file_formats.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rwopen.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvl.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvlx.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvl_38a.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_meta.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_npc_txt.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_sav.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_savx.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_smbx64_cnf.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_wld.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_wld_38a.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_rw_wldx.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\file_strlist.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\lvl_filedata.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\npc_filedata.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\pge_file_lib_globs.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\pge_x.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\save_filedata.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\smbx64.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\smbx64_cnf_filedata.cpp" />
+    <ClCompile Include="libs\PGE_File_Formats\wld_filedata.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\class.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\class_info.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\class_registry.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\class_rep.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\create_class.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\error.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\exception_handler.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\function.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\function_introspection.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\headertest.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\inheritance.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\link_compatibility.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\object_rep.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\open.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\operator.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\pcall.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\scope.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\set_package_preload.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\stack_content_by_name.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\weak_ref.cpp" />
+    <ClCompile Include="libs\luabind-deboostified\src\wrapper_base.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyFFI.cpp" />
+    <ClCompile Include="Misc\Gui\RichTextDialog.cpp" />
+    <ClCompile Include="Misc\PGEEditorCmdSender.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookCharacterId.cpp" />
+    <ClCompile Include="Misc\TestMode.cpp" />
+    <ClCompile Include="Misc\TestModeMenu.cpp" />
+    <ClCompile Include="Misc\UniPath.cpp" />
+    <ClCompile Include="Misc\WaitForTickEnd.cpp" />
+    <ClCompile Include="Rendering\BitBltEmulation.cpp" />
+    <ClCompile Include="Misc\PerfTracker.cpp" />
+    <ClCompile Include="Misc\RuntimeHookManagers\LevelHUDController.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAsyncHTTPRequest.cpp" />
+    <ClCompile Include="Misc\AsyncHTTPClient.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyConsole.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyLogger.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyMusicbox.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyPath.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyScenery.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyTile.cpp" />
+    <ClCompile Include="GameConfig\GeneralLunaConfig.cpp" />
+    <ClCompile Include="Misc\FreeImageUtils\FreeImageHelper.cpp" />
+    <ClCompile Include="Misc\FreeImageUtils\FreeImageData.cpp" />
+    <ClCompile Include="Misc\FreeImageUtils\FreeImageInit.cpp" />
+    <ClCompile Include="Misc\FreeImageUtils\FreeImageGifData.cpp" />
+    <ClCompile Include="Misc\RuntimeHookUtils\APIHook.cpp" />
+    <ClCompile Include="Misc\TypeLib.cpp" />
+    <ClCompile Include="Misc\VariantHelper.cpp" />
+    <ClCompile Include="Misc\win32_Unicode.cpp" />
+    <ClCompile Include="Rendering\AsyncGifRecorder.cpp" />
+    <ClCompile Include="Autocode\Commands\AC_HeartSystem.cpp" />
+    <ClCompile Include="Autocode\Commands\AC_LunaControl.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyPlayerSettings.cpp" />
+    <ClCompile Include="Rendering\FrameCapture.cpp" />
+    <ClCompile Include="Rendering\GL\GLEngineCmds.cpp" />
+    <ClCompile Include="Rendering\GL\GLFramebuffer.cpp" />
+    <ClCompile Include="Rendering\Shaders\GLShader.cpp" />
+    <ClCompile Include="Misc\SafeFPUControl.cpp" />
+    <ClCompile Include="Rendering\WindowSizeHandler.cpp" />
+    <ClCompile Include="SMBXInternal\CustomGraphics.cpp" />
+    <ClCompile Include="GameConfig\GameAutostart.cpp" />
+    <ClCompile Include="GameConfig\GameConfiguration.cpp" />
+    <ClCompile Include="libs\luasocket\auxiliar.c" />
+    <ClCompile Include="libs\luasocket\buffer.c" />
+    <ClCompile Include="libs\luasocket\except.c" />
+    <ClCompile Include="libs\luasocket\inet.c" />
+    <ClCompile Include="libs\luasocket\io.c" />
+    <ClCompile Include="libs\luasocket\luasocket.cpp" />
+    <ClCompile Include="libs\luasocket\mime.cpp" />
+    <ClCompile Include="libs\luasocket\options.c" />
+    <ClCompile Include="libs\luasocket\select.c" />
+    <ClCompile Include="libs\luasocket\tcp.c" />
+    <ClCompile Include="libs\luasocket\timeout.c" />
+    <ClCompile Include="libs\luasocket\udp.c" />
+    <ClCompile Include="libs\luasocket\wsocket.c" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWarp.cpp" />
+    <ClCompile Include="Misc\MemoryScanner\MemoryScanner.cpp" />
+    <ClCompile Include="Misc\Gui\GuiCrashNotify.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncEffects.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncGraphics.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncLevel.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncMisc.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncText.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions\LuaProxyGlobalFuncNative.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookPublicFunctions.cpp" />
+    <ClCompile Include="Rendering\GL\GLContextManager.cpp" />
+    <ClCompile Include="Rendering\GL\GLDraw.cpp" />
+    <ClCompile Include="Rendering\GL\GLEngine.cpp" />
+    <ClCompile Include="Rendering\GL\GLEngineProxy.cpp" />
+    <ClCompile Include="Rendering\GL\GLInitTest.cpp" />
+    <ClCompile Include="Rendering\GL\GLSplitSprite.cpp" />
+    <ClCompile Include="Rendering\GL\GLSprite.cpp" />
+    <ClCompile Include="Rendering\GL\GLTextureStore.cpp" />
+    <ClCompile Include="Rendering\RenderOps\RenderGLOp.cpp" />
+    <ClCompile Include="Rendering\RenderUtils.cpp" />
+    <ClCompile Include="SMBXInternal\Animation.cpp" />
+    <ClCompile Include="Autocode\Autocode.cpp" />
+    <ClCompile Include="Autocode\AutocodeManager.cpp" />
+    <ClCompile Include="Autocode\AutocodeCounter.cpp" />
+    <ClCompile Include="SMBXInternal\Blocks.cpp" />
+    <ClCompile Include="CellManager\CellManager.cpp" />
+    <ClCompile Include="libs\stackwalker\StackWalker.cpp" />
+    <ClCompile Include="Misc\ErrorReporter.cpp" />
+    <ClCompile Include="HardcodedGraphics\HardocodeGFXMap.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAnimation.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyAudio.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyBlock.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyData.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyGlobalFunctions.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyLayer.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyNativeInput.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyNPC.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxySaveBank.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxySection.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWorld.cpp" />
+    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyWorldLevel.cpp" />
+    <ClCompile Include="LuaMain\LuaSharedProxy.cpp" />
+    <ClCompile Include="Minigames\CGUI\CGUIContainer.cpp" />
+    <ClCompile Include="CustomSprites\CSprite.cpp" />
+    <ClCompile Include="CustomSprites\CSpriteManager.cpp" />
+    <ClCompile Include="LevelCodes\dlltestlvlCode.cpp" />
+    <ClCompile Include="LevelCodes\Docopoper-AbstractAssault.lvl.cpp" />
+    <ClCompile Include="LevelCodes\Docopoper-Calleoca.cpp" />
+    <ClCompile Include="Autocode\Commands\EnumCmd.cpp" />
+    <ClCompile Include="LevelCodes\EuroShellRandD.lvl.cpp" />
+    <ClCompile Include="Minigames\GameboyRPG.cpp" />
+    <ClCompile Include="Minigames\Minigames.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookFixups.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookGeneral.cpp" />
+    <ClCompile Include="Misc\VB6StrPtr.cpp" />
+    <ClCompile Include="Misc\VB6RNG.cpp" />
+    <ClCompile Include="Misc\Playground.cpp" />
+    <ClCompile Include="Autocode\Commands\GenComp.cpp" />
     <ClCompile Include="GlobalFuncs.cpp" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="HardcodedGraphics\HardcodedGraphicsManager.cpp" />
+    <ClCompile Include="CustomSprites\Hitbox\Hitbox.cpp" />
+    <ClCompile Include="Input\Input.cpp" />
+    <ClCompile Include="LevelCodes\JosephStaleknight-CurtainTortoise.lvl.cpp" />
+    <ClCompile Include="LevelCodes\Kil-DemosBrain.cpp" />
+    <ClCompile Include="LevelCodes\KilArmoryCode.cpp" />
+    <ClCompile Include="SMBXInternal\HardcodedGraphicsAccess.cpp" />
+    <ClCompile Include="SMBXInternal\Layer.cpp" />
+    <ClCompile Include="SMBXInternal\Level.cpp" />
+    <ClCompile Include="LuaMain\LuaHelper.cpp" />
+    <ClCompile Include="LuaMain\LuaProxy.cpp" />
+    <ClCompile Include="LuaMain\LunaLuaMain.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="EventStateMachine.cpp" />
-    <ClCompile Include="Misc\PerfTracker.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLContextManager.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLDraw.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLEngine.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLEngineCmds.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLEngineProxy.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLInitTest.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLSplitSprite.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLSprite.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLTextureStore.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\BitBltEmulation.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\AsyncGifRecorder.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyFFI.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\HardcodedGraphicsAccess.cpp">
-      <Filter>SMBXInternal</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\TestMode.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\GL\GLFramebuffer.cpp">
-      <Filter>Rendering\GL</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookCharacterId.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\FrameCapture.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\UniPath.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="IPC\IPCPipeServer.cpp">
-      <Filter>IPC</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\WaitForTickEnd.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookPublicFunctions.cpp">
-      <Filter>Misc\RuntimeHookUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\TestModeMenu.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\PGEEditorCmdSender.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\Gui\RichTextDialog.cpp">
-      <Filter>Misc\Gui</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shaders\GLShaderVariableInfo.cpp">
-      <Filter>Rendering\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shaders\GLShaderAttributeInfo.cpp">
-      <Filter>Rendering\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shaders\GLShaderUniformInfo.cpp">
-      <Filter>Rendering\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Shaders\GLShaderVariableEntry.cpp">
-      <Filter>Rendering\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\ImageLoader.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\ResourceFileMapper.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\LunaImage.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\NpcIdExtender.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyFFIGraphics.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\LoadScreen.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_formats.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvl.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvl_38a.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_lvlx.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_meta.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_npc_txt.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_sav.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_savx.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_smbx64_cnf.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_wld.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_wldx.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rwopen.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_strlist.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\lvl_filedata.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\npc_filedata.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\pge_file_lib_globs.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\pge_x.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\save_filedata.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\smbx64.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\smbx64_cnf_filedata.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\wld_filedata.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\ConvertUTF_PGEFF.c">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\PGE_File_Formats\file_rw_wld_38a.cpp">
-      <Filter>libs\PGE_File_Formats</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager\SMBXFileManager.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager\LoadFile_Level.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
+    <ClCompile Include="MciEmulator\mciEmulator.cpp" />
+    <ClCompile Include="Misc\MiscFuncs.cpp" />
+    <ClCompile Include="SMBXInternal\NPCs.cpp" />
+    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookHooks.cpp" />
+    <ClCompile Include="SMBXInternal\Overworld.cpp" />
+    <ClCompile Include="SMBXInternal\PlayerMOB.cpp" />
+    <ClCompile Include="Rendering\RenderOps\RenderBitmapOp.cpp" />
+    <ClCompile Include="Rendering\RenderOps\RenderEffectOp.cpp" />
+    <ClCompile Include="Rendering\Rendering.cpp" />
+    <ClCompile Include="Rendering\RenderOps\RenderRectOp.cpp" />
+    <ClCompile Include="Misc\RuntimeHook.cpp" />
+    <ClCompile Include="LevelCodes\SAJewers-QraestoliaCaverns.lvl.cpp" />
+    <ClCompile Include="LevelCodes\Docopoper-TheFloorisLava.lvl..cpp" />
+    <ClCompile Include="LevelCodes\SAJewers-Snowboardin.cpp" />
+    <ClCompile Include="SdlMusic\MusicDefList.cpp" />
+    <ClCompile Include="SdlMusic\MusicManager.cpp" />
+    <ClCompile Include="SdlMusic\SdlMusPlayer.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\CameraMan.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\PlayerInput.cpp" />
+    <ClCompile Include="SMBXInternal\Ports\modPlayer.cpp" />
+    <ClCompile Include="SMBXInternal\Reconstructed\Util\NpcToCoins.cpp" />
+    <ClCompile Include="SMBXInternal\SMBXEvents.cpp" />
+    <ClCompile Include="SMBXInternal\Sound.cpp" />
+    <ClCompile Include="CustomSprites\SpritesFuncs\SpriteBehaviorFuncs.cpp" />
+    <ClCompile Include="CustomSprites\SpriteComponent.cpp" />
+    <ClCompile Include="CustomSprites\SpritesFuncs\SpriteDrawFuncs.cpp" />
+    <ClCompile Include="LevelCodes\Talkhaus-Science_Final_Battle.cpp" />
+    <ClCompile Include="UserSaves\UserSaving.cpp" />
+    <ClCompile Include="SMBXInternal\WorldLevel.cpp" />
     <ClCompile Include="VersionString.cpp" />
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNpcHarm.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager\CustomParamStore.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyFileFormats.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\IniProcessor\ini_processing.cpp">
-      <Filter>libs\IniProcessor</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\DirManager\dirman_winapi.cpp">
-      <Filter>libs\DirManager</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\DirManager\dirman.cpp">
-      <Filter>libs\DirManager</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\fmt\fmt_ostream.cpp">
-      <Filter>libs\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\fmt\fmt_posix.cpp">
-      <Filter>libs\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\fmt\fmt_printf.cpp">
-      <Filter>libs\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\fmt\fmt_format.cpp">
-      <Filter>libs\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\Utils\files.cpp">
-      <Filter>libs\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\Utils\strings.cpp">
-      <Filter>libs\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager\config_manager.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\LunaLoader\LunaLoaderPatch.cpp">
-      <Filter>LunaLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyShader.cpp">
-      <Filter>LuaMain\LuaProxyComponent</Filter>
-    </ClCompile>
-    <ClCompile Include="Input\LunaGameController.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LunaPathValidator.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src$filename">
-      <Filter>libs\luabind-deboostified</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\WindowSizeHandler.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Input\MouseHandler.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\VB6RNG.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\link_compatibility.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\object_rep.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\open.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\operator.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\pcall.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\scope.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\set_package_preload.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\stack_content_by_name.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\wrapper_base.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\weak_ref.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\inheritance.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\function.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\function_introspection.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\error.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\create_class.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\class.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\class_info.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\class_registry.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\class_rep.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\exception_handler.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\luabind-deboostified\src\headertest.cpp">
-      <Filter>libs\luabind-deboostified\src</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNPCTransform.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookDefines.cpp">
-      <Filter>Misc\RuntimeHookComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\Gameover.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\BootSystem.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Reconstructed\EpisodeMain.cpp">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Reconstructed\PlayerInput.cpp">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp">
-      <Filter>LuaMain</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\AsmPatch.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\MonitorSystem.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Ports\modPlayer.cpp">
-      <Filter>SMBXInternal\Ports</Filter>
-    </ClCompile>
-    <ClCompile Include="SMBXInternal\Reconstructed\CameraMan.cpp">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </ClInclude>
-    <ClCompile Include="WorldMap.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadFile_Save.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc\SaveData.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager\LoadFile_World.cpp">
-      <Filter>FileManager</Filter>
-    </ClCompile>
+    <ClCompile Include="WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Misc\scratch.txt">
-      <Filter>Misc</Filter>
-    </None>
-    <None Include="Misc\scrappedcode.txt">
-      <Filter>Misc</Filter>
-    </None>
+    <ClInclude Include="..\LunaLoader\LunaLoaderPatch.h" />
+    <ClInclude Include="EventStateMachine.h" />
+    <ClInclude Include="FileManager\config_manager.h" />
+    <ClInclude Include="FileManager\CustomParamStore.h" />
+    <ClInclude Include="FileManager\LoadFile_Save.h" />
+    <ClInclude Include="FileManager\SMBXFileManager.h" />
+    <ClInclude Include="Input\LunaGameController.h" />
+    <ClInclude Include="Input\MouseHandler.h" />
+    <ClInclude Include="libs\DirManager\dirman.h" />
+    <ClInclude Include="libs\DirManager\dirman_private.h" />
+    <ClInclude Include="libs\fmt\fmt_container.h" />
+    <ClInclude Include="libs\fmt\fmt_format.h" />
+    <ClInclude Include="libs\fmt\fmt_ostream.h" />
+    <ClInclude Include="libs\fmt\fmt_posix.h" />
+    <ClInclude Include="libs\fmt\fmt_printf.h" />
+    <ClInclude Include="libs\fmt\fmt_qformat.h" />
+    <ClInclude Include="libs\fmt\fmt_string.h" />
+    <ClInclude Include="libs\fmt\fmt_time.h" />
+    <ClInclude Include="libs\IniProcessor\ini_processing.h" />
+    <ClInclude Include="libs\IniProcessor\ini_processing_variant.h" />
+    <ClInclude Include="libs\json\json.hpp" />
+    <ClInclude Include="libs\Utils\files.h" />
+    <ClInclude Include="libs\Utils\strings.h" />
+    <ClInclude Include="libs\Utils\vptrlist.h" />
+    <ClInclude Include="LuaMain\LuaProxyFFIGraphics.h" />
+    <ClInclude Include="LuaMain\LunaPathValidator.h" />
+    <ClInclude Include="Misc\CollisionMatrix.h" />
+    <ClInclude Include="Misc\LoadScreen.h" />
+    <ClInclude Include="Misc\MonitorSystem.h" />
+    <ClInclude Include="Misc\NpcIdExtender.h" />
+    <ClInclude Include="Misc\ResourceFileMapper.h" />
+    <ClInclude Include="Misc\RuntimeHookComponents\CharacterIdExtension.h" />
+    <ClInclude Include="Misc\SaveData.h" />
+    <ClInclude Include="Misc\SRect.h" />
+    <ClInclude Include="Misc\VB6Array.h" />
+    <ClInclude Include="Misc\VB6Logic.h" />
+    <ClInclude Include="Rendering\AsyncGifRecorderImgs.h" />
+    <ClInclude Include="Rendering\ImageLoader.h" />
+    <ClInclude Include="Rendering\LunaImage.h" />
+    <ClInclude Include="Rendering\Shaders\GLShaderVariableType.h" />
+    <ClInclude Include="Rendering\Shaders\GLShaderVariableEntry.h" />
+    <ClInclude Include="Rendering\Shaders\GLShaderAttributeInfo.h" />
+    <ClInclude Include="Rendering\Shaders\GLShaderUniformInfo.h" />
+    <ClInclude Include="Rendering\Shaders\GLShaderVariableInfo.h" />
+    <ClInclude Include="IPC\IPCPipeServer.h" />
+    <ClInclude Include="Misc\Gui\GuiUtils.h" />
+    <ClInclude Include="Misc\Gui\RichTextDialog.h" />
+    <ClInclude Include="Misc\PGEEditorCmdSender.h" />
+    <ClInclude Include="libs\PGE_File_Formats\charsetconvert.h" />
+    <ClInclude Include="libs\PGE_File_Formats\ConvertUTF.h" />
+    <ClInclude Include="libs\PGE_File_Formats\CSVReader.h" />
+    <ClInclude Include="libs\PGE_File_Formats\CSVReaderPGE.h" />
+    <ClInclude Include="libs\PGE_File_Formats\CSVUtils.h" />
+    <ClInclude Include="libs\PGE_File_Formats\file_formats.h" />
+    <ClInclude Include="libs\PGE_File_Formats\file_strlist.h" />
+    <ClInclude Include="libs\PGE_File_Formats\lvl_filedata.h" />
+    <ClInclude Include="libs\PGE_File_Formats\meta_filedata.h" />
+    <ClInclude Include="libs\PGE_File_Formats\npc_filedata.h" />
+    <ClInclude Include="libs\PGE_File_Formats\pge_file_lib_globs.h" />
+    <ClInclude Include="libs\PGE_File_Formats\pge_file_lib_sys.h" />
+    <ClInclude Include="libs\PGE_File_Formats\pge_ff_units.h" />
+    <ClInclude Include="libs\PGE_File_Formats\pge_x.h" />
+    <ClInclude Include="libs\PGE_File_Formats\pge_x_macro.h" />
+    <ClInclude Include="libs\PGE_File_Formats\save_filedata.h" />
+    <ClInclude Include="libs\PGE_File_Formats\smbx38a_private.h" />
+    <ClInclude Include="libs\PGE_File_Formats\smbx64.h" />
+    <ClInclude Include="libs\PGE_File_Formats\smbx64_cnf_filedata.h" />
+    <ClInclude Include="libs\PGE_File_Formats\smbx64_macro.h" />
+    <ClInclude Include="libs\PGE_File_Formats\wld_filedata.h" />
+    <ClInclude Include="Misc\TestMode.h" />
+    <ClInclude Include="Misc\TestModeMenu.h" />
+    <ClInclude Include="Misc\UniPath.h" />
+    <ClInclude Include="Misc\WaitForTickEnd.h" />
+    <ClInclude Include="Rendering\FrameCapture.h" />
+    <ClInclude Include="Rendering\GL\GLFramebuffer.h" />
+    <ClInclude Include="Rendering\SMBXImageCategories.h" />
+    <ClInclude Include="Rendering\WindowSizeHandler.h" />
+    <ClInclude Include="SMBXInternal\Functions.h" />
+    <ClInclude Include="SMBXInternal\HardcodedGraphicsAccess.h" />
+    <ClInclude Include="Rendering\BitBltEmulation.h" />
+    <ClInclude Include="Misc\PerfTracker.h" />
+    <ClInclude Include="Misc\RuntimeHookManagers\LevelHUDController.h" />
+    <ClInclude Include="Misc\AsmPatch.h" />
+    <ClInclude Include="Misc\AsyncHTTPClient.h" />
+    <ClInclude Include="libs\simpleini\SimpleIni.h" />
+    <ClInclude Include="GameConfig\GeneralLunaConfig.h" />
+    <ClInclude Include="Misc\FreeImageUtils\FreeImageHelper.h" />
+    <ClInclude Include="Misc\FreeImageUtils\FreeImageData.h" />
+    <ClInclude Include="Misc\FreeImageUtils\FreeImageInit.h" />
+    <ClInclude Include="Misc\FreeImageUtils\FreeImageGifData.h" />
+    <ClInclude Include="Misc\RuntimeHookUtils\APIHook.h" />
+    <ClInclude Include="Misc\RuntimeHookUtils\CmnHdr.h" />
+    <ClInclude Include="Misc\RuntimeHookUtils\Toolhelp.h" />
+    <ClInclude Include="Misc\TypeLib.h" />
+    <ClInclude Include="Misc\VariantHelper.h" />
+    <ClInclude Include="Misc\win32_Unicode.h" />
+    <ClInclude Include="Rendering\AsyncGifRecorder.h" />
+    <ClInclude Include="Rendering\Shaders\GLShader.h" />
+    <ClInclude Include="Misc\SafeFPUControl.h" />
+    <ClInclude Include="SMBXInternal\BaseItemArray.h" />
+    <ClInclude Include="SMBXInternal\CollectedStarRecord.h" />
+    <ClInclude Include="SMBXInternal\CustomGraphics.h" />
+    <ClInclude Include="SMBXInternal\CameraInfo.h" />
+    <ClInclude Include="GameConfig\GameAutostart.h" />
+    <ClInclude Include="GameConfig\GameConfiguration.h" />
+    <ClInclude Include="httprequest.h" />
+    <ClInclude Include="libs\luasocket\auxiliar.h" />
+    <ClInclude Include="libs\luasocket\buffer.h" />
+    <ClInclude Include="libs\luasocket\except.h" />
+    <ClInclude Include="libs\luasocket\inet.h" />
+    <ClInclude Include="libs\luasocket\io.h" />
+    <ClInclude Include="libs\luasocket\luasocket.h" />
+    <ClInclude Include="libs\luasocket\mime.h" />
+    <ClInclude Include="libs\luasocket\options.h" />
+    <ClInclude Include="libs\luasocket\pierror.h" />
+    <ClInclude Include="libs\luasocket\select.h" />
+    <ClInclude Include="libs\luasocket\socket.h" />
+    <ClInclude Include="libs\luasocket\tcp.h" />
+    <ClInclude Include="libs\luasocket\timeout.h" />
+    <ClInclude Include="libs\luasocket\udp.h" />
+    <ClInclude Include="libs\luasocket\wsocket.h" />
+    <ClInclude Include="Misc\RunningStat.h" />
+    <ClInclude Include="Rendering\GL\GLInitTest.h" />
+    <ClInclude Include="Rendering\GL\GLSplitSprite.h" />
+    <ClInclude Include="Rendering\GL\GLSprite.h" />
+    <ClInclude Include="SMBXInternal\Menu.h" />
+    <ClInclude Include="Misc\MemoryScanner\MemoryScannerDefines.h" />
+    <ClInclude Include="Misc\MemoryScanner\MemoryScanner.h" />
+    <ClInclude Include="Misc\Gui\GuiCrashNotify.h" />
+    <ClInclude Include="Misc\ThreadedCmdQueue.h" />
+    <ClInclude Include="Rendering\GL\GLCompat.h" />
+    <ClInclude Include="Rendering\GL\GLContextManager.h" />
+    <ClInclude Include="Rendering\GL\GLDraw.h" />
+    <ClInclude Include="Rendering\GL\GLEngine.h" />
+    <ClInclude Include="Rendering\GL\GLEngineCmds.h" />
+    <ClInclude Include="Rendering\GL\GLEngineProxy.h" />
+    <ClInclude Include="Rendering\GL\GLTextureStore.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderGLOp.h" />
+    <ClInclude Include="Rendering\RenderUtils.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SMBXInternal\Animation.h" />
+    <ClInclude Include="Autocode\Autocode.h" />
+    <ClInclude Include="Autocode\AutocodeManager.h" />
+    <ClInclude Include="Autocode\AutocodeCounter.h" />
+    <ClInclude Include="SMBXInternal\BGOs.h" />
+    <ClInclude Include="SMBXInternal\Blocks.h" />
+    <ClInclude Include="CellManager\CellManager.h" />
+    <ClInclude Include="libs\stackwalker\StackWalker.h" />
+    <ClInclude Include="Misc\ErrorReporter.h" />
+    <ClInclude Include="LuaMain\LuabindIncludes.h" />
+    <ClInclude Include="LuaMain\LuaProxyComponent\LuaProxyAudio.h" />
+    <ClInclude Include="LuaMain\LuaSharedProxy.h" />
+    <ClInclude Include="Minigames\CGUI\CGUI.h" />
+    <ClInclude Include="CustomSprites\CSprite.h" />
+    <ClInclude Include="CustomSprites\CSpriteManager.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="Minigames\GameboyRPG.h" />
+    <ClInclude Include="Misc\VB6StrPtr.h" />
+    <ClInclude Include="Misc\VB6RNG.h" />
+    <ClInclude Include="Misc\Playground.h" />
+    <ClInclude Include="GlobalFuncs.h" />
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="HardcodedGraphics\HardcodedGraphicsManager.h" />
+    <ClInclude Include="CustomSprites\Hitbox\Hitbox.h" />
+    <ClInclude Include="Input\Input.h" />
+    <ClInclude Include="SMBXInternal\Ports.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\CameraMan.h" />
+    <ClInclude Include="SMBXInternal\Types.h" />
+    <ClInclude Include="SMBXInternal\Variables.h" />
+    <ClInclude Include="SMBXInternal\Musicbox.h" />
+    <ClInclude Include="SMBXInternal\NativeInput.h" />
+    <ClInclude Include="SMBXInternal\Layer.h" />
+    <ClInclude Include="SMBXInternal\Level.h" />
+    <ClInclude Include="LevelCodes\LevelCodes.h" />
+    <ClInclude Include="LuaMain\LuaHelper.h" />
+    <ClInclude Include="LuaMain\LuaProxy.h" />
+    <ClInclude Include="LuaMain\LunaLuaMain.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="MciEmulator\mciEmulator.h" />
+    <ClInclude Include="Minigames\Minigames.h" />
+    <ClInclude Include="Misc\MiscFuncs.h" />
+    <ClInclude Include="SMBXInternal\NPCs.h" />
+    <ClInclude Include="SMBXInternal\Overworld.h" />
+    <ClInclude Include="SMBXInternal\Path.h" />
+    <ClInclude Include="SMBXInternal\PlayerMOB.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderBitmapOp.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderEffectOp.h" />
+    <ClInclude Include="Rendering\Rendering.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderOp.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderRectOp.h" />
+    <ClInclude Include="Rendering\RenderOps\RenderStringOp.h" />
+    <ClInclude Include="Misc\RuntimeHook.h" />
+    <ClInclude Include="SdlMusic\MusicManager.h" />
+    <ClInclude Include="SdlMusic\SdlMusPlayer.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\EpisodeMain.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\PlayerInput.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\ReconstructedDefines.h" />
+    <ClInclude Include="SMBXInternal\Reconstructed\Util\NpcToCoins.h" />
+    <ClInclude Include="SMBXInternal\Scenery.h" />
+    <ClInclude Include="SMBXInternal\SMBXEvents.h" />
+    <ClInclude Include="SMBXInternal\Sound.h" />
+    <ClInclude Include="CustomSprites\SpriteComponent.h" />
+    <ClInclude Include="CustomSprites\SpritesFuncs\SpriteFuncs.h" />
+    <ClInclude Include="SMBXInternal\Tile.h" />
+    <ClInclude Include="SMBXInternal\Warp.h" />
+    <ClInclude Include="SMBXInternal\Water.h" />
+    <ClInclude Include="UserSaves\UserSaving.h" />
+    <ClInclude Include="SMBXInternal\WorldLevel.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="LunaDll.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="LunaDll.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="SMBXInternal\Reconstructed\about.txt">
-      <Filter>SMBXInternal\Reconstructed</Filter>
-    </Text>
+    <None Include="Misc\scrappedcode.txt" />
+    <None Include="Misc\scratch.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Text Include="Changelog.txt" />
     <Text Include="FeatureJSONResource.txt" />
+    <Text Include="SMBXInternal\Reconstructed\about.txt" />
   </ItemGroup>
 </Project>

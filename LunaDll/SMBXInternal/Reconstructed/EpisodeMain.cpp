@@ -369,9 +369,9 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     if (gEpisodeMain.FindSaves(fullPthNoWorldFileWithEndSlashS, GM_CUR_SAVE_SLOT) >= 0) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
     {
         // blank out intro filename if the episode already has a save file and the intro was already played
-        if(GM_HUB_STYLED_EPISODE == 0) //--If NoMap = False Then StartLevel = "" (line 4997)--
+        if(GM_WORLD_IS_HUB_EPISODE == 0) //--If NoMap = False Then StartLevel = "" (line 4997)--
         {
-            GM_WORLD_INTRO_FILENAME = "";
+            GM_WORLD_AUTOSTART_LVLNAME_PTR = "";
         }
 
         native_loadGame(); //--LoadGame (line 4998)--
@@ -419,10 +419,10 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     native_initLevelEnv(); //--SetupPlayers (line 5018)--
 
     // load the autoboot level if there's no save file, or the hub level if set
-    if((GM_WORLD_INTRO_FILENAME != GM_STR_NULL && !saveFileExists()) || (GM_HUB_STYLED_EPISODE == -1)) //--If StartLevel <> "" Then-- (line 5019)
+    if((GM_WORLD_AUTOSTART_LVLNAME_PTR != GM_STR_NULL && !saveFileExists()) || (GM_WORLD_IS_HUB_EPISODE == -1)) //--If StartLevel <> "" Then-- (line 5019)
     {
         // make the strings, wstrings, and visual basic 6 string ptr's for the world intro filename
-        std::string fullPathAndAutobootLvlS = fullPthNoWorldFileWithEndSlashS + (std::string)GM_WORLD_INTRO_FILENAME;
+        std::string fullPathAndAutobootLvlS = fullPthNoWorldFileWithEndSlashS + (std::string)GM_WORLD_AUTOSTART_LVLNAME_PTR;
         std::wstring fullPathAndAutobootLvlWS = Str2WStr(fullPathAndAutobootLvlS);
         VB6StrPtr fullPathAndAutobootLvlVB6 = fullPathAndAutobootLvlS;
 
@@ -446,7 +446,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
         } //--End If (line 5029)--
         //--Exit Sub (line 5030)--
         // if it doesn't exist and there's no hub, error and boot the map instead after clicking "OK"
-        else if(!fileExists(fullPathAndAutobootLvlS) && GM_HUB_STYLED_EPISODE == 0)
+        else if(!fileExists(fullPathAndAutobootLvlS) && GM_WORLD_IS_HUB_EPISODE == 0)
         {
             std::wstring path = L"The level autoboot file can not be loaded. Does it even exist?\n\nAutoboot level:\n" + fullPathWS;
             MessageBoxW(0, path.c_str(), L"SMBX could not load the autoboot level", MB_ICONERROR);
@@ -455,7 +455,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
             GM_EPISODE_MODE = COMBOOL(true);
         }
         // else if it doesn't exist and there IS a hub, error and exit instead after clicking "OK"
-        else if(!fileExists(fullPathAndAutobootLvlS) && GM_HUB_STYLED_EPISODE == -1)
+        else if(!fileExists(fullPathAndAutobootLvlS) && GM_WORLD_IS_HUB_EPISODE == -1)
         {
             std::wstring path = L"The level hub file can not be loaded. Does it even exist?\n\nAutoboot level:\n" + fullPathWS + L"\n\nBecause there is no hub level, the game will now close after clicking OK. Please put in a valid hub level file in the episode before loading it.";
             MessageBoxW(0, path.c_str(), L"SMBX could not load the hub level", MB_ICONERROR);

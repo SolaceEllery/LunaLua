@@ -174,6 +174,7 @@ void GLEngineProxy::EndFrame(HDC hdcDest, bool isLoadScreen, bool redrawOnly, bo
     else
     {
         obj->mPauseOverlay = false;
+        gMainWindowUnfocusPending = false;
         obj->mForceDraw = false;
     }
 

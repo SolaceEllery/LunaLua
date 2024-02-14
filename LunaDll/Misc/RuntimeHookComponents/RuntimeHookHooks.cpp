@@ -5846,7 +5846,7 @@ void __stdcall runtimeHookMushBugEvent()
 SHORT __stdcall runtimeHookGetKeyStateRetore(int vk)
 {
     SHORT state = 0x00;
-    for(int i = 0; i <= 9; i++)
+    for(int i = 0; i <= HID_GetKeyboardCount(); i++)
     {
         state = (gKeyState[i][vk] & 0x80) ? 0xF000 : 0;
     }
