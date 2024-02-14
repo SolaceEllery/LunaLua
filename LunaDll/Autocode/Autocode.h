@@ -8,12 +8,14 @@
 #include <SDL2/SDL_mixer_ext.h>
 
 struct AutocodeSFXs {
-    AutocodeSFXs();
-    ~AutocodeSFXs();
-
     Mix_Chunk*  Chunk;
     std::string FullPath;
     bool IsUsed;
+
+    AutocodeSFXs()
+    {
+        Reset();
+    }
 
     void Reset()
     {

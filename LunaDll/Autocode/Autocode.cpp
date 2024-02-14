@@ -26,23 +26,6 @@ using namespace std;
 AutocodeSFXs AutocodeSFXCache[500];
 int AutocodeSFXCacheCount = 0;
 
-AutocodeSFXs::AutocodeSFXs()
-{
-    for(int i = 0; i <= 500; i++)
-    {
-        AutocodeSFXCache[i].Reset();
-    }
-}
-
-AutocodeSFXs::~AutocodeSFXs()
-{
-    for(int i = 0; i <= 500; i++)
-    {
-        AutocodeSFXCache[i].Reset();
-        AutocodeSFXCacheCount = 0;
-    }
-}
-
 // CTORS
 Autocode::Autocode() {
     m_Type = AT_Invalid;
