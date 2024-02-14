@@ -5,6 +5,30 @@
 #include "../Defines.h"
 #include <string>
 #include "../CustomSprites/CSprite.h"
+#include <SDL2/SDL_mixer_ext.h>
+
+struct AutocodeSFXs {
+    AutocodeSFXs();
+    ~AutocodeSFXs();
+
+    Mix_Chunk*  Chunk;
+    std::string FullPath;
+    bool IsUsed;
+
+    void Reset()
+    {
+        if(Chunk != nullptr)
+        {
+            Mix_FreeChunk(Chunk);
+        }
+        Chunk = nullptr;
+        FullPath = "";
+        IsUsed = false;
+    }
+};
+
+extern AutocodeSFXs AutocodeSFXCache[500];
+extern int AutocodeSFXCacheCount;
 
 enum LunaControlAct {
     LCA_Invalid = 0,

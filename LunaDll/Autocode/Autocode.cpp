@@ -23,6 +23,26 @@
 
 using namespace std;
 
+AutocodeSFXs AutocodeSFXCache[500];
+int AutocodeSFXCacheCount = 0;
+
+AutocodeSFXs::AutocodeSFXs()
+{
+    for(int i = 0; i <= 500; i++)
+    {
+        AutocodeSFXCache[i].Reset();
+    }
+}
+
+AutocodeSFXs::~AutocodeSFXs()
+{
+    for(int i = 0; i <= 500; i++)
+    {
+        AutocodeSFXCache[i].Reset();
+        AutocodeSFXCacheCount = 0;
+    }
+}
+
 // CTORS
 Autocode::Autocode() {
     m_Type = AT_Invalid;
@@ -244,25 +264,45 @@ void Autocode::Do(bool init) {
         }
 
         // AUDIO
-        case AT_SFX: {
-            if(this->Length <= 1) { // Play once when delay runs out
+        case AT_SFX:
+        {
+            if(this->Length <= 1)
+            { // Play once when delay runs out
                 // Play built in sound
-                if(Param1 > 0) {
+                if(Param1 > 0)
+                {
                     SMBXSound::PlaySFX((int)Param1);
                 }
-                else {
+                else
+                {
                     // Sound from level folder
-                    if(MyString.length() > 0) {
-                        //char* dbg = "CUSTOM SOUND PLAY DBG";
+                    if(MyString.length() > 0)
+                    {
                         std::wstring full_path = getCustomFolderPath() + MyString;
-                        Mix_Chunk* chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
-                        if (chunk)
+                        if(AutocodeSFXCacheCount > 500)
                         {
-                            bool success = (Mix_PlayChannelTimedVolume(-1, chunk, 0, -1, MIX_MAX_VOLUME) != -1);
+                            // Overwrite starting from 0
+                            AutocodeSFXCacheCount = 0;
+                            for(int i = 0; i <= 498; i++)
+                            {
+                                // Reset everything from 0 up to 498. The last two will be kept in case if they're still playing and everything else needs to be reset.
+                                AutocodeSFXCache[i].Reset();
+                            }
                         }
-                        Mix_FreeChunk(chunk);
+                        for(int i = 0; i <= 500; i++)
+                        {
+                            if(!AutocodeSFXCache[i].IsUsed)
+                            {
+                                AutocodeSFXCache[i].Chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
+                                AutocodeSFXCache[i].FullPath = WStr2Str(full_path);
+                                if(AutocodeSFXCache[i].Chunk)
+                                {
+                                    bool success = (Mix_PlayChannelTimedVolume(-1, AutocodeSFXCache[i].Chunk, 0, -1, MIX_MAX_VOLUME) != -1);
+                                }
+                            }
+                        }
+                        AutocodeSFXCacheCount = AutocodeSFXCacheCount + 1;
                     }
-
                 }
                 Expired = true;
             }
@@ -281,16 +321,32 @@ void Autocode::Do(bool init) {
                     // Sound from level folder
                     if(MyString.length() > 0)
                     {
-                        //char* dbg = "CUSTOM SOUND PLAY DBG";
                         std::wstring full_path = getCustomFolderPath() + MyString;
-                        Mix_Chunk* chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
-                        if (chunk)
+                        //char* dbg = "CUSTOM SOUND PLAY DBG";
+                        if(AutocodeSFXCacheCount > 500)
                         {
-                            bool success = (Mix_PlayChannelTimedVolume(-1, chunk, 0, (int)Param2, (int)(Param3 <= 0.0 ? 128 : Param3)) != -1);
+                            // Overwrite starting from 0
+                            AutocodeSFXCacheCount = 0;
+                            for(int i = 0; i <= 498; i++)
+                            {
+                                // Reset everything from 0 up to 498. The last two will be kept in case if they're still playing and everything else needs to be reset.
+                                AutocodeSFXCache[i].Reset();
+                            }
                         }
-                        Mix_FreeChunk(chunk);
+                        for(int i = 0; i <= 500; i++)
+                        {
+                            if(!AutocodeSFXCache[i].IsUsed)
+                            {
+                                AutocodeSFXCache[i].Chunk = PGE_Sounds::SND_OpenSnd(WStr2Str(full_path).c_str());
+                                AutocodeSFXCache[i].FullPath = WStr2Str(full_path);
+                                if(AutocodeSFXCache[i].Chunk)
+                                {
+                                    bool success = (Mix_PlayChannelTimedVolume(-1, AutocodeSFXCache[i].Chunk, 0, -1, MIX_MAX_VOLUME) != -1);
+                                }
+                            }
+                        }
+                        AutocodeSFXCacheCount = AutocodeSFXCacheCount + 1;
                     }
-
                 }
                 Expired = true;
             }
@@ -306,6 +362,14 @@ void Autocode::Do(bool init) {
                 {
                     //char* dbg = "CUSTOM SOUND STOP DBG";
                     std::wstring full_path = getCustomFolderPath() + MyString;
+                    for(int i = 0; i <= 500; i++)
+                    {
+                        if(AutocodeSFXCache[i].FullPath == WStr2Str(full_path))
+                        {
+                            AutocodeSFXCache[i].Reset();
+                        }
+                    }
+                    AutocodeSFXCacheCount = AutocodeSFXCacheCount - 1;
                     // Chunks are loaded and freed afterwards here, so until I add stuff to PGE_Sounds for this to work, this'll do nothing
                 }
                 Expired = true;
