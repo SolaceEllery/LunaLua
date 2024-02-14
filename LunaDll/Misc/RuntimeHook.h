@@ -472,6 +472,7 @@ void __stdcall runtimeHookInitGameWindow(void);
 void __stdcall runtimeHookLoadDefaultGraphics(void);
 
 void __stdcall runtimeHookSaveGame(void);
+void __stdcall runtimeHookLoadGame(void);
 
 void __stdcall runtimeHookCleanupLevel(void);
 

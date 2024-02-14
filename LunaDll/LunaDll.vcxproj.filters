@@ -754,6 +754,15 @@
     <ClInclude Include="SMBXInternal\Reconstructed\CameraMan.h">
       <Filter>SMBXInternal\Reconstructed</Filter>
     </ClInclude>
+    <ClInclude Include="WorldMap.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\SaveData.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="FileManager\LoadFile_Save.h">
+      <Filter>FileManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LuaMain\LuaHelper.cpp">
@@ -1406,6 +1415,15 @@
     <ClCompile Include="libs\luabind-deboostified\src$filename">
       <Filter>libs\luabind-deboostified</Filter>
     </ClCompile>
+    <ClCompile Include="libs\luabind-deboostified\src$filename">
+      <Filter>libs\luabind-deboostified</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\luabind-deboostified\src$filename">
+      <Filter>libs\luabind-deboostified</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\luabind-deboostified\src$filename">
+      <Filter>libs\luabind-deboostified</Filter>
+    </ClCompile>
     <ClCompile Include="Rendering\WindowSizeHandler.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -1510,6 +1528,18 @@
     </ClCompile>
     <ClCompile Include="SMBXInternal\Reconstructed\CameraMan.cpp">
       <Filter>SMBXInternal\Reconstructed</Filter>
+    </ClInclude>
+    <ClCompile Include="WorldMap.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadFile_Save.cpp">
+      <Filter>FileManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\SaveData.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="FileManager\LoadFile_World.cpp">
+      <Filter>FileManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

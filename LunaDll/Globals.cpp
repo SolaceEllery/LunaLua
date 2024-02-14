@@ -62,6 +62,9 @@ bool gDidGameOver = false;
 // Flag for booting an episode
 bool gDidBootScreen = false;
 
+// Whether to use savx format
+bool gUseSavX = true;
+
 // Global variables
 int	gFrames;
 

@@ -30,6 +30,8 @@
 #include "../../SMBXInternal/Sound.h"
 #include "../../SMBXInternal/SMBXEvents.h"
 
+#include "../../WorldMap.h"
+
 #include "../PerfTracker.h"
 
 #include "../../Misc/TestMode.h"
@@ -37,6 +39,7 @@
 #include "../../Misc/WaitForTickEnd.h"
 #include "../../Rendering/ImageLoader.h"
 #include "../../Misc/LoadScreen.h"
+#include "../../../FileManager/LoadFile_Save.h"
 
 #include "../../SMBXInternal/HardcodedGraphicsAccess.h"
 #include "../../Rendering/LunaImage.h"
@@ -44,6 +47,7 @@
 #include "../../libs/PGE_File_Formats/file_formats.h"
 
 #include "../../Misc/VB6RNG.h"
+#include "../WorldMap.h"
 
 #include "../../SMBXInternal/Reconstructed/EpisodeMain.h"
 #include "../../SMBXInternal/Reconstructed/PlayerInput.h"
@@ -934,7 +938,7 @@ extern BOOL __stdcall StretchBltHook(
 
         return TRUE;
     }
-
+    
     return StretchBlt(hdcDest, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest, hdcSrc, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc, dwRop);
 }
 
@@ -1712,7 +1716,24 @@ extern void __stdcall RenderWorldHook()
         g_GLEngine.QueueCmd(cmd);
     }
     g_EventHandler.hookWorldRenderStart();
-    RenderWorldReal();
+
+    if (WorldMap::GetWorldMapOverrideEnabled())
+    {
+        // allow lua to do world map rendering
+        if (gLunaLua.isValid()) {
+            std::shared_ptr<Event> worldDrawEvent = std::make_shared<Event>("onOverworldSystemDraw", false);
+            worldDrawEvent->setDirectEventName("onOverworldSystemDraw");
+            worldDrawEvent->setLoopable(false);
+            gLunaLua.callEvent(worldDrawEvent);
+        }
+        WorldRender();
+        g_BitBltEmulation.flushPendingBlt();
+    }
+    else
+    {
+        // call original RenderWorld function
+        RenderWorldReal();
+    }
 
     gPlayerInput.Update();
     MusicManager::update();
@@ -2506,7 +2527,6 @@ static _declspec(naked) void __stdcall saveGame_OrigFunc()
         RET
     }
 }
-
 void __stdcall runtimeHookSaveGame()
 {
     if(gEpisodeSettings.canSaveEpisode)
@@ -2516,18 +2536,65 @@ void __stdcall runtimeHookSaveGame()
         // Hook for saving the game
         if (gLunaLua.isValid())
         {
-            std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", true);
-            saveGameEvent->setDirectEventName("onSaveGame");
-            saveGameEvent->setLoopable(false);
-            gLunaLua.callEvent(saveGameEvent);
-            
-            isCancelled = saveGameEvent->native_cancelled();
+            // Hook for saving the game
+            if (!GM_CHEATED && gLunaLua.isValid()) {
+                std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
+                saveGameEvent->setDirectEventName("onSaveGame");
+                saveGameEvent->setLoopable(false);
+                gLunaLua.callEvent(saveGameEvent);
+            }
+
+            if (gUseSavX)
+            {
+                LunaLua_writeSaveFile_savx();
+            }
+            else
+            {
+                saveGame_OrigFunc();
+            }
         }
         
-        if(!isCancelled)
+        if(!isCancelled && !GM_CHEATED)
         {
             gDeathCounter.Save();
             saveGame_OrigFunc();
+        }
+    }
+}
+
+static _declspec(naked) void __stdcall loadGame_OrigFunc()
+{
+    __asm {
+        PUSH EBP
+        MOV EBP, ESP
+        SUB ESP, 0x8
+        PUSH 0x8E4E06
+        RET
+    }
+}
+void __stdcall runtimeHookLoadGame()
+{
+    // Hook for saving the game
+    bool loadedSaveFile = false;
+    // clean up data from previously loaded save file
+    LunaLua_preLoadSaveFile();
+    if (gUseSavX) {
+        // if savx files are enabled, try loading it 
+        loadedSaveFile = LunaLua_loadSaveFile_savx();
+    }
+    if (!loadedSaveFile) {
+        // call original function if a save exists and savx wasn't loaded
+        if (fileExists(std::wstring(GM_FULLDIR) + L"save" + Str2WStr(i2str(GM_CUR_SAVE_SLOT).c_str()) + L".sav")) {
+            loadGame_OrigFunc();
+            loadedSaveFile = true;
+        }
+    }
+    // replaces some surrounding code that was nop'd out:
+    // if any save was loaded
+    if (loadedSaveFile) {
+        // clear autostart level name
+        if (!GM_WORLD_IS_HUB_EPISODE) {
+            GM_WORLD_AUTOSTART_LVLNAME_PTR = "";
         }
     }
 }
@@ -2582,6 +2649,7 @@ static _declspec(naked) void __stdcall loadWorld_OrigFunc(VB6StrPtr* filename)
     }
 }
 
+WorldData& getCurrentWorldData();
 void __stdcall runtimeHookLoadWorld(VB6StrPtr* filename)
 {
     // This only occurs when first loading the episode...
@@ -2590,7 +2658,25 @@ void __stdcall runtimeHookLoadWorld(VB6StrPtr* filename)
     // Clear the autostart patch at this point
     GameAutostart::ClearAutostartPatch();
 
-    loadWorld_OrigFunc(filename);
+    // check if we're loading into a wldx file...
+    std::wstring lowerName = *filename;
+    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), towlower);
+    bool loadWldX = (lowerName.rfind(L".wldx") == (lowerName.size() - 5));
+    
+    if (loadWldX)
+    {
+        // wldx format
+        WorldMap::SetWorldMapOverrideEnabled(true); // activate new map system by default
+
+        SMBXWorldFileBase base;
+        base.ReadFile(static_cast<std::wstring>(*filename), getCurrentWorldData());
+    }
+    else
+    {
+        // wld format
+        WorldMap::SetWorldMapOverrideEnabled(false); // disable new map system, if it was active*/
+        loadWorld_OrigFunc(filename);
+    }
 }
 
 static _declspec(naked) void __stdcall cleanupWorld_OrigFunc()
@@ -5325,12 +5411,17 @@ _declspec(naked) void __stdcall runtimeHookBlockSpeedSet_FSTP_EAX_EDX_EDI(void)
 }
 
 bool __stdcall saveFileExists() {
+    // this used to be used to check for certain behaviour that should occur depending on whether the user was loading into an existing save,
+    // that is now done in runtimeHookLoadGame, so we always want this check to pass
+    return true;
+    /*
     std::wstring saveFilePath = GM_FULLDIR;
     saveFilePath += L"save";
     saveFilePath += std::to_wstring(GM_CUR_SAVE_SLOT);
     saveFilePath += L".sav";
 
     return fileExists(saveFilePath);
+    */
 }
 
 void __stdcall runtimeHookSetPlayerFenceSpeed(PlayerMOB *player) {

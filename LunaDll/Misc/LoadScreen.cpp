@@ -12,6 +12,7 @@
 #include <lua.hpp>
 #include "LoadScreen.h"
 #include "../LuaMain/LunaPathValidator.h"
+#include "../../../FileManager/LoadFile_Save.h"
 
 static bool lunaLoadScreenEnabled = false;
 static std::thread* loadThread = nullptr;
@@ -46,7 +47,6 @@ static void updateFinishedFlag(lua_State* L)
     lua_pushboolean(L, killThreadFlag);
     lua_setglobal(L, "_loadingFinished");
 }
-
 
 // also used by Gameover.cpp
 void InitMinimalLuaState(lua_State* L) {
@@ -152,6 +152,9 @@ static void LoadThread(void)
         L = luaL_newstate();
 
         InitMinimalLuaState(L);
+
+        lua_pushstring(L, (GetSavesPath()).c_str());
+        lua_setglobal(L, "_savesPath");
 
         lua_pushnumber(L, 0.0);
         lua_setglobal(L, "_loadScreenTimeout");

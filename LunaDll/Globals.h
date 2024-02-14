@@ -184,6 +184,9 @@ extern bool            gDidGameOver;
 // Flag for booting an episode
 extern bool            gDidBootScreen;
 
+// Whether to use savx format
+extern bool            gUseSavX;
+
 extern StartupSettings gStartupSettings;
 extern EpisodeSettings gEpisodeSettings;
 

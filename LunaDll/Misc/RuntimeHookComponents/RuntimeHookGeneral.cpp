@@ -1740,7 +1740,7 @@ void ParseArgs(const std::vector<std::wstring>& args)
         {
             std::wstring lowerArg = arg;
             std::transform(lowerArg.begin(), lowerArg.end(), lowerArg.begin(), towlower);
-            if (lowerArg.rfind(L".wld") == (lowerArg.size() - 4))
+            if (lowerArg.rfind(L".wld") == (lowerArg.size() - 4) || lowerArg.rfind(L".wldx") == (lowerArg.size() - 5))
             {
                 wldPath = arg;
             }
@@ -2314,6 +2314,10 @@ void TrySkipPatch()
 
     // Save game hook
     PATCH(0x8E47D0).JMP(runtimeHookSaveGame).NOP_PAD_TO_SIZE<6>().Apply();
+    // Load game hook
+    PATCH(0x8E4E00).JMP(runtimeHookLoadGame).NOP_PAD_TO_SIZE<6>().Apply();
+    // NOP-out some logic around loadgame being called, since we want to handle that ourselves now
+    PATCH(0x8CDEC4).NOP_PAD_TO_SIZE<55>().Apply();
 
     // Disables the disabling of cheating while saving.
     if(gEpisodeSettings.canCheatAndSave)
@@ -2863,7 +2867,8 @@ void TrySkipPatch()
         .JMP(saveFileExists)
         .Apply();
 
-    PATCH(0x8CDEC7)
+    // this conflicts with patches for loading savx!
+    /*PATCH(0x8CDEC7)
         .bytes(0x84, 0xC0) // test al, al
         .bytes(0x74, 0x35) // jz 0x8CDF00
         .Apply();
@@ -2872,4 +2877,5 @@ void TrySkipPatch()
     PATCH(0x8BEAE9)
         .PUSH_IMM32((std::uint32_t) L"regsvr32 /s ")
         .Apply();
+        .Apply();*/
 }

@@ -615,6 +615,8 @@ namespace LuaProxy {
         void setCurrentWalkingFrameTimer(short currentWalkingFrameTimer);
         short currentWalkingTimer() const;
         void setCurrentWalkingTimer(short currentWalkingTimer);
+        bool justFinishedWalking() const;
+        void setJustFinishedWalking(bool justFinishedWalking);
         bool playerIsCurrentWalking() const;
         std::string levelTitle(lua_State* L);
         luabind::object levelObj(lua_State* L);
@@ -676,6 +678,9 @@ namespace LuaProxy {
         void setWidth(double width, lua_State* L);
         double height(lua_State* L) const;
         void setHeight(double height, lua_State* L);
+
+        bool visible(lua_State* L) const;
+        void setVisible(bool visible, lua_State* L);
 
         bool isValid() const;
         bool isValid_throw(lua_State *L) const;
@@ -758,6 +763,7 @@ namespace LuaProxy {
         static luabind::object getByFilename(const std::string& levelFilename, lua_State* L);
         static luabind::object findByName(const std::string& levelName, lua_State* L);
         static luabind::object findByFilename(const std::string& levelFilename, lua_State* L);
+        static luabind::object getIntersecting(double x1, double y1, double x2, double y2, lua_State* L);
 
 
         LevelObject(int index);
@@ -768,10 +774,16 @@ namespace LuaProxy {
         void setX(double x);
         double y() const;
         void setY(double y);
+        double width() const;
+        void setWidth(double width);
+        double height() const;
+        void setHeight(double height);
         double goToX();
         void setGoToX(double goToX);
         double goToY();
         void setGoToY(double goToY);
+        short id() const;
+        void setId(short id);
         ExitType topExitType() const;
         void setTopExitType(ExitType topExitType);
         ExitType leftExitType() const;
@@ -869,6 +881,7 @@ namespace LuaProxy {
     namespace Native{
         std::string getSMBXPath();
         std::string getEpisodePath();
+        std::string getSavesPath();
         void simulateError(short errcode);
     }
     //Debug/Text functions
@@ -997,7 +1010,7 @@ namespace LuaProxy {
         luabind::object getLevelData(lua_State *L);
         luabind::object openWorldHeader(const std::string &filePath, lua_State *L);
         luabind::object openWorld(const std::string &filePath, lua_State *L);
-        //luabind::object getWorldData(lua_State *L); // TODO: Implement this once PGEFL will handle WorldMap reading
+        luabind::object getWorldData(lua_State *L);
         luabind::object openNpcConfig(const std::string &filePath, lua_State *L);
     }
 
@@ -1049,6 +1062,7 @@ namespace LuaProxy {
     bool MusicIsPaused();
     bool MusicIsFading();
     void playMusic(int section);
+    void overworldStartMusic(int musicID);
 
     //General global memory [Moved as Defines.*]
     unsigned short gravity();

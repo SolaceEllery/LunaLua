@@ -127,6 +127,7 @@
     <ClInclude Include="EventStateMachine.h" />
     <ClInclude Include="FileManager\config_manager.h" />
     <ClInclude Include="FileManager\CustomParamStore.h" />
+    <ClInclude Include="FileManager\LoadFile_Save.h" />
     <ClInclude Include="FileManager\SMBXFileManager.h" />
     <ClInclude Include="Input\LunaGameController.h" />
     <ClInclude Include="Input\MouseHandler.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Misc\NpcIdExtender.h" />
     <ClInclude Include="Misc\ResourceFileMapper.h" />
     <ClInclude Include="Misc\RuntimeHookComponents\CharacterIdExtension.h" />
+    <ClInclude Include="Misc\SaveData.h" />
     <ClInclude Include="Misc\SRect.h" />
     <ClInclude Include="Misc\VB6Array.h" />
     <ClInclude Include="Misc\VB6Logic.h" />
@@ -330,6 +332,7 @@
     <ClInclude Include="UserSaves\UserSaving.h" />
     <ClInclude Include="SMBXInternal\WorldLevel.h" />
     <ClInclude Include="version.h" />
+    <ClInclude Include="WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\LunaLoader\LunaLoaderPatch.cpp" />
@@ -337,6 +340,7 @@
     <ClCompile Include="FileManager\config_manager.cpp" />
     <ClCompile Include="FileManager\CustomParamStore.cpp" />
     <ClCompile Include="FileManager\LoadFile_Level.cpp" />
+    <ClCompile Include="FileManager\LoadFile_World.cpp" />
     <ClCompile Include="FileManager\SMBXFileManager.cpp" />
     <ClCompile Include="Input\LunaGameController.cpp" />
     <ClCompile Include="Input\MouseHandler.cpp" />
@@ -349,6 +353,7 @@
     <ClCompile Include="libs\IniProcessor\ini_processing.cpp" />
     <ClCompile Include="libs\Utils\files.cpp" />
     <ClCompile Include="libs\Utils\strings.cpp" />
+    <ClCompile Include="LoadFile_Save.cpp" />
     <ClCompile Include="LuaMain\LuaProxyComponent\LuaProxyFileFormats.cpp" />
     <ClCompile Include="LuaMain\LuaProxyFFIGraphics.cpp" />
     <ClCompile Include="LuaMain\LuaProxyFFIPlayers.cpp" />
@@ -364,6 +369,7 @@
     <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookDefines.cpp" />
     <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNpcHarm.cpp" />
     <ClCompile Include="Misc\RuntimeHookComponents\RuntimeHookNPCTransform.cpp" />
+    <ClCompile Include="Misc\SaveData.cpp" />
     <ClCompile Include="Rendering\ImageLoader.cpp" />
     <ClCompile Include="Rendering\LunaImage.cpp" />
     <ClCompile Include="Rendering\Shaders\GLShaderVariableEntry.cpp" />
@@ -574,6 +580,7 @@
     <ClCompile Include="UserSaves\UserSaving.cpp" />
     <ClCompile Include="SMBXInternal\WorldLevel.cpp" />
     <ClCompile Include="VersionString.cpp" />
+    <ClCompile Include="WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Misc\scrappedcode.txt" />
