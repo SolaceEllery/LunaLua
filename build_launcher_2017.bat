@@ -6,7 +6,7 @@ set JOM=C:\Qt\Qt5.12.12\Tools\QtCreator\bin\jom
 
 if not exist build-smbx-launcher\NUL md build-smbx-launcher
 cd build-smbx-launcher
-%QT_PATH%\qmake -spec win32-msvc CONFIG+=Win32 CONFIG+=debug ../LunadllNewLauncher/SMBXLauncher/SMBXLauncher.pro
+%QT_PATH%\qmake -spec win32-msvc CONFIG+=Win32 CONFIG+=release ../LunadllNewLauncher/SMBXLauncher/SMBXLauncher.pro
 %JOM%\jom /J 4
 if errorlevel 1 (
     pause
@@ -15,9 +15,9 @@ if errorlevel 1 (
 
 if exist build-smbx-launcher\NUL rd /S /Q deploy
 md deploy
-copy debug\SMBXLauncher.exe deploy
+copy release\SMBXLauncher.exe deploy
 cd deploy
-%QT_PATH%\windeployqt --debug SMBXLauncher.exe
+%QT_PATH%\windeployqt --release SMBXLauncher.exe
 
 rem ----------------------- A CLEAN-UP -----------------------
 
