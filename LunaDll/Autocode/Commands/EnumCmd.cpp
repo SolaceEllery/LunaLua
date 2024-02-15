@@ -363,8 +363,8 @@ AutocodeType Autocode::EnumerizeCommand(wchar_t* wbuf) {
         if(wcscmp(command, L"CancelSMBXEvent") == 0)
             return AT_CancelSMBXEvent;
         
-        if(wcscmp(command, L"OnCheat") == 0)
-            return AT_OnCheat;
+        if(wcscmp(command, L"RunCheat") == 0)
+            return AT_RunCheat;
         
         if(wcscmp(command, L"PlaySFX") == 0)
             return AT_PlaySFX;
