@@ -20,6 +20,10 @@
 #include "../../SMBXInternal/Overworld.h"
 #include "../../SMBXInternal/CollectedStarRecord.h"
 
+#include "../../SMBXInternal/Variables.h"
+#include "../../SMBXInternal/Types.h"
+#include "../../SMBXInternal/Functions.h"
+
 #include "../../Rendering/FrameCapture.h"
 #include "../../libs/PGE_File_Formats/file_formats.h"
 
@@ -39,6 +43,7 @@
 
 #include "../../Misc/CollisionMatrix.h"
 #include "../../FileManager/SMBXFileManager.h"
+#include "../../FileManager/LoadFile_Save.h"
 #include <DirManager/dirman.h>
 
 WorldData& getCurrentWorldData();
@@ -54,6 +59,7 @@ EpisodeMain::~EpisodeMain() {}
 EpisodeList g_episodeList[32767];
 int EpisodeCount = 0;
 int EpisodeIdx = 0;
+bool SaveFileExists = false;
 
 // The big one. This will load an episode anywhere in the engine. This is also used when booting the engine.
 void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound)
@@ -376,7 +382,47 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     }
 
     // load the save file data
-    if (gEpisodeMain.FindSaves(fullPthNoWorldFileWithEndSlashS, GM_CUR_SAVE_SLOT) >= 0) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
+    // clean up data from previously loaded save file
+    LunaLua_preLoadSaveFile();
+    if (gUseSavX)
+    {
+        // if savx files are enabled, try loading it 
+        SaveFileExists = LunaLua_loadSaveFile_savx();
+    }
+
+    if (!SaveFileExists)
+    {
+        // form the paths from the very start if wldx is being used
+        if(loadWldX)
+        {
+            int FileRelease = wldData.meta.RecentFormatVersion;
+            for(int i = 1; i <= SMBX13::Vars::numWorldLevels; i++)
+            {
+                if(SMBX13::Vars::WorldLevel[i].Start)
+                {
+                    SMBX13::Vars::WorldPlayer[1].Type = 1;
+                    SMBX13::Vars::WorldPlayer[1].Location = SMBX13::Vars::WorldLevel[i].Location;
+                    break;
+                }
+            }
+            for(int i = 1; i <= SMBX13::Vars::numWorldLevels; i++)
+            {
+                auto& level = SMBX13::Vars::WorldLevel[i];
+                if(level.Start)
+                {
+                    level.Active = true;
+                    SMBX13::Functions::LevelPath(i, 5, true);
+                }
+            }
+        }
+
+        // continue if a save exists and savx wasn't loaded
+        if (fileExists(std::wstring(GM_FULLDIR) + L"save" + Str2WStr(i2str(GM_CUR_SAVE_SLOT).c_str()) + L".sav")) {
+            SaveFileExists = true;
+        }
+    }
+
+    if (SaveFileExists) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
     {
         // blank out intro filename if the episode already has a save file and the intro was already played
         if(GM_WORLD_IS_HUB_EPISODE == 0) //--If NoMap = False Then StartLevel = "" (line 4997)--

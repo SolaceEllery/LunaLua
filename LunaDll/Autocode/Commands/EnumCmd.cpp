@@ -355,6 +355,25 @@ AutocodeType Autocode::EnumerizeCommand(wchar_t* wbuf) {
 
         if(wcscmp(command, L"RelativeDraw") == 0)
             return AT_RelativeDraw;
+        
+        // TheXTech Autocode events below
+        if(wcscmp(command, L"OnEvent") == 0)
+            return AT_OnEvent;
+        
+        if(wcscmp(command, L"CancelSMBXEvent") == 0)
+            return AT_CancelSMBXEvent;
+        
+        if(wcscmp(command, L"OnCheat") == 0)
+            return AT_OnCheat;
+        
+        if(wcscmp(command, L"PlaySFX") == 0)
+            return AT_PlaySFX;
+        
+        if(wcscmp(command, L"StopSFX") == 0)
+            return AT_StopSFX;
+        
+        if(wcscmp(command, L"SFXPreLoad") == 0)
+            return AT_SFXPreLoad;
     }
 
     if(wbuf) {

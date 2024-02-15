@@ -387,6 +387,18 @@ static void ProcessPasteKeystroke()
     }
 }
 
+static bool cheatBufferCheck(int virtKey)
+{
+    if(virtKey > 47 && virtKey < 58 || virtKey > 64 && virtKey < 91)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 static void ProcessRawKeyPress(uint32_t virtKey, uint32_t scanCode, bool repeated, int keyboardIdx)
 {
     static WCHAR unicodeData[32] = { 0 };

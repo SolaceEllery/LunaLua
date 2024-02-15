@@ -10,6 +10,7 @@
 
 extern int EpisodeCount;
 extern int EpisodeIdx;
+extern bool SaveFileExists;
 
 struct EpisodeList
 {

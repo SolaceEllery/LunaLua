@@ -60,6 +60,7 @@
 #include <lua.hpp>
 #include "../../LuaMain/LunaPathValidator.h"
 #include "../../Misc/VB6Bool.h"
+
 #include "../../SMBXInternal/Functions.h"
 #include "../../SMBXInternal/Types.h"
 #include "../../SMBXInternal/Variables.h"
@@ -186,6 +187,32 @@ extern int __stdcall LoadWorld()
         // wldx format
         SMBXWorldFileBase base;
         base.ReadFile(gWorldFilename, getCurrentWorldData());
+        if(episodeStarted)
+        {
+            native_saveGame();
+            if(SMBX13::Vars::curWorldLevel > 0 && SMBX13::Vars::LevelBeatCode > 0)
+            {
+                for(int i = 1; i <= SMBX13::Vars::numWorldMusic; i++)
+                {
+                    if(SMBX13::Functions::CheckCollision(SMBX13::Vars::WorldPlayer[1].Location, SMBX13::Vars::WorldMusic[i].Location))
+                    {
+                        if(SMBX13::Vars::curWorldMusic != SMBX13::Vars::WorldMusic[i].Type)
+                        {
+                            SMBX13::Functions::StartMusic(SMBX13::Vars::WorldMusic[i].Type);
+                        }
+                    }
+                }
+                auto& level = SMBX13::Vars::WorldLevel[SMBX13::Vars::curWorldLevel];
+                for(int i = 1; i <= 4; i++)
+                {
+                    if(level.LevelExit[i] == SMBX13::Vars::LevelBeatCode || level.LevelExit[i] == -1)
+                    {
+                        SMBX13::Vars::WorldPlayer[1].LevelName = level.LevelName;
+                        SMBX13::Functions::LevelPath(SMBX13::Vars::curWorldLevel, i);
+                    }
+                }
+            }
+        }
     }
 
     ResetLunaModule();
