@@ -39,8 +39,9 @@
 
 #include "../../Misc/CollisionMatrix.h"
 #include "../../FileManager/SMBXFileManager.h"
-
 #include <DirManager/dirman.h>
+
+WorldData& getCurrentWorldData();
 
 extern PlayerMOB* getTemplateForCharacterWithDummyFallback(int id);
 extern "C" void __cdecl LunaLuaSetGameData(const char* dataPtr, int dataLen);
@@ -67,6 +68,9 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
 
     // this needs to be set already so we can convert it to a std::string
     std::wstring fullPathWS = wldPathWS;
+
+    // also set the gWorldFilename global
+    gWorldFilename = fullPathWS;
 
     /*
     --
@@ -149,13 +153,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
         if(!FileFormats::OpenWorldFileHeader(fullPathS, wldData) || !wldData.meta.ReadFileValid)
         {
             std::wstring path = L"The world map file header cannot be parsed.\n\nPath:\n" + fullPathWS;
-            MessageBoxW(0, path.c_str(), L"SMBX could not load world map", MB_ICONERROR);
-            _exit(1);
-        }
-
-        if(wldData.meta.RecentFormat != WorldData::SMBX64)
-        {
-            std::wstring path = L"The world map file is in the wrong format. It must be saved in SMBX64 format.\n\nPath:\n" + fullPathWS;
             MessageBoxW(0, path.c_str(), L"SMBX could not load world map", MB_ICONERROR);
             _exit(1);
         }
@@ -362,8 +359,21 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
             Sleep 500 (line 4994)
         --
     */
-    // load the world
-    native_loadWorld(&fullPathVB6); //--OpenWorld SelectWorld(selWorld).WorldPath & SelectWorld(selWorld).WorldFile (line 4995)--
+    // check if we're loading into a wldx file...
+    std::transform(gWorldFilename.begin(), gWorldFilename.end(), gWorldFilename.begin(), towlower);
+    bool loadWldX = (gWorldFilename.rfind(L".wldx") == (gWorldFilename.size() - 5));
+    
+    if(loadWldX)
+    {
+        // load the wldx format
+        SMBXWorldFileBase base;
+        base.ReadFile(gWorldFilename, getCurrentWorldData());
+    }
+    else
+    {
+        // load the wld format
+        native_loadWorld(&fullPathVB6); //--OpenWorld SelectWorld(selWorld).WorldPath & SelectWorld(selWorld).WorldFile (line 4995)--
+    }
 
     // load the save file data
     if (gEpisodeMain.FindSaves(fullPthNoWorldFileWithEndSlashS, GM_CUR_SAVE_SLOT) >= 0) //--If SaveSlot(selSave) >= 0 Then (line 4996)--
@@ -641,12 +651,6 @@ void EpisodeMain::PopulateEpisodeList()
                 if (!FileFormats::OpenWorldFileHeader(wldPath, wldData) || !wldData.meta.ReadFileValid)
                 {
                     // Couldn't read file
-                    continue;
-                }
-
-                if (wldData.meta.RecentFormat != WorldData::SMBX64)
-                {
-                    // Wrong .wld format, we don't handle it right now
                     continue;
                 }
 

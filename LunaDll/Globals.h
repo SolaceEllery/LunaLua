@@ -304,3 +304,5 @@ extern int gFocusTimer;
 
 extern PlayerInput gPlayerInput;
 extern EpisodeMain gEpisodeMain;
+
+extern std::wstring gWorldFilename;

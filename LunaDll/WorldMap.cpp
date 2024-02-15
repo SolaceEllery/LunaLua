@@ -35,7 +35,7 @@ static void __stdcall worldLoopHook() {
 
 // Patch to override SMBX 1.3 'WorldLoop',
 // this is right after tha call to UpdateGraphics2/UpdateControls/UpdateSound
-static auto overrideWorldLoopPatch = PATCH(0x8E088A).CALL(worldLoopHook).JMP(0x8E1DB7).NOP_PAD_TO_SIZE<20>();
+//static auto overrideWorldLoopPatch = PATCH(0x8E088A).CALL(worldLoopHook).JMP(0x8E1DB7).NOP_PAD_TO_SIZE<20>();
 
 // set world map override to active or inactive
 // this will switch the entire world map rendering and logic to be handled by Lua
@@ -47,12 +47,12 @@ void WorldMap::SetWorldMapOverrideEnabled(bool enabled)
         if (enabled)
         {
             // enable world map override
-            overrideWorldLoopPatch.Apply();
+            //overrideWorldLoopPatch.Apply();
         }
         else
         {
             // disable world map override
-            overrideWorldLoopPatch.Unapply();
+            //overrideWorldLoopPatch.Unapply();
         }
     }
 }

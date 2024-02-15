@@ -115,7 +115,7 @@ void LunaLua_loadWorldFile(WorldData& outData, std::wstring fullPath, bool isVal
     GM_FULLDIR = fullPath.substr(0, slashPos + 1);
     GM_LVLFILENAME_PTR = fullPath.substr(slashPos + 1, fullPath.length()-(slashPos+1));
 
-    hasUnrecognizedConfigPack = verifyCompatibility(outData.meta.configPackId, "SMBX2");
+    hasUnrecognizedConfigPack = (outData.meta.configPackId != "SMBX2" && outData.meta.configPackId != "TheXTech");
 
     //ImageLoader::Run(); also called later
 

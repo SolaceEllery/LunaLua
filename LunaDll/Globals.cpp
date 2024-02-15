@@ -177,3 +177,5 @@ int gFocusTimer = 2;
 
 PlayerInput gPlayerInput;
 EpisodeMain gEpisodeMain;
+
+std::wstring gWorldFilename = L"";

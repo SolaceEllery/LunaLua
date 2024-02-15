@@ -149,6 +149,8 @@ LunaLoaderResult LunaLoaderRun(const wchar_t *pathToSMBX, const wchar_t *cmdLine
     free(cmdLine);
     cmdLine = NULL;
 
+    //Sleep(25000);
+
     // Test that the main thread is suspended, just in case
     if(SuspendThread(pi.hThread) < 1)
     {

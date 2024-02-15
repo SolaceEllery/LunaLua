@@ -67,8 +67,10 @@
 #include "../../Autocode/AutocodeCounter.h"
 
 #include "../../SMBXInternal/Reconstructed/CameraMan.h"
+#include "../../FileManager/SMBXFileManager.h"
 
 void CheckIPCQuitRequest();
+WorldData& getCurrentWorldData();
 
 extern HHOOK HookWnd;
 extern HHOOK KeyHookWnd;
@@ -174,6 +176,17 @@ extern int __stdcall LoadWorld()
     GLEngineProxy::CheckRendererInit();
 
     LunaLoadScreenStart();
+    
+    // check if we're loading into a wldx file...
+    std::transform(gWorldFilename.begin(), gWorldFilename.end(), gWorldFilename.begin(), towlower);
+    bool loadWldX = (gWorldFilename.rfind(L".wldx") == (gWorldFilename.size() - 5));
+    
+    if (loadWldX)
+    {
+        // wldx format
+        SMBXWorldFileBase base;
+        base.ReadFile(gWorldFilename, getCurrentWorldData());
+    }
 
     ResetLunaModule();
     gIsOverworld = true;
@@ -1533,8 +1546,6 @@ void __declspec(naked) __stdcall PostCameraUpdateHook_Wrapper()
     };
 }
 
-#include "../../FileManager/SMBXFileManager.h"
-
 extern void __stdcall WorldHUDPrintTextController(VB6StrPtr* Text, short* fonttype, float* x, float* y)
 {
     if (gSMBXHUDSettings.overworldHudState == WHUD_ALL){
@@ -2649,7 +2660,6 @@ static _declspec(naked) void __stdcall loadWorld_OrigFunc(VB6StrPtr* filename)
     }
 }
 
-WorldData& getCurrentWorldData();
 void __stdcall runtimeHookLoadWorld(VB6StrPtr* filename)
 {
     // This only occurs when first loading the episode...
@@ -2657,24 +2667,15 @@ void __stdcall runtimeHookLoadWorld(VB6StrPtr* filename)
 
     // Clear the autostart patch at this point
     GameAutostart::ClearAutostartPatch();
+    
+    gWorldFilename = static_cast<std::wstring>(*filename);
 
     // check if we're loading into a wldx file...
-    std::wstring lowerName = *filename;
-    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), towlower);
-    bool loadWldX = (lowerName.rfind(L".wldx") == (lowerName.size() - 5));
+    std::transform(gWorldFilename.begin(), gWorldFilename.end(), gWorldFilename.begin(), towlower);
+    bool loadWldX = (gWorldFilename.rfind(L".wldx") == (gWorldFilename.size() - 5));
     
-    if (loadWldX)
+    if(!loadWldX)
     {
-        // wldx format
-        WorldMap::SetWorldMapOverrideEnabled(true); // activate new map system by default
-
-        SMBXWorldFileBase base;
-        base.ReadFile(static_cast<std::wstring>(*filename), getCurrentWorldData());
-    }
-    else
-    {
-        // wld format
-        WorldMap::SetWorldMapOverrideEnabled(false); // disable new map system, if it was active*/
         loadWorld_OrigFunc(filename);
     }
 }
