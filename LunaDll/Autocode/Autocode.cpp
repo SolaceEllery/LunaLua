@@ -816,7 +816,7 @@ void Autocode::Do(bool init) {
         {
             if(Length <= 1) // Play once when delay runs out
             {
-                GM_INPUTSTR_BUF_PTR = WStr2Str(MyString);
+                GM_INPUTSTR_BUF_PTR = MyString;
                 Expired = true;
             }
             break;

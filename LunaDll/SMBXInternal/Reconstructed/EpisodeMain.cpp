@@ -411,7 +411,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
                 if(level.Start)
                 {
                     level.Active = true;
-                    SMBX13::Functions::LevelPath(i, 5, true);
+                    SMBX13::modMain::LevelPath(i, 5, true);
                 }
             }
         }

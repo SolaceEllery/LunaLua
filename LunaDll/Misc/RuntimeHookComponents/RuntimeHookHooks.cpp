@@ -194,11 +194,11 @@ extern int __stdcall LoadWorld()
             {
                 for(int i = 1; i <= SMBX13::Vars::numWorldMusic; i++)
                 {
-                    if(SMBX13::Functions::CheckCollision(SMBX13::Vars::WorldPlayer[1].Location, SMBX13::Vars::WorldMusic[i].Location))
+                    if(SMBX13::modCollision::CheckCollision(SMBX13::Vars::WorldPlayer[1].Location, SMBX13::Vars::WorldMusic[i].Location))
                     {
                         if(SMBX13::Vars::curWorldMusic != SMBX13::Vars::WorldMusic[i].Type)
                         {
-                            SMBX13::Functions::StartMusic(SMBX13::Vars::WorldMusic[i].Type);
+                            SMBX13::modSound::StartMusic(SMBX13::Vars::WorldMusic[i].Type);
                         }
                     }
                 }
