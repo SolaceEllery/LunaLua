@@ -623,6 +623,7 @@ namespace LuaProxy {
         short getCurrentDirection() const;
         short playerPowerup() const;
         void setPlayerPowerup(short playerPowerup);
+        void openPath(int winState, int levelDirection, bool useAnimation);
     };
 
     class Tile

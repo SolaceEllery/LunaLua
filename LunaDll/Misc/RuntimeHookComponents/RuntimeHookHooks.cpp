@@ -192,13 +192,15 @@ extern int __stdcall LoadWorld()
             native_saveGame();
             if(SMBX13::Vars::curWorldLevel > 0 && SMBX13::Vars::LevelBeatCode > 0)
             {
+                auto& worldPlayer = SMBX13::Vars::WorldPlayer[1];
                 for(int i = 1; i <= SMBX13::Vars::numWorldMusic; i++)
                 {
-                    if(SMBX13::modCollision::CheckCollision(SMBX13::Vars::WorldPlayer[1].Location, SMBX13::Vars::WorldMusic[i].Location))
+                    auto& worldMusic = SMBX13::Vars::WorldMusic[i];
+                    if(SMBX13::modCollision::CheckCollision(worldPlayer.Location, worldMusic.Location))
                     {
-                        if(SMBX13::Vars::curWorldMusic != SMBX13::Vars::WorldMusic[i].Type)
+                        if(SMBX13::Vars::curWorldMusic != worldMusic.Type)
                         {
-                            SMBX13::modSound::StartMusic(SMBX13::Vars::WorldMusic[i].Type);
+                            SMBX13::modSound::StartMusic(worldMusic.Type);
                         }
                     }
                 }
@@ -207,7 +209,7 @@ extern int __stdcall LoadWorld()
                 {
                     if(level.LevelExit[i] == SMBX13::Vars::LevelBeatCode || level.LevelExit[i] == -1)
                     {
-                        SMBX13::Vars::WorldPlayer[1].LevelName = level.LevelName;
+                        worldPlayer.LevelName = level.LevelName;
                         SMBX13::Functions::LevelPath(SMBX13::Vars::curWorldLevel, i);
                     }
                 }
