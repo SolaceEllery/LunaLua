@@ -306,6 +306,50 @@ bool LuaProxy::Misc::loadEpisode(std::string episodeName)
     return LuaProxy::Misc::loadEpisode(episodeName, GM_CUR_SAVE_SLOT, GM_PLAYERS_COUNT, 0);
 }
 
+bool LuaProxy::Misc::loadEpisodeLevel(std::string episodeName, std::string levelName, int warpIdx)
+{
+    bool success = false;
+
+    // We're checking to see if the world path exists, and if it does, we can go through to load the episode
+    std::string worldPth = "";
+    
+    if(fileExists(Str2WStr(episodeName)))
+    {
+        worldPth = episodeName;
+        success = true;
+    }
+    else
+    {
+        worldPth = findEpisodeWorldPathFromName(episodeName);
+        success = true;
+    }
+
+    if(success)
+    {
+        gStartupSettings.epSettings.wldPath = Str2WStr(worldPth);
+        gStartupSettings.epSettings.startOnLevel = Str2WStr(levelName);
+        gStartupSettings.epSettings.startOnLevelWarp = warpIdx;
+        gStartupSettings.epSettings.players = GM_PLAYERS_COUNT;
+        gStartupSettings.epSettings.character1 = static_cast<int>(Player::Get(1)->Identity);
+        if(GM_PLAYERS_COUNT > 1)
+        {
+            gStartupSettings.epSettings.character2 = static_cast<int>(Player::Get(2)->Identity);
+        }
+        gStartupSettings.epSettings.saveSlot = GM_CUR_SAVE_SLOT;
+
+        GM_EPISODE_MODE = COMBOOL(false);
+        GM_CREDITS_MODE = COMBOOL(false);
+        GM_LEVEL_MODE = COMBOOL(true);
+    }
+
+    return success;
+}
+
+bool LuaProxy::Misc::loadEpisodeLevel(std::string episodeName, std::string levelName)
+{
+    return LuaProxy::Misc::loadEpisodeLevel(episodeName, levelName, 0);
+}
+
 void LuaProxy::Misc::pause()
 {
     pause(false);

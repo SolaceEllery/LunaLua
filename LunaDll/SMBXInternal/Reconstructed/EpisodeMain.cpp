@@ -62,7 +62,7 @@ int EpisodeIdx = 0;
 bool SaveFileExists = false;
 
 // The big one. This will load an episode anywhere in the engine. This is also used when booting the engine.
-void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound)
+void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound, bool startOnEpisodeLevel, bool clearGameData)
 {
     //--ElseIf .Jump = True Or .Start = True Or (GetKeyState(vbKeySpace) And KEY_PRESSED) Or (GetKeyState(vbKeyReturn) And KEY_PRESSED) Or MenuMouseClick = True Then (line 4945)--
 
@@ -219,19 +219,19 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // setup SFXs
     native_setupSFX();
 
-    // clear gamedata
-    LunaLuaSetGameData(0, 0);
+    // clear gamedata if set to do so
+    if(clearGameData)
+    {
+        LunaLuaSetGameData(0, 0);
+    }
 
     //--BEGIN MAIN RECODE--
 
     // play the world loaded sfx if suppressSound is false
     if(!suppressSound)
     {
-        if(gStartupSettings.epSettings.canPlaySFXOnStartup)
-        {
-            short soundID = 29;
-            native_playSFX(&soundID); //--PlaySound 29 (line 4946)--
-        }
+        short soundID = 29;
+        native_playSFX(&soundID); //--PlaySound 29 (line 4946)--
     }
 
     // implement player count
@@ -474,8 +474,27 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     // init SetupPlayers
     native_initLevelEnv(); //--SetupPlayers (line 5018)--
 
+    // if we're going to start on a specific level from the episode, load it as well
+    if(gStartupSettings.epSettings.startOnLevel != L"" && startOnEpisodeLevel)
+    {
+        // create the start level variable
+        VB6StrPtr fullPathAndStartLevelVB6 = WStr2Str(gStartupSettings.epSettings.startOnLevel);
+
+        // set world to false
+        GM_EPISODE_MODE = COMBOOL(false);
+
+        // cleanup level
+        native_cleanupLevel();
+
+        // set the warp as well
+        GM_NEXT_LEVEL_WARPIDX = gStartupSettings.epSettings.startOnLevelWarp;
+
+        // load the level from the episode
+        native_loadLevel(&fullPathAndStartLevelVB6);
+    }
+
     // load the autoboot level if there's no save file, or the hub level if set
-    if((GM_WORLD_AUTOSTART_LVLNAME_PTR != GM_STR_NULL && !saveFileExists()) || (GM_WORLD_IS_HUB_EPISODE == -1)) //--If StartLevel <> "" Then-- (line 5019)
+    if(!startOnEpisodeLevel && ((GM_WORLD_AUTOSTART_LVLNAME_PTR != GM_STR_NULL && !saveFileExists()) || (GM_WORLD_IS_HUB_EPISODE == -1))) //--If StartLevel <> "" Then-- (line 5019)
     {
         // make the strings, wstrings, and visual basic 6 string ptr's for the world intro filename
         std::string fullPathAndAutobootLvlS = fullPthNoWorldFileWithEndSlashS + (std::string)GM_WORLD_AUTOSTART_LVLNAME_PTR;

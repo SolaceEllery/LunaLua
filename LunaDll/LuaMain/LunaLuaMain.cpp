@@ -737,6 +737,7 @@ void CLunaLua::bindAll()
                 def("exitGame", &LuaProxy::Misc::exitGame),
                 def("exitEngine", &LuaProxy::Misc::exitEngine),
                 def("didGameOver", &LuaProxy::Misc::didGameOver),
+
                 // Misc.loadEpisode
                 // Episode name only
                 def("loadEpisode", (bool(*)(std::string))&LuaProxy::Misc::loadEpisode),
@@ -746,6 +747,13 @@ void CLunaLua::bindAll()
                 def("loadEpisode", (bool(*)(std::string, int, int))&LuaProxy::Misc::loadEpisode),
                 // Episode name, save slot, number of players, and other player IDs in case
                 def("loadEpisode", (bool(*)(std::string, int, int, int))&LuaProxy::Misc::loadEpisode),
+
+                // Misc.loadEpisodeLevel
+                // With warp idx
+                def("loadEpisodeLevel", (bool(*)(std::string, std::string, int))&LuaProxy::Misc::loadEpisodeLevel),
+                // Without warp idx
+                def("loadEpisodeLevel", (bool(*)(std::string, std::string))&LuaProxy::Misc::loadEpisodeLevel),
+
                 def("pause", (void(*)(void))&LuaProxy::Misc::pause),
                 def("pause", (void(*)(bool))&LuaProxy::Misc::pause),
                 def("unpause", &LuaProxy::Misc::unpause),

@@ -927,6 +927,8 @@ namespace LuaProxy {
         bool loadEpisode(std::string episodeName, int saveSlot, int numPlayers);
         bool loadEpisode(std::string episodeName, int saveSlot);
         bool loadEpisode(std::string episodeName);
+        bool loadEpisodeLevel(std::string episodeName, std::string levelName, int warpIdx);
+        bool loadEpisodeLevel(std::string episodeName, std::string levelName);
         void pause();
         void pause(bool atFrameEnd);
         void unpause();

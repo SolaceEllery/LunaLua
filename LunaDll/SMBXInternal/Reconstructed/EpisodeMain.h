@@ -41,7 +41,7 @@ class EpisodeMain {
         EpisodeMain();
         ~EpisodeMain();
 
-        void LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound);
+        void LaunchEpisode(std::wstring wldPathWS, int saveSlot, int playerCount, Characters firstCharacter, Characters secondCharacter, bool suppressSound, bool startOnEpisodeLevel, bool clearGameData);
         int FindSaves(std::string worldPathS, int saveSlot);
         void WriteLegacyEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData);
         

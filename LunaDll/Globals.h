@@ -44,12 +44,13 @@ struct StartupEpisodeSettings
     int character1;
     int character2;
     int saveSlot;
-    bool canPlaySFXOnStartup;
+    std::wstring startOnLevel;
+    int startOnLevelWarp;
 
     StartupEpisodeSettings() :
         enabled(false), wldPath(), players(1),
         character1(1), character2(2), saveSlot(0),
-        canPlaySFXOnStartup(false)
+        startOnLevel(L""), startOnLevelWarp(0)
     {
     }
 };
@@ -306,3 +307,5 @@ extern PlayerInput gPlayerInput;
 extern EpisodeMain gEpisodeMain;
 
 extern std::wstring gWorldFilename;
+
+extern bool gOnMarioChallenge;

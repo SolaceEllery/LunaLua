@@ -1063,6 +1063,17 @@ extern "C" {
     {
         return gDisablePlayerKeysLegacy;
     }
+
+    // Sets the Mario Challenge state.
+    FFI_EXPORT(void) LunaLuaSetMarioChallengeState(bool enable)
+    {
+        gOnMarioChallenge = enable;
+    }
+    // Checks if the Mario Challenge is enabled.
+    FFI_EXPORT(bool) LunaLuaGetMarioChallengeState()
+    {
+        return gOnMarioChallenge;
+    }
 }
 
 

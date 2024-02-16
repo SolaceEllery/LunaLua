@@ -179,3 +179,5 @@ PlayerInput gPlayerInput;
 EpisodeMain gEpisodeMain;
 
 std::wstring gWorldFilename = L"";
+
+bool gOnMarioChallenge = false;

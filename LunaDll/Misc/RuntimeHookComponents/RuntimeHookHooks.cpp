@@ -1838,7 +1838,7 @@ void __stdcall runtimeHookGameMenu()
         return;
     }
     // or, if not, and we find a episode, launch that instead.
-    if(!gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled())
+    if(!gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled() && !gOnMarioChallenge)
     {
         GameAutostart autostarter;
         std::string autostartFile = WStr2Str(getLatestConfigFile(L"autostart.ini"));
@@ -1865,7 +1865,7 @@ void __stdcall runtimeHookGameMenu()
 
                     autostarter.setSelectedEpisode(selectedEpisode);
 
-                    gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+                    gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false, false, true);
 
                     if (autostartConfig.value("transient", false).toBool())
                     {
@@ -1888,7 +1888,7 @@ void __stdcall runtimeHookGameMenu()
 
             autostarter.setSelectedEpisode(selectedEpisode);
             
-            gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false);
+            gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false, false, true);
         }
         else
         {
@@ -1898,22 +1898,35 @@ void __stdcall runtimeHookGameMenu()
             _exit(0);
         }
     }
-    else if(gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled())
+    else if(gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled() && !gOnMarioChallenge)
     {
         GameAutostart autostarter;
-        if(!gStartupSettings.waitForIPC && !TestModeIsEnabled() && gEpisodeLoadedOnBoot)
-        {
-            std::string selectedEpisode = "";
-            std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
-            int playerCount = gStartupSettings.epSettings.players;
-            Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
-            Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
-            int saveSlot = gStartupSettings.epSettings.saveSlot;
 
-            autostarter.setSelectedEpisode(selectedEpisode);
+        std::string selectedEpisode = "";
+        std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
+        int playerCount = gStartupSettings.epSettings.players;
+        Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
+        Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
+        int saveSlot = gStartupSettings.epSettings.saveSlot;
 
-            gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true);
-        }
+        autostarter.setSelectedEpisode(selectedEpisode);
+
+        gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, true, false, true);
+    }
+    else if(gEpisodeLoadedOnBoot && !gStartupSettings.waitForIPC && !TestModeIsEnabled() && gOnMarioChallenge)
+    {
+        GameAutostart autostarter;
+
+        std::string selectedEpisode = "";
+        std::wstring selectedEpisodePath = gStartupSettings.epSettings.wldPath;
+        int playerCount = gStartupSettings.epSettings.players;
+        Characters firstCharacter = static_cast<Characters>(gStartupSettings.epSettings.character1);
+        Characters secondCharacter = static_cast<Characters>(gStartupSettings.epSettings.character2);
+        int saveSlot = gStartupSettings.epSettings.saveSlot;
+
+        autostarter.setSelectedEpisode(selectedEpisode);
+
+        gEpisodeMain.LaunchEpisode(selectedEpisodePath, saveSlot, playerCount, firstCharacter, secondCharacter, false, true, true);
     }
 }
 

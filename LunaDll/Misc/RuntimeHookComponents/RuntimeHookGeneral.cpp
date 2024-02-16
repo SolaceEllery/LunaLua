@@ -563,10 +563,11 @@ static void SendLuaRawKeyEventRepeated(uint32_t virtKey, bool isDown, int keyboa
     {
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyDown" : "onKeyboardKeyUp", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
+        std::string blank = "";
         if (cKey != 0) {
             gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
         } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), blank, keyboardIdx + 1);
         }
     }
 }
@@ -576,10 +577,14 @@ static void SendLuaRawKeyEvent(uint32_t virtKey, bool isDown, int keyboardIdx)
     if (gLunaLua.isValid() && !LunaMsgBox::IsActive()) {
         std::shared_ptr<Event> keyboardReleaseEvent = std::make_shared<Event>(isDown ? "onKeyboardKeyPress" : "onKeyboardKeyRelease", false);
         auto cKey = MapVirtualKeyA(virtKey, MAPVK_VK_TO_CHAR);
-        if (cKey != 0) {
+        std::string blank = "";
+        if (cKey != 0)
+        {
             gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), std::string(1, cKey & 0b01111111), keyboardIdx + 1);
-        } else {
-            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), "", keyboardIdx);
+        }
+        else
+        {
+            gLunaLua.callEvent(keyboardReleaseEvent, static_cast<int>(virtKey), blank, keyboardIdx + 1);
         }
     }
 }
@@ -1768,11 +1773,6 @@ void ParseArgs(const std::vector<std::wstring>& args)
             gStartupSettings.epSettings.enabled = true;
             gStartupSettings.patch = true;
         }
-    }
-    
-    if (vecStrFind(args, L"--playSfxOnStartup"))
-    {
-        gStartupSettings.epSettings.canPlaySFXOnStartup = true;
     }
 
     if (vecStrFind(args, L"--waitForIPC"))
