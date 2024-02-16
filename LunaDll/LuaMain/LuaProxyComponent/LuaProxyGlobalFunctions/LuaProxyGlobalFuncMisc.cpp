@@ -12,6 +12,7 @@
 
 #include "../../../SMBXInternal/Reconstructed/EpisodeMain.h"
 #include "../../../FileManager/SMBXFileManager.h"
+#include <DirManager/dirman.h>
 
 void LuaProxy::Misc::npcToCoins()
 {
@@ -465,6 +466,10 @@ static luabind::object getAllEpisodes(lua_State *L)
             e["episodeName"] = WStr2Str(g_episodeList[i].episodeName);
             e["episodePath"] = WStr2Str(g_episodeList[i].episodePath);
             e["episodeWorldFile"] = WStr2Str(g_episodeList[i].episodeWorldFile);
+            //{
+                //luabind::object lvl = luabind::newtable(L);
+            //}
+            //outData["episodeLevels"] = lvl;
             outData[++counter] = e;
         }
     }

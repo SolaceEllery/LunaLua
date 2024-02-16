@@ -478,7 +478,7 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     if(gStartupSettings.epSettings.startOnLevel != L"" && startOnEpisodeLevel)
     {
         // create the start level variable
-        VB6StrPtr fullPathAndStartLevelVB6 = WStr2Str(gStartupSettings.epSettings.startOnLevel);
+        VB6StrPtr fullPathAndStartLevelVB6 = fullPthNoWorldFileWithEndSlashS + WStr2Str(gStartupSettings.epSettings.startOnLevel);
 
         // set world to false
         GM_EPISODE_MODE = COMBOOL(false);

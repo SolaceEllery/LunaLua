@@ -86,7 +86,7 @@ void LunaLua_loadLevelFile(LevelData &outData, std::wstring fullPath, bool isVal
     if(!outData.sound_overrides.empty())
         uses38AFeatures = true;
 
-    hasUnrecognizedConfigPack = (outData.meta.configPackId != "SMBX2" && outData.meta.configPackId != "TheXTech");
+    hasUnrecognizedConfigPack = (outData.meta.configPackId != "SMBX2" && outData.meta.configPackId != "TheXTech" && outData.meta.configPackId != "");
 
     std::wstring dir = fullPath.substr(0U, findLastSlash);
     std::wstring filename = fullPath.substr(findLastSlash + 1);
