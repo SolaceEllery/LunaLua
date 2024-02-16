@@ -33,12 +33,14 @@ bool PlayerInput::Toggle(bool enable)
     {
         gDisablePlayerKeysLegacy = false;
         gPlayerInputOverhaulToggled = true;
+        gDisablePlayerMovementAboveThree = true;
         return true;
     }
     else
     {
         gDisablePlayerKeysLegacy = true;
         gPlayerInputOverhaulToggled = false;
+        gDisablePlayerMovementAboveThree = false;
         return false;
     }
 }
@@ -47,55 +49,55 @@ void PlayerInput::SetControllerControls(int type, int playerIdx, int controllerB
 {
     if(type == 1)
     {
-        g_playerControllerInputs[playerIdx].up = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].up = controllerButton;
     }
     else if(type == 2)
     {
-        g_playerControllerInputs[playerIdx].down = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].down = controllerButton;
     }
     else if(type == 3)
     {
-        g_playerControllerInputs[playerIdx].left = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].left = controllerButton;
     }
     else if(type == 4)
     {
-        g_playerControllerInputs[playerIdx].right = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].right = controllerButton;
     }
     else if(type == 5)
     {
-        g_playerControllerInputs[playerIdx].jump = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].jump = controllerButton;
     }
     else if(type == 6)
     {
-        g_playerControllerInputs[playerIdx].run = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].run = controllerButton;
     }
     else if(type == 7)
     {
-        g_playerControllerInputs[playerIdx].dropitem = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].dropitem = controllerButton;
     }
     else if(type == 8)
     {
-        g_playerControllerInputs[playerIdx].pause = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].pause = controllerButton;
     }
     else if(type == 9)
     {
-        g_playerControllerInputs[playerIdx].altrun = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].altrun = controllerButton;
     }
     else if(type == 10)
     {
-        g_playerControllerInputs[playerIdx].altjump = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].altjump = controllerButton;
     }
     else if(type == 11)
     {
-        g_playerControllerInputs[playerIdx].special = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].special = controllerButton;
     }
     else if(type == 12)
     {
-        g_playerControllerInputs[playerIdx].leftTrigger = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].leftTrigger = controllerButton;
     }
     else if(type == 13)
     {
-        g_playerControllerInputs[playerIdx].rightTrigger = controllerButton;
+        g_playerControllerInputs[playerIdx - 1].rightTrigger = controllerButton;
     }
 
     if(isPermanent)
@@ -106,7 +108,7 @@ void PlayerInput::SetControllerControls(int type, int playerIdx, int controllerB
 
 void PlayerInput::SetControllerIdx(int playerIdx, int controllerIdx, bool isPermanent)
 {
-    g_playerControllerInputs[playerIdx].controllerID = controllerIdx;
+    g_playerControllerInputs[playerIdx - 1].controllerID = controllerIdx;
 
     if(isPermanent)
     {
@@ -116,62 +118,62 @@ void PlayerInput::SetControllerIdx(int playerIdx, int controllerIdx, bool isPerm
 
 int PlayerInput::GetControllerIdx(int playerIdx)
 {
-    return g_playerControllerInputs[playerIdx].controllerID;
+    return g_playerControllerInputs[playerIdx - 1].controllerID;
 }
 
 void PlayerInput::SetKeyboardControls(int type, int playerIdx, int virtKey, bool isPermanent)
 {
     if(type == 1)
     {
-        g_playerKeyboardInputs[playerIdx].up = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].up = virtKey;
     }
     else if(type == 2)
     {
-        g_playerKeyboardInputs[playerIdx].down = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].down = virtKey;
     }
     else if(type == 3)
     {
-        g_playerKeyboardInputs[playerIdx].left = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].left = virtKey;
     }
     else if(type == 4)
     {
-        g_playerKeyboardInputs[playerIdx].right = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].right = virtKey;
     }
     else if(type == 5)
     {
-        g_playerKeyboardInputs[playerIdx].jump = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].jump = virtKey;
     }
     else if(type == 6)
     {
-        g_playerKeyboardInputs[playerIdx].run = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].run = virtKey;
     }
     else if(type == 7)
     {
-        g_playerKeyboardInputs[playerIdx].dropitem = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].dropitem = virtKey;
     }
     else if(type == 8)
     {
-        g_playerKeyboardInputs[playerIdx].pause = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].pause = virtKey;
     }
     else if(type == 9)
     {
-        g_playerKeyboardInputs[playerIdx].altrun = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].altrun = virtKey;
     }
     else if(type == 10)
     {
-        g_playerKeyboardInputs[playerIdx].altjump = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].altjump = virtKey;
     }
     else if(type == 11)
     {
-        g_playerKeyboardInputs[playerIdx].special = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].special = virtKey;
     }
     else if(type == 12)
     {
-        g_playerKeyboardInputs[playerIdx].leftTrigger = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].leftTrigger = virtKey;
     }
     else if(type == 13)
     {
-        g_playerKeyboardInputs[playerIdx].rightTrigger = virtKey;
+        g_playerKeyboardInputs[playerIdx - 1].rightTrigger = virtKey;
     }
 
     if(isPermanent)
@@ -182,7 +184,7 @@ void PlayerInput::SetKeyboardControls(int type, int playerIdx, int virtKey, bool
 
 void PlayerInput::SetKeyboardIdx(int playerIdx, int keyboardIdx, bool isPermanent)
 {
-    g_playerKeyboardInputs[playerIdx].keyboardIdx = keyboardIdx;
+    g_playerKeyboardInputs[playerIdx - 1].keyboardIdx = keyboardIdx;
 
     if(isPermanent)
     {
@@ -192,7 +194,7 @@ void PlayerInput::SetKeyboardIdx(int playerIdx, int keyboardIdx, bool isPermanen
 
 int PlayerInput::GetKeyboardIdx(int playerIdx)
 {
-    return g_playerKeyboardInputs[playerIdx].keyboardIdx;
+    return g_playerKeyboardInputs[playerIdx - 1].keyboardIdx;
 }
 
 bool PlayerInput::IsPressing(int type, int playerIdx)

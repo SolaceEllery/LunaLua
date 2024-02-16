@@ -84,7 +84,7 @@ void WorldMap::openPath(int winState, int levelDirection, bool useAnimation)
         {
             if(level.LevelExit[i] == (int16_t)winState || winState == -1)
             {
-                LevelPath(curWorldLevel, i, useAnimation);
+                LevelPath((int16_t)curWorldLevel, (int16_t)i, useAnimation);
             }
         }
     }
@@ -92,7 +92,7 @@ void WorldMap::openPath(int winState, int levelDirection, bool useAnimation)
     {
         if(level.LevelExit[levelDirection] == (int16_t)winState || winState == -1)
         {
-            LevelPath(curWorldLevel, levelDirection, useAnimation);
+            LevelPath((int16_t)curWorldLevel, (int16_t)levelDirection, useAnimation);
         }
     }
 }
