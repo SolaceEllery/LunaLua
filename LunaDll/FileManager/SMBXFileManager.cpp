@@ -223,7 +223,6 @@ void SMBXWorldFileBase::ReadFile(const std::wstring& fullPath, WorldData& outDat
     LunaLua_loadWorldFile(outData, filePath, m_isValid);
 }
 
-
 void SMBXWorldFileBase::PopulateEpisodeList()
 {
     static const std::vector<std::string> wldExtensions({".wld", ".wldx"});

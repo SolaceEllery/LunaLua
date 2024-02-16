@@ -4,6 +4,10 @@
 #include "Globals.h"
 #include "Misc/LoadScreen.h"
 
+#include "SMBXInternal/Functions.h"
+#include "SMBXInternal/Variables.h"
+#include "SMBXInternal/Types.h"
+
 bool mapOverrideEanbled = false;
 
 static void __stdcall worldLoopHook() {
@@ -60,4 +64,35 @@ void WorldMap::SetWorldMapOverrideEnabled(bool enabled)
 bool WorldMap::GetWorldMapOverrideEnabled()
 {
     return mapOverrideEanbled;
+}
+
+void WorldMap::openPath(int winState, int levelDirection, bool useAnimation)
+{
+    using namespace SMBX13::Functions;
+    using namespace SMBX13::Vars;
+    using namespace SMBX13::Types;
+
+    if(winState <= -2)
+    {
+        winState = -1;
+    }
+
+    auto& level = WorldLevel[curWorldLevel];
+    if(levelDirection <= 0 || levelDirection >= 5)
+    {
+        for(int i = 1; i <= 4; i++)
+        {
+            if(level.LevelExit[i] == (int16_t)winState || winState == -1)
+            {
+                LevelPath(curWorldLevel, i, useAnimation);
+            }
+        }
+    }
+    else
+    {
+        if(level.LevelExit[levelDirection] == (int16_t)winState || winState == -1)
+        {
+            LevelPath(curWorldLevel, levelDirection, useAnimation);
+        }
+    }
 }

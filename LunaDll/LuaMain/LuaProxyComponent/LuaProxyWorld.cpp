@@ -141,34 +141,3 @@ void LuaProxy::World::setPlayerPowerup(short playerPowerup)
 {
     SMBXOverworld::get()->currentPowerup = playerPowerup;
 }
-
-void LuaProxy::World::openPath(int winState, int levelDirection, bool useAnimation)
-{
-    using namespace SMBX13::Functions;
-    using namespace SMBX13::Vars;
-    using namespace SMBX13::Types;
-
-    if(winState <= -2)
-    {
-        winState = -1;
-    }
-
-    auto& level = WorldLevel[curWorldLevel];
-    if(levelDirection <= 0 || levelDirection >= 5)
-    {
-        for(int i = 1; i <= 4; i++)
-        {
-            if(level.LevelExit[i] == (int16_t)winState || winState == -1)
-            {
-                SMBX13::Functions::LevelPath(curWorldLevel, i, useAnimation);
-            }
-        }
-    }
-    else
-    {
-        if(level.LevelExit[levelDirection] == (int16_t)winState || winState == -1)
-        {
-            SMBX13::Functions::LevelPath(curWorldLevel, levelDirection, useAnimation);
-        }
-    }
-}

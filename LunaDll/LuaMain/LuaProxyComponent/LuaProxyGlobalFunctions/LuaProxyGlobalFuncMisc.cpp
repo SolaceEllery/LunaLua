@@ -463,13 +463,12 @@ static luabind::object getAllEpisodes(lua_State *L)
         for (int i = 0; i <= EpisodeCount; i++)
         {
             luabind::object e = luabind::newtable(L);
+            // Episode name
             e["episodeName"] = WStr2Str(g_episodeList[i].episodeName);
+            // Episode path
             e["episodePath"] = WStr2Str(g_episodeList[i].episodePath);
+            // Episode world file
             e["episodeWorldFile"] = WStr2Str(g_episodeList[i].episodeWorldFile);
-            //{
-                //luabind::object lvl = luabind::newtable(L);
-            //}
-            //outData["episodeLevels"] = lvl;
             outData[++counter] = e;
         }
     }

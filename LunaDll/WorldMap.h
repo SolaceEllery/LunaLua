@@ -5,6 +5,7 @@ namespace WorldMap
 {
     void SetWorldMapOverrideEnabled(bool enabled);
     bool GetWorldMapOverrideEnabled();
+    void openPath(int winState, int levelDirection, bool useAnimation);
 }
 
 #endif
