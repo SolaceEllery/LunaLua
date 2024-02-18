@@ -12,6 +12,8 @@
 #include "../Globals.h"
 #include "../LuaMain/LunaPathValidator.h"
 
+#include "../Autocode/AutocodeCounter.h"
+
 void __stdcall SMBXSaveFile::Save()
 {
     if(gEpisodeSettings.canSaveEpisode)
