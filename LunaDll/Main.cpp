@@ -398,7 +398,6 @@ int TestFunc()
     }
 
     Blocks::DoSortingIfRequired();
-    //SMBXEvents::UpdateEventTriggers();
 
     return 0;
 }
@@ -496,6 +495,8 @@ void LevelFrameCode()
             break;
         }
     }
+
+    //SMBXEvents::UpdateEventTriggers();
 }
 
 // INIT LEVEL - This should be called during the level load hook function. It'll also figure out which level is being played.
@@ -575,7 +576,6 @@ void InitLevel() {
         Player::FilterReservePowerup(Player::Get(1));
         Player::Get(1)->Identity = CHARACTER_MARIO;
     }
-
 }
 
 __declspec(naked) int UltimateProxy()

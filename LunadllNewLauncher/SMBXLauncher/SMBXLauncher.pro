@@ -76,6 +76,10 @@ SOURCES += $$files($$PWD/../../LunaDll/libs/PGE_File_Formats/*.cpp)
 SOURCES += $$files($$PWD/../../LunaDll/libs/PGE_File_Formats/*.c)
 HEADERS += $$files($$PWD/../../LunaDll/libs/PGE_File_Formats/*.h)
 
+win32: INCLUDEPATH += $$PWD/../../LunaDll/libs/IniProcessor
+SOURCES += $$files($$PWD/../../LunaDll/libs/IniProcessor/*.cpp)
+HEADERS += $$files($$PWD/../../LunaDll/libs/IniProcessor/*.h)
+
 FORMS    += mainlauncherwindow.ui \
     devtoolsdialog.ui
 

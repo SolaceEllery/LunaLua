@@ -159,8 +159,8 @@ namespace SMBXEvents {
 
 }
 
-extern bool EventHasTriggered[255];
-extern bool EventSetToCancel[255];
+extern bool EventHasTriggered[254];
+extern bool EventSetToCancel[254];
 
 inline short SMBXEvents::Count() { return GM_EVENT_COUNT; }
 

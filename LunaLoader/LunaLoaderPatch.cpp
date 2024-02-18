@@ -88,23 +88,19 @@ LunaLoaderResult LunaLoaderRun(const wchar_t *pathToSMBX, const wchar_t *cmdLine
 
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
-#ifdef LUNALOADER_EXEC
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE),
            hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     if((hStdout == INVALID_HANDLE_VALUE) || (hStdin == INVALID_HANDLE_VALUE))
         return LUNALOADER_CREATEPROCESS_FAIL;
-#endif
 
     memset(&si, 0, sizeof(si));
     memset(&pi, 0, sizeof(pi));
 
-#ifdef LUNALOADER_EXEC
     si.cb = sizeof(STARTUPINFO);
     si.hStdError = hStdout;
     si.hStdOutput = hStdout;
     si.hStdInput = hStdin;
     si.dwFlags |= STARTF_USESTDHANDLES;
-#endif
 
     // Prepare command line
     size_t pos = 0;
@@ -129,11 +125,7 @@ LunaLoaderResult LunaLoaderRun(const wchar_t *pathToSMBX, const wchar_t *cmdLine
                        cmdLine,          // Command line
                        NULL,             // Process handle not inheritable
                        NULL,             // Thread handle not inheritable
-#ifdef LUNALOADER_EXEC
                        TRUE,             // Set handle inheritance to TRUE
-#else
-                       FALSE,            // Set handle inheritance to FALSE
-#endif
                        CREATE_SUSPENDED, // Create in suspended state
                        NULL,             // Use parent's environment block
                        workingDir,       // Use parent's starting directory
@@ -288,10 +280,8 @@ LunaLoaderResult LunaLoaderRun(const wchar_t *pathToSMBX, const wchar_t *cmdLine
     // Resume the main program thread
     ResumeThread(pi.hThread);
 
-#ifdef LUNALOADER_EXEC
     // Keep this running until LunaLua will finish it's work
     WaitForSingleObject(pi.hThread, INFINITE);
-#endif
 
     // Close handles
     CloseHandle(pi.hThread);

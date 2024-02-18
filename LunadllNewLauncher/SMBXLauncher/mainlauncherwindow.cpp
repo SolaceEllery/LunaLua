@@ -27,6 +27,7 @@
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QProcess>
 
 static DevToolsDialog* devDialogPtr = nullptr;
 
@@ -394,7 +395,7 @@ void MainLauncherWindow::runSMBX()
     wldPath = pathUnixToWine(wldPath);
 #endif
     argList << ("--loadWorld=" + wldPath);
-    argList << QString("--num-players=%1").arg(config.singleplayer() ? 1 : 2);
+    argList << QString("--num-players=%1").arg(config.numPlayers());
     argList << QString("--p1c=%1").arg(config.character1());
     if (!config.singleplayer())
     {
@@ -403,14 +404,13 @@ void MainLauncherWindow::runSMBX()
     argList << QString("--saveslot=%1").arg(config.saveSlot());
 
     internalRunSMBX(m_smbxExe, argList);
-    close();
+    //close();
 }
 
 void MainLauncherWindow::runSMBXEditor()
 {
     // Don't need to write luna config for editor
     internalRunSMBX(m_smbxExe, {"--leveleditor"});
-    close();
 }
 
 void MainLauncherWindow::runPGEEditor()
@@ -514,7 +514,13 @@ void MainLauncherWindow::runSMBXLevel(const QString& file)
 #endif
 
     internalRunSMBX(m_smbxExe, {"--testLevel=" + filePath});
-    close();
+}
+
+static void delayTimer(int seconds)
+{
+    QTime dieTime= QTime::currentTime().addSecs(seconds);
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
 void MainLauncherWindow::checkForUpdates()
@@ -634,6 +640,7 @@ void MainLauncherWindow::warnError(const QString &msg)
 
 void MainLauncherWindow::internalRunSMBX(const QString &smbxExeFile, const QList<QString> &args)
 {
+    QProcess smbx;
     QFileInfo exeFileInfo(smbxExeFile);
     if(!exeFileInfo.exists()){
         qWarning() << "SMBX file does not exist!";
@@ -649,10 +656,10 @@ void MainLauncherWindow::internalRunSMBX(const QString &smbxExeFile, const QList
         runArgs.push_front(smbxExeFile);
 
 #ifdef _WIN32
-        QProcess::startDetached(loader, runArgs);
+        smbx.startDetached(loader, runArgs);
 #else
         runArgs.push_front(loader);
-        QProcess::startDetached("wine", runArgs);
+        smbx.startDetached("wine", runArgs);
 #endif
 
         /*
@@ -669,10 +676,19 @@ void MainLauncherWindow::internalRunSMBX(const QString &smbxExeFile, const QList
     else
     {
 #ifdef _WIN32
-        QProcess::startDetached(smbxExeFile, runArgs);
+        smbx.startDetached(smbxExeFile, runArgs);
 #else
         runArgs.push_front(smbxExeFile);
-        QProcess::startDetached("wine", runArgs);
+        smbx.startDetached("wine", runArgs);
 #endif
     }
+
+    hide();
+
+    while(!smbx.waitForFinished())
+    {
+        // Loop here until SMBX2 is closed
+    }
+
+    show();
 }

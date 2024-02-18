@@ -1,7 +1,7 @@
 #include "SMBXEvents.h"
 
-bool EventHasTriggered[255] = {false};
-bool EventSetToCancel[255] = {false};
+bool EventHasTriggered[254] = {false};
+bool EventSetToCancel[254] = {false};
 
 // GET
 SMBXEvent* SMBXEvents::Get(int index) {
@@ -51,7 +51,7 @@ bool SMBXEvents::EventWasTriggered(std::wstring eventName)
 
 void SMBXEvents::UpdateEventTriggers()
 {
-    for(int i = 0; i <= 255; i++)
+    for(int i = 0; i <= 254; i++)
     {
         if(EventHasTriggered[i])
         {

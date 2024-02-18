@@ -12,6 +12,7 @@ class AutostartConfig : public QObject
     Q_PROPERTY(int character1 READ character1 WRITE setCharacter1 NOTIFY character1Updated)
     Q_PROPERTY(int character2 READ character2 WRITE setCharacter2 NOTIFY character2Updated)
     Q_PROPERTY(int saveSlot READ saveSlot WRITE setSaveSlot NOTIFY saveSlotUpdated)
+    Q_PROPERTY(int numPlayers READ numPlayers WRITE setNumPlayers NOTIFY numPlayersUpdated)
 
 public:
     explicit AutostartConfig(QObject *parent = 0);
@@ -44,6 +45,11 @@ public:
     int saveSlot() const
     {
         return m_saveSlot;
+    }
+    
+    int numPlayers() const
+    {
+        return m_numPlayers;
     }
 
 public slots:
@@ -80,6 +86,11 @@ public slots:
         m_saveSlot = arg;
         emit saveSlotUpdated();
     }
+    
+    void setNumPlayers(int arg)
+    {
+        m_numPlayers = arg;
+    }
 
 signals:
     void useAutostartUpdated();
@@ -88,6 +99,7 @@ signals:
     void character1Updated();
     void character2Updated();
     void saveSlotUpdated();
+    void numPlayersUpdated();
 
 private:
     bool m_useAutostart;
@@ -96,6 +108,7 @@ private:
     int m_character1;
     int m_character2;
     int m_saveSlot;
+    int m_numPlayers;
 };
 
 #endif // AUTOSTARTCONFIG_H
