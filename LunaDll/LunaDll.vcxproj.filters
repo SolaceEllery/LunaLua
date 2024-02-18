@@ -247,6 +247,8 @@
     <ClCompile Include="SMBXInternal\WorldLevel.cpp" />
     <ClCompile Include="VersionString.cpp" />
     <ClCompile Include="WorldMap.cpp" />
+    <ClCompile Include="FileManager\SaveFile.cpp"/>
+    <ClCompile Include="Misc/Win32PathUtils.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LunaLoader\LunaLoaderPatch.h" />
@@ -459,6 +461,8 @@
     <ClInclude Include="SMBXInternal\WorldLevel.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="WorldMap.h" />
+    <ClInclude Include="FileManager\SaveFile.h"/>
+    <ClInclude Include="Misc/Win32PathUtils.h"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunaDll.rc" />
