@@ -1025,7 +1025,10 @@ static __declspec(naked) void updateInput_Orig()
 
 extern void __stdcall runtimeHookUpdateInput()
 {
-    if (gMainWindowFocused)
+    gLunaGameControllerManager.pollInputs();
+    gEscPressedRegistered = gEscPressed;
+    gEscPressed = false;
+    if (gMainWindowFocused || !gStartupSettings.runWhenUnfocused)
     {
         if(!gDisablePlayerKeys)
         {
@@ -1038,6 +1041,11 @@ extern void __stdcall runtimeHookUpdateInput()
         {
             updateInput_Orig();
         }
+    }
+    else
+    {
+        // But if we're not running input update code, we still need to let Lua code act normal anyway
+        g_EventHandler.hookInputUpdate();
     }
 }
 
@@ -2567,51 +2575,6 @@ void __stdcall runtimeHookLoadDefaultGraphics(void)
         // Get initial HDCs set up...
         ImageLoader::Run(true);
         initDone = true;
-    }
-}
-
-static _declspec(naked) void __stdcall saveGame_OrigFunc()
-{
-    __asm {
-        PUSH EBP
-        MOV EBP, ESP
-        SUB ESP, 0x8
-        PUSH 0x8E47D6
-        RET
-    }
-}
-void __stdcall runtimeHookSaveGame()
-{
-    if(gEpisodeSettings.canSaveEpisode)
-    {
-        bool isCancelled = false;
-
-        // Hook for saving the game
-        if (gLunaLua.isValid())
-        {
-            // Hook for saving the game
-            if (!GM_CHEATED && gLunaLua.isValid()) {
-                std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
-                saveGameEvent->setDirectEventName("onSaveGame");
-                saveGameEvent->setLoopable(false);
-                gLunaLua.callEvent(saveGameEvent);
-            }
-
-            if (gUseSavX)
-            {
-                LunaLua_writeSaveFile_savx();
-            }
-            else
-            {
-                saveGame_OrigFunc();
-            }
-        }
-        
-        if(!isCancelled && !GM_CHEATED)
-        {
-            gDeathCounter.Save();
-            saveGame_OrigFunc();
-        }
     }
 }
 

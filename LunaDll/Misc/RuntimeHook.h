@@ -300,7 +300,7 @@ _declspec(naked) static void __stdcall _RenderBelowPriorityHookImpl() {
 #ifdef __clang__
     // NB: I'm using %c modifiers for PriorityMostSignificantDWord and PriorityLeastSignificantDWord because of a clang bug: https://bugs.llvm.org/show_bug.cgi?id=24232
     __asm__ volatile (
-        ".intel_syntax\n"
+        ".intel_syntax noprefix\n"
         "pushfd\n"
         "push eax\n"
         "push ecx\n"
@@ -354,7 +354,7 @@ _declspec(naked) static void __stdcall _RenderBelowPriorityHookWithSkipImpl() {
 #ifdef __clang__
     // NB: I'm using %c modifiers for PriorityMostSignificantDWord, PriorityLeastSignificantDWord, skipTargetAddrValue and skipTargetAddrValue because of a clang bug: https://bugs.llvm.org/show_bug.cgi?id=24232
     __asm__ volatile (
-        ".intel_syntax\n"
+        ".intel_syntax noprefix\n"
         "pushfd\n"
         "push eax\n"
         "push ecx\n"
@@ -431,6 +431,7 @@ void runtimeHookCharacterIdRegister(short id, const std::string& name, short bas
 void runtimeHookCharacterIdUnregister(short id);
 void runtimeHookCharacterIdReset();
 CharacterHitBoxData* runtimeHookGetExtCharacterHitBoxData(short characterId, short powerupId);
+void __stdcall runtimeHookCharacterIdCopyPlayerToTemplate(int characterId, int playerIdx);
 
 // Game Mode Handling
 void __stdcall runtimeHookSmbxChangeModeHookRaw(void);
@@ -468,9 +469,6 @@ void __stdcall runtimeHookCoinSpin();
 void __stdcall runtimeHookInitGameWindow(void);
 
 void __stdcall runtimeHookLoadDefaultGraphics(void);
-
-void __stdcall runtimeHookSaveGame(void);
-void __stdcall runtimeHookLoadGame(void);
 
 void __stdcall runtimeHookCleanupLevel(void);
 

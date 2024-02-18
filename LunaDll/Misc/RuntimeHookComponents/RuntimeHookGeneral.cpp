@@ -41,6 +41,8 @@
 #include "../../SMBXInternal/Ports.h"
 #include "../../SMBXInternal/Functions.h"
 
+#include "../../FileManager/SaveFile.h"
+
 #ifndef NO_SDL
 bool episodeStarted = false;
 #endif
@@ -2315,18 +2317,8 @@ void TrySkipPatch()
     PATCH(0x8F7E8E).PUSH_EBX().CALL(runtimeHookLoadLevelHeader).NOP_PAD_TO_SIZE<12>().Apply();
     PATCH(0x8F7EA3).JMP(0x8F7EDB).NOP_PAD_TO_SIZE<56>().Apply();
 
-    // Save game hook
-    PATCH(0x8E47D0).JMP(runtimeHookSaveGame).NOP_PAD_TO_SIZE<6>().Apply();
-    // Load game hook
-    PATCH(0x8E4E00).JMP(runtimeHookLoadGame).NOP_PAD_TO_SIZE<6>().Apply();
     // NOP-out some logic around loadgame being called, since we want to handle that ourselves now
     PATCH(0x8CDEC4).NOP_PAD_TO_SIZE<55>().Apply();
-
-    // Disables the disabling of cheating while saving.
-    if(gEpisodeSettings.canCheatAndSave)
-    {
-        PATCH(0x8E47FB).JMP(0x8E480F).Apply();
-    }
 
     PATCH(0x8DC6E0).JMP(runtimeHookCleanupLevel).NOP_PAD_TO_SIZE<6>().Apply();
 
@@ -2830,6 +2822,9 @@ void TrySkipPatch()
 
     // Replace PlayerEffects function
     PATCH(SMBX13::modPlayer_Private::_PlayerEffects_ptr).JMP(&SMBX13::Ports::PlayerEffects).NOP_PAD_TO_SIZE<6>().Apply();
+
+    // Replace SaveGame function
+    PATCH(SMBX13::modMain::_SaveGame_ptr).JMP(&SMBXSaveFile::Save).NOP_PAD_TO_SIZE<6>().Apply();
 
     // Restore GetKeyState for some pause related calls
     // GameLoop:
