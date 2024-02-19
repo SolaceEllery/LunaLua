@@ -14,110 +14,134 @@
 
 #include "../Autocode/AutocodeCounter.h"
 
+#include "LoadFile_Save.h"
+
 void __stdcall SMBXSaveFile::Save()
 {
     if(gEpisodeSettings.canSaveEpisode)
     {
         SafeFPUControl fpuExceptionClear; // Make sure FPU exceptions are cleared when the function exits
 
-        // Don't save if cheater set
-        if (SMBX13::Vars::Cheater && !gEpisodeSettings.canCheatAndSave) return;
-
-        // Hook for saving the game
-        if (gLunaLua.isValid()) {
-            std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
-            saveGameEvent->setDirectEventName("onSaveGame");
-            saveGameEvent->setLoopable(false);
-            gLunaLua.callEvent(saveGameEvent);
-        }
-
-        // Save LunaDLL death counter
-        gDeathCounter.Save();
-
-        // Save active characters to templates
-        for (int i = SMBX13::Vars::numPlayers; i >= 1; i--)
+        if(!gUseSavX)
         {
-            runtimeHookCharacterIdCopyPlayerToTemplate(SMBX13::Vars::Player[i].Character, i);
-        }
+            // Don't save if cheater set
+            if (SMBX13::Vars::Cheater && !gEpisodeSettings.canCheatAndSave) return;
 
-        // Clean up star list if blank level names?
-        {
-            using SMBX13::Vars::numStars;
-            using SMBX13::Vars::Star;
-            for (int i = numStars; i >= 1; i--)
+            // Hook for saving the game
+            if (gLunaLua.isValid()) {
+                std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
+                saveGameEvent->setDirectEventName("onSaveGame");
+                saveGameEvent->setLoopable(false);
+                gLunaLua.callEvent(saveGameEvent);
+            }
+
+            // Save LunaDLL death counter
+            gDeathCounter.Save();
+
+            // Save active characters to templates
+            for (int i = SMBX13::Vars::numPlayers; i >= 1; i--)
             {
-                if (Star[i].level.length() == 0)
+                runtimeHookCharacterIdCopyPlayerToTemplate(SMBX13::Vars::Player[i].Character, i);
+            }
+
+            // Clean up star list if blank level names?
+            {
+                using SMBX13::Vars::numStars;
+                using SMBX13::Vars::Star;
+                for (int i = numStars; i >= 1; i--)
                 {
-                    if (numStars > i)
+                    if (Star[i].level.length() == 0)
                     {
-                        Star[i] = Star[numStars];
-                        Star[numStars].level = L"";
-                        Star[numStars].Section = 0;
+                        if (numStars > i)
+                        {
+                            Star[i] = Star[numStars];
+                            Star[numStars].level = L"";
+                            Star[numStars].Section = 0;
+                        }
+                        numStars--;
                     }
-                    numStars--;
                 }
             }
+
+            // Use PGE FL functions to help convert to string
+            // It doesn't have SMBX64 format write function, so converting to GamesaveData wouldn't make
+            // sense anyway.
+
+            // Get output string to store data in
+            PGESTRING rawStr;
+            {
+                PGE_FileFormats_misc::RawTextOutput out(&rawStr);
+                using namespace SMBX13::Vars;
+                out << SMBX64::WriteSInt(64);
+                out << SMBX64::WriteFloat(Lives); // Yes, it's a float
+                out << SMBX64::WriteSInt(Coins);
+                out << SMBX64::WriteFloat(WorldPlayer[1].Location.X);
+                out << SMBX64::WriteFloat(WorldPlayer[1].Location.Y);
+                for (int i = 1; i <= 5; i++)
+                {
+                    const auto& savedChar = SavedChar[i];
+                    out << SMBX64::WriteSInt(savedChar.State);
+                    out << SMBX64::WriteSInt(savedChar.HeldBonus);
+                    out << SMBX64::WriteSInt(savedChar.Mount);
+                    out << SMBX64::WriteSInt(savedChar.MountType);
+                    out << SMBX64::WriteSInt(savedChar.Hearts);
+                }
+                out << SMBX64::WriteSInt(curWorldMusic);
+                out << SMBX64::WriteCSVBool(BeatTheGame);
+                for (int i = 1; i <= numWorldLevels; i++)
+                {
+                    out << SMBX64::WriteCSVBool(WorldLevel[i].Active);
+                }
+                out << "\"next\"\n";
+                for (int i = 1; i <= numWorldPaths; i++)
+                {
+                    out << SMBX64::WriteCSVBool(WorldPath[i].Active);
+                }
+                out << "\"next\"\n";
+                for (int i = 1; i <= numScenes; i++)
+                {
+                    out << SMBX64::WriteCSVBool(Scene[i].Active);
+                }
+                out << "\"next\"\n";
+                for (int i = 1; i <= numStars; i++)
+                {
+                    out << SMBX64::WriteStr(Star[i].level);
+                    out << SMBX64::WriteSInt(Star[i].Section);
+                }
+                out << "\"next\"\n";
+                out << SMBX64::WriteSInt(MaxWorldStars);
+            }
+
+            // Use CRLF line endings
+            rawStr = PGE_ReplSTRING(rawStr, "\n", "\r\n");
+
+            // Write data to file in atomic fashion
+            std::wstring worldPath = SMBX13::Vars::SelectWorld[SMBX13::Vars::selWorld].WorldPath;
+            std::wstring saveFilePath = GetSavesPathW() + L"save" + std::to_wstring(SMBX13::Vars::selSave) + L".sav";
+            LunaPathValidator::Result* ret = LunaPathValidator::GetForThread().CheckPath(WStr2Str(saveFilePath).c_str());
+            if (ret && ret->canWrite)
+            {
+                writeFileAtomic(saveFilePath, rawStr.c_str(), rawStr.size());
+            }
         }
-
-        // Use PGE FL functions to help convert to string
-        // It doesn't have SMBX64 format write function, so converting to GamesaveData wouldn't make
-        // sense anyway.
-
-        // Get output string to store data in
-        PGESTRING rawStr;
+        else
         {
-            PGE_FileFormats_misc::RawTextOutput out(&rawStr);
-            using namespace SMBX13::Vars;
-            out << SMBX64::WriteSInt(64);
-            out << SMBX64::WriteFloat(Lives); // Yes, it's a float
-            out << SMBX64::WriteSInt(Coins);
-            out << SMBX64::WriteFloat(WorldPlayer[1].Location.X);
-            out << SMBX64::WriteFloat(WorldPlayer[1].Location.Y);
-            for (int i = 1; i <= 5; i++)
-            {
-                const auto& savedChar = SavedChar[i];
-                out << SMBX64::WriteSInt(savedChar.State);
-                out << SMBX64::WriteSInt(savedChar.HeldBonus);
-                out << SMBX64::WriteSInt(savedChar.Mount);
-                out << SMBX64::WriteSInt(savedChar.MountType);
-                out << SMBX64::WriteSInt(savedChar.Hearts);
-            }
-            out << SMBX64::WriteSInt(curWorldMusic);
-            out << SMBX64::WriteCSVBool(BeatTheGame);
-            for (int i = 1; i <= numWorldLevels; i++)
-            {
-                out << SMBX64::WriteCSVBool(WorldLevel[i].Active);
-            }
-            out << "\"next\"\n";
-            for (int i = 1; i <= numWorldPaths; i++)
-            {
-                out << SMBX64::WriteCSVBool(WorldPath[i].Active);
-            }
-            out << "\"next\"\n";
-            for (int i = 1; i <= numScenes; i++)
-            {
-                out << SMBX64::WriteCSVBool(Scene[i].Active);
-            }
-            out << "\"next\"\n";
-            for (int i = 1; i <= numStars; i++)
-            {
-                out << SMBX64::WriteStr(Star[i].level);
-                out << SMBX64::WriteSInt(Star[i].Section);
-            }
-            out << "\"next\"\n";
-            out << SMBX64::WriteSInt(MaxWorldStars);
-        }
+            // Don't save if cheater set
+            if (SMBX13::Vars::Cheater && !gEpisodeSettings.canCheatAndSave) return;
 
-        // Use CRLF line endings
-        rawStr = PGE_ReplSTRING(rawStr, "\n", "\r\n");
+            // Hook for saving the game
+            if (gLunaLua.isValid()) {
+                std::shared_ptr<Event> saveGameEvent = std::make_shared<Event>("onSaveGame", false);
+                saveGameEvent->setDirectEventName("onSaveGame");
+                saveGameEvent->setLoopable(false);
+                gLunaLua.callEvent(saveGameEvent);
+            }
 
-        // Write data to file in atomic fashion
-        std::wstring worldPath = SMBX13::Vars::SelectWorld[SMBX13::Vars::selWorld].WorldPath;
-        std::wstring saveFilePath = worldPath + L"save" + std::to_wstring(SMBX13::Vars::selSave) + L".sav";
-        LunaPathValidator::Result* ret = LunaPathValidator::GetForThread().CheckPath(WStr2Str(saveFilePath).c_str());
-        if (ret && ret->canWrite)
-        {
-            writeFileAtomic(saveFilePath, rawStr.c_str(), rawStr.size());
+            // Save LunaDLL death counter
+            gDeathCounter.Save();
+
+            // Write SAVX file
+            LunaLua_writeSaveFile_savx();
         }
     }
 }
