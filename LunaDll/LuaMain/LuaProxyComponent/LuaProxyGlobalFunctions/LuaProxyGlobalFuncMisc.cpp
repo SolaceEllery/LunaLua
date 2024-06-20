@@ -13,6 +13,7 @@
 #include "../../../SMBXInternal/Reconstructed/EpisodeMain.h"
 #include "../../../FileManager/SMBXFileManager.h"
 #include <DirManager/dirman.h>
+#include <windows.h>
 
 void LuaProxy::Misc::npcToCoins()
 {
@@ -491,4 +492,12 @@ int LuaProxy::Misc::getEpisodeIdx()
     return gEpisodeMain.GetEpisodeIdx();
 }
 
+void LuaProxy::Misc::sendBeep(int freq, int dur)
+{
+    Beep((DWORD)freq, (DWORD)dur);
+}
 
+void LuaProxy::Misc::sendBeep(int freq)
+{
+    Beep((DWORD)freq, 50);
+}

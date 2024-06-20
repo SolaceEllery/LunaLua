@@ -781,7 +781,9 @@ void CLunaLua::bindAll()
                 // Misc.getFileSize(file) - Gets the filesize of any file specified.
                 def("getFileSize", (double(*)(std::string))&GetFileSize),
                 def("setNewWorldMapSystemEnabled", &WorldMap::SetWorldMapOverrideEnabled),
-                def("getNewWorldMapSystemEnabled", &WorldMap::GetWorldMapOverrideEnabled)
+                def("getNewWorldMapSystemEnabled", &WorldMap::GetWorldMapOverrideEnabled),
+                def("sendBeep", (void(*)(int, int))&LuaProxy::Misc::sendBeep),
+                def("sendBeep", (void(*)(int))&LuaProxy::Misc::sendBeep)
             ],
             
             namespace_("Keyboard")[

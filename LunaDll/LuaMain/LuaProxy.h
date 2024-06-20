@@ -938,6 +938,8 @@ namespace LuaProxy {
         luabind::object getEpisodeList(lua_State *L);
         int getEpisodeCount();
         int getEpisodeIdx();
+        void sendBeep(int freq, int dur);
+        void sendBeep(int freq);
 
         // Internal use profiler functions
         void __enablePerfTracker();

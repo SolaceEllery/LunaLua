@@ -779,4 +779,7 @@ void __stdcall runtimeHookPlayerKillLavaSolidExit(short* playerIdxPtr);
 void __stdcall runtimeHookPlayerCountCollisionsForWeakLava(short* playerIdxPtr);
 void __stdcall runtimeHookPlayerBlockCollisionEnd(void);
 
+//void __stdcall runtimeHookSuperMario2Toggle();
+//void __stdcall runtimeHookSuperMario4Toggle();
+
 #endif

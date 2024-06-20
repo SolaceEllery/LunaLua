@@ -2875,4 +2875,6 @@ void TrySkipPatch()
         .PUSH_IMM32((std::uint32_t) L"regsvr32 /s ")
         .Apply();
         .Apply();*/
+    
+    //PATCH(0x8E93CB).JMP(runtimeHookSuperMario2On).Apply();
 }

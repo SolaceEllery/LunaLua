@@ -5923,3 +5923,79 @@ void __stdcall runtimeHookGameover() {
     LunaLuaGameoverScreenRun();
     LunaLuaResetEpisode();
 }
+
+/*void __stdcall runtimeHookSuperMario2Toggle()
+{
+    using namespace SMBX13::Functions;
+    using namespace SMBX13::Vars;
+    using namespace SMBX13::Types;
+
+    for(int16_t i = 1; i <= GM_PLAYERS_COUNT; i++)
+    {
+        int16_t B = CheckLiving();
+        if(B > 0)
+        {
+            numPlayers = 2;
+            ScreenType = 6;
+            SingleCoop = 1;
+            SetupScreens();
+
+            auto& p = Player[i];
+
+            if(p.Effect == 9)
+            {
+                p.Effect = 0;
+            }
+
+            p.Immune = 1;
+
+            if(i != B)
+            {
+                Player[i] = p;
+                Player[i].Location.SpeedY = VB6RNG::generateNumber() * 24 - 12;
+            }
+
+            Bomb(p.Location, (VB6RNG::generateNumber() * 2) + 2);
+        }
+    }
+
+    gDisablePlayerMovementAboveThree = false;
+}
+
+void __stdcall runtimeHookSuperMario4Toggle()
+{
+    using namespace SMBX13::Functions;
+    using namespace SMBX13::Vars;
+    using namespace SMBX13::Types;
+
+    for(int16_t i = 1; i <= GM_PLAYERS_COUNT; i++)
+    {
+        int16_t B = CheckLiving();
+        if(B > 0)
+        {
+            numPlayers = 2;
+            ScreenType = 6;
+            SingleCoop = 0;
+            SetupScreens();
+
+            auto& p = Player[i];
+
+            if(p.Effect == 9)
+            {
+                p.Effect = 0;
+            }
+
+            p.Immune = 1;
+
+            if(i != B)
+            {
+                Player[i] = p;
+                Player[i].Location.SpeedY = VB6RNG::generateNumber() * 24 - 12;
+            }
+
+            Bomb(p.Location, (VB6RNG::generateNumber() * 2) + 2);
+        }
+    }
+
+    gDisablePlayerMovementAboveThree = false;
+}*/
