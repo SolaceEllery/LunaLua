@@ -39,7 +39,6 @@ public:
     static std::string MUS_MusicArtistTag();
     static std::string MUS_MusicAlbumTag();
     static std::string MUS_MusicCopyrightTag();
-    static std::string MUS_get();
 
     static void MUS_changeVolume(int vlm);
     static void MUS_openFile(const char *musFile);
@@ -90,12 +89,6 @@ private:
     static std::atomic<unsigned __int64> sCount;
     static std::atomic<unsigned __int64> musSCount;
     static void postMixCallback(void *udata, Uint8 *stream, int len);
-
-    struct MusicOverrideSettings {
-        std::string fullPath;
-    };
-    static bool overrideArrayIsUsed;
-    static std::map<std::string, MusicOverrideSettings > overrideSettings;
 };
 
 

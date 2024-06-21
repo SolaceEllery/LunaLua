@@ -58,10 +58,6 @@ namespace LuaProxy
         double  MusicGetTempo();
         double  MusicGetPitch();
         double  MusicGetSpeed();
-        std::string MusicGet();
-
-        void __setOverrideForMusicAlias(const std::string& alias, std::string chunk);
-        std::string __getMusicForAlias(const std::string& alias, int type);
 
         //SFX
         Mix_Chunk* newMix_Chunk();
