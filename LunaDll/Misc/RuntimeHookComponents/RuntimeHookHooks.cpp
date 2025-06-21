@@ -4883,7 +4883,7 @@ static void __stdcall runtimeHookStopAllBgos() {
 _declspec(naked) void __stdcall runtimeHookUpdateLayersOnFreeze() {
     __asm {
         call runtimeHookStopAllBgos
-        mov bp, word ptr [0xB25956] // Overwritten instruction
+        mov bp, word ptr ds:[0xB25956] // Overwritten instruction
         ret
     }
 }
@@ -4891,7 +4891,7 @@ _declspec(naked) void __stdcall runtimeHookUpdateLayersOnFreeze() {
 _declspec(naked) void __stdcall runtimeHookUpdateLayersDuringEffect() {
     __asm {
         call runtimeHookStopAllBgos
-        mov ax, word ptr [0xB25956] // Overwritten instruction
+        mov ax, word ptr ds:[0xB25956] // Overwritten instruction
         ret
     }
 }
