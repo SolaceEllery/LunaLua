@@ -42,6 +42,7 @@
 #include "../../libs/PGE_File_Formats/file_formats.h"
 
 #include "../../Misc/VB6RNG.h"
+#include "../../SMBXInternal/Types.h"
 
 #include "../../SMBXInternal/Reconstructed/EpisodeMain.h"
 #include "../../SMBXInternal/Overworld.h"
@@ -1280,6 +1281,9 @@ static void __stdcall CameraUpdateHook(int cameraIdx)
     // Enforce rounded camera position
     SMBX_CameraInfo::setCameraX(cameraIdx, std::round(SMBX_CameraInfo::getCameraX(cameraIdx)));
     SMBX_CameraInfo::setCameraY(cameraIdx, std::round(SMBX_CameraInfo::getCameraY(cameraIdx)));
+
+    // Set flag to know that cameras have been initialised
+    gCamerasInitialised = true;
 
     Renderer::Get().StartCameraRender(cameraIdx);
 
@@ -3501,6 +3505,117 @@ __declspec(naked) void __stdcall runtimeHookNPCSectionWrap(void)
     }
 }
 
+static void __stdcall runtimeHookNPCDespawnTimerFixInternal(NPCMOB* npc)
+{
+    // Fixes an obscure bug of unknown cause where despawn timer can be positive while
+    // the NPC isn't active, causing the despawn timer to never decrement.
+    if (!npc->activeFlag && npc->offscreenCountdownTimer > 0)
+    {
+        npc->offscreenCountdownTimer = -1;
+    }
+}
+
+_declspec(naked) void __stdcall runtimeHookNPCDespawnTimerFix()
+{
+    __asm {
+        push ebx // save for later
+        push esi
+
+        push esi // pointer to NPC
+        call runtimeHookNPCDespawnTimerFixInternal
+
+        pop esi
+        pop ebx
+
+        movsx edi, word ptr ds:[esi+0xE2] // this is what the code that this replaces does
+        push 0xA0A0C2 // return to original code
+        ret
+    }
+}
+
+static bool momentumIsOnScreen(Momentum& momentum)
+{
+    // If cameras haven't been initialised, we can't say
+    if (!gCamerasInitialised)
+    {
+        return false;
+    }
+
+    // Determine the number of active cameras
+    int cameraType = GM_CAMERA_CONTROL;
+
+    int startCameraIdx = 1;
+    int endCameraIdx = 1;
+
+    if (GM_SUPERMARIO2_PLAYER_IDX > 0) {
+        // For the supermario2 cheat, just use the camera of the active player
+        startCameraIdx = GM_SUPERMARIO2_PLAYER_IDX;
+        endCameraIdx = startCameraIdx;
+    }
+    else if (cameraType == 1 || cameraType == 4 || (cameraType == 5 && SMBX_CameraInfo::Get(2)->unkIsSplitScreen))
+    {
+        endCameraIdx = 2;
+    }
+
+    // Check the box against each of the active cameras
+    for (int cameraIdx = startCameraIdx; cameraIdx <= endCameraIdx; cameraIdx++)
+    {
+        SMBX_CameraInfo* camInfo = SMBX_CameraInfo::Get(cameraIdx);
+
+        double cameraX1 = SMBX_CameraInfo::getCameraX(cameraIdx);
+        double cameraY1 = SMBX_CameraInfo::getCameraY(cameraIdx);
+        double cameraX2 = cameraX1 + camInfo->width;
+        double cameraY2 = cameraY1 + camInfo->height;
+
+        if (momentum.x <= cameraX2 && momentum.y <= cameraY2 && (momentum.x + momentum.width) >= cameraX1 && (momentum.y + momentum.height) >= cameraY1)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static void __stdcall runtimeHookNPCRespawnBugFixInternal(NPCMOB* npc)
+{
+    // Fixes the frame-perfect despawn bug.
+    // This checks if the NPC is off screen, and if so, sets some flags to let it respawn.
+    // Minor note: this runs before most of the NPC's values are reset.
+
+    if (!gDisableNPCRespawnBugFix && !GM_FREEZWITCH_ACTIV && !momentumIsOnScreen(npc->spawnMomentum))
+    {
+        npc->offscreenFlag1 = -1;
+        npc->offscreenFlag2 = -1;
+    }
+    else
+    {
+        npc->offscreenFlag1 = 0;
+        npc->offscreenFlag2 = 0;
+    }
+}
+
+_declspec(naked) void __stdcall runtimeHookNPCRespawnBugFix()
+{
+    __asm {
+        push esi
+        push edi
+
+        push esi // NPC's pointer
+
+        call runtimeHookNPCRespawnBugFixInternal
+
+        pop edi
+        pop esi
+
+        // this is what the code that this replaces does
+        lea edx, ds:[esi+0xA8]
+        lea eax, ds:[esi+0x78]
+
+        push 0xA3B927 // return to original code
+        ret
+    }
+}
+
 static void __stdcall runtimeHookJumpSlideFixInternal(short playerIdx) {
     PlayerMOB* player = PlayerMOB::Get(playerIdx);
     auto extended = Player::GetExtended(playerIdx);
@@ -3984,19 +4099,6 @@ static unsigned int __stdcall runtimeHookNPCCollisionGroupInternal(int npcAIdx, 
     // Check noNPCCollision
     if (extA->nonpccollision || extB->nonpccollision) {
         return 0; // Collision cancelled
-    }
-
-    // check walkThroughNPCs
-    NPCMOB* npcB = NPC::GetRaw(npcBIdx);
-    if (NPC::GetWalkPastNPCs(npc->id)) {
-        if (!npc_npcblock[npcB->id] && !npc_npcblocktop[npcB->id]) {
-            return 0; // Cancelled
-        }
-    }
-    if (NPC::GetWalkPastNPCs(npcB->id)) {
-        if (!npc_npcblock[npc->id] && !npc_npcblocktop[npc->id]) {
-            return 0; // Cancelled
-        }
     }
 
     return -1; // Collision goes ahead
@@ -4753,51 +4855,178 @@ bool __stdcall saveFileExists() {
     return fileExists(saveFilePath);
 }
 
-void __stdcall runtimeHookSetPlayerFenceSpeed(PlayerMOB *player) {
-    int climbingNPC = (int) *((double*) (((char*) player) + 0x2C));
+/*
+ * If the fence fixes are disabled, we mimic the legacy behavior,
+ * when the player is climbing a BGO, we set its speed to that of NPC -1.
+ */
+static NPCMOB* getClimbedNPC(int idx) {
+    if (idx < 0) { // If we're climbing a BGO...
+        // ...use NPC -1 instead
+        return NPC::GetFenceDummyNPC();
+    } else { // If we're climbing a NPC...
+        // ...Get the NPC object
+        return NPC::GetRaw(idx);
+    }
+}
 
-    if (climbingNPC >= 0) {
-        if (climbingNPC > 5000) {
+// Is there a player in a screen-freezing forced state?
+static bool anyPlayerInScreenFreezingForcedState() {
+    for (short playerId = 1; playerId <= GM_PLAYERS_COUNT; playerId++) {
+        PlayerMOB* checkedPlayer = Player::Get(playerId);
+
+        if (Player::IsInScreenFreezingForcedState(checkedPlayer)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void __stdcall runtimeHookSetPlayerFenceSpeed(PlayerMOB *player) {
+    // Retrieve which NPC/BGO the player is climbing
+    int climbingNPC = (int) player->ClimbingNPCOrBGO;
+
+    if (climbingNPC >= 0 || !gMovingFenceFixIsEnabled) { // If the player is climbing a NPC or the fence fix is disabled
+        // Check if we're out of bounds
+        if (climbingNPC > SMBX13::Types::maxNPCs) {
             emulateVB6Error(9);
         }
 
-        player->momentum.speedX += NPC::GetRaw(climbingNPC)->momentum.speedX;
-        player->momentum.speedY += NPC::GetRaw(climbingNPC)->momentum.speedY;
-    } else {
+        // Get the NPC object
+        NPCMOB* climbingNPCObj = getClimbedNPC(climbingNPC);
+        
+        // Set the player speed to that of the NPC if the screen isn't frozen
+        if (!gMovingVineFixIsEnabled || (!anyPlayerInScreenFreezingForcedState() && !GM_FREEZWITCH_ACTIV)) {
+            player->momentum.speedX += climbingNPCObj->momentum.speedX;
+            player->momentum.speedY += climbingNPCObj->momentum.speedY;
+        }
+    } else { // If the player is climbing a BGO
+        // Compute the BGO idx
         int climbingBGO = -climbingNPC-1;
 
-        if (climbingBGO > 8000) {
+        // Get the BGO object
+        SMBX_BGO* climbingBGOObj = SMBX_BGO::GetRaw(climbingBGO);
+
+        // Check if we're out of bounds
+        if (climbingBGO >= SMBX13::Types::maxBackgrounds) {
             emulateVB6Error(9);
         }
 
-        player->momentum.speedX += SMBX_BGO::GetRaw(climbingBGO)->momentum.speedX;
-        player->momentum.speedY += SMBX_BGO::GetRaw(climbingBGO)->momentum.speedY;
+        // Set the player speed to that of the BGO
+        player->momentum.speedX += climbingBGOObj->momentum.speedX;
+        player->momentum.speedY += climbingBGOObj->momentum.speedY;
     }
 }
 
 bool __stdcall runtimeHookIncreaseFenceFrameCondition(PlayerMOB *player) {
-    int climbingNPC = (int) *((double*) (((char*) player) + 0x2C));
+    // Retrieve which NPC/BGO the player is climbing
+    int climbingNPC = (int) player->ClimbingNPCOrBGO;
 
-    if (climbingNPC >= 0) {
-        if (climbingNPC > 5000) {
+    if (climbingNPC >= 0 || !gMovingFenceFixIsEnabled) { // If the player is climbing a NPC or the fence fix is disabled
+        // Check if we're out of bounds
+        if (climbingNPC > SMBX13::Types::maxNPCs) {
             emulateVB6Error(9);
         }
 
-        return player->momentum.speedX != NPC::GetRaw(climbingNPC)->momentum.speedX || player->momentum.speedY < NPC::GetRaw(climbingNPC)->momentum.speedY - 0.1;
-    } else {
+        // Get the NPC object
+        NPCMOB* climbingNPCObj = getClimbedNPC(climbingNPC);
+
+        // Return whether we should be playing the climbing animation or not
+        if (!gMovingVineFixIsEnabled || (!anyPlayerInScreenFreezingForcedState() && !GM_FREEZWITCH_ACTIV)) {
+            return player->momentum.speedX != climbingNPCObj->momentum.speedX || player->momentum.speedY < climbingNPCObj->momentum.speedY - 0.1;
+        } else {
+            return player->momentum.speedX != 0 || player->momentum.speedY < -0.1;
+        }
+    } else { // If the player is climbing a BGO
+        // Compute the BGO idx
         int climbingBGO = -climbingNPC-1;
 
-        if (climbingBGO > 8000) {
+        // Check if we're out of bounds
+        if (climbingBGO >= SMBX13::Types::maxBackgrounds) {
             emulateVB6Error(9);
         }
 
-        return player->momentum.speedX != SMBX_BGO::GetRaw(climbingBGO)->momentum.speedX || player->momentum.speedY < SMBX_BGO::GetRaw(climbingBGO)->momentum.speedY - 0.1;
+        // Get the BGO object
+        SMBX_BGO* climbingBGOObj = SMBX_BGO::GetRaw(climbingBGO);
+
+        // Return whether we should be playing the climbing animation or not
+        return player->momentum.speedX != climbingBGOObj->momentum.speedX || player->momentum.speedY < climbingBGOObj->momentum.speedY - 0.1;
     }
 }
 
 void __stdcall runtimeHookUpdateBGOMomentum(int bgoId, int layerId) {
-    SMBX_BGO::GetRaw(bgoId)->momentum.speedX = Layer::Get(layerId)->xSpeed;
-    SMBX_BGO::GetRaw(bgoId)->momentum.speedY = Layer::Get(layerId)->ySpeed;
+    // Get the BGO object
+    SMBX_BGO* bgoObj = SMBX_BGO::GetRaw(bgoId);
+
+    // Get the layer object
+    LayerControl* layerObj = Layer::Get(layerId);
+
+    // Update BGO speed
+    bgoObj->momentum.speedX = layerObj->xSpeed;
+    bgoObj->momentum.speedY = layerObj->ySpeed;
+}
+
+static void __stdcall runtimeHookStopAllBgos() {
+    for (short bgoId = 0; bgoId < GM_BGO_COUNT + GM_BGO_LOCKS_COUNT; bgoId++) {
+        // Get the BGO object
+        SMBX_BGO* bgoObj = SMBX_BGO::GetRaw(bgoId);
+
+        // Set its speed to 0
+        bgoObj->momentum.speedX = 0;
+        bgoObj->momentum.speedY = 0;
+    }
+}
+
+_declspec(naked) void __stdcall runtimeHookUpdateLayersOnFreeze() {
+    __asm {
+        call runtimeHookStopAllBgos
+        mov bp, word ptr ds:[0xB25956] // Overwritten instruction
+        ret
+    }
+}
+
+_declspec(naked) void __stdcall runtimeHookUpdateLayersDuringEffect() {
+    __asm {
+        call runtimeHookStopAllBgos
+        mov ax, word ptr ds:[0xB25956] // Overwritten instruction
+        ret
+    }
+}
+
+void __stdcall runtimeHookOnLayerStop(int currentLayerId) {
+    // Get the current layer object
+    LayerControl* currentLayer = Layer::Get(currentLayerId);
+
+    // Overwritten instruction
+    currentLayer->IsStopped = COMBOOL(false);
+
+    for (short bgoId = 0; bgoId < GM_BGO_COUNT + GM_BGO_LOCKS_COUNT; bgoId++) {
+        // Get the BGO object
+        SMBX_BGO* bgoObj = SMBX_BGO::GetRaw(bgoId);
+
+        // If the bgo belongs to the current layer
+        if (bgoObj->ptLayerName == currentLayer->ptLayerName) {
+            // Stop it
+            bgoObj->momentum.speedX = 0;
+            bgoObj->momentum.speedY = 0;
+        }
+    }
+}
+
+static bool __stdcall runtimeHookGetOffVineConditionImpl(PlayerMOB* player, int stompedId) {
+    NPCMOB* stomped = NPC::GetRaw(stompedId);
+
+    return player->ClimbingState > 0 && NPC::GetFallOffVineOnStomp(stomped->id);
+}
+
+_declspec(naked) bool __stdcall runtimeHookGetOffVineCondition() {
+    __asm {
+        movsx ecx, cx // expand stomped NPC idx to 32 bits
+        push ecx // push stomped NPC idx
+        push edi // push pointer to player
+        call runtimeHookGetOffVineConditionImpl
+        test al, al
+        ret
+    }
 }
 
 void __stdcall runtimeHookPlayerKillLava(short* playerIdxPtr)
