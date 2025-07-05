@@ -166,12 +166,6 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     std::string worldNameS = "";
     VB6StrPtr worldNameVB6 = worldNameS;
     
-    // make an idx int variable
-    int externalEpisodeIdx = 0;
-
-    // build the episode list
-    SMBXWorldFileBase::PopulateEpisodeList();
-
     // check to see if the episode is external. if so, we'll need to change some things.
     if(checkIfWorldIsInWorldPath(fullPathS))
     {
@@ -181,20 +175,25 @@ void EpisodeMain::LaunchEpisode(std::wstring wldPathWS, int saveSlot, int player
     {
         // toggle this on
         externalEpisode = true;
-
-        // make the episode name the episode's actual name
-        worldNameS = wldData.EpisodeTitle;
-        worldNameVB6 = worldNameS;
-
-        // this code, from here, sets the new episode
-        externalEpisodeIdx = gEpisodeMain.WriteEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData, false);
     }
+
+    // build the new episode list
+    gEpisodeMain.PopulateEpisodeList();
+
+    // get the episode idx for the new system
+    EpisodeIdx = findEpisodeIDFromWorldFileAndPath(wldPathS);
+    
+    // make sure that the old system still has an episode entry, otherwise we'll crash
+    gEpisodeMain.WriteLegacyEpisodeEntry(worldNameVB6, fullPthNoWorldFileWithEndSlashVB6, fullWorldFileNoPthVB6, wldData);
 
     // reset cheat status
     Vars::Cheater = false;
 
     // reset checkpoints
     Vars::Checkpoint = "";
+
+    // make the legacy episode count set the episode entry to 1
+    Vars::NumSelectWorld = 1;
 
     // show loadscreen
     LunaLoadScreenStart();
