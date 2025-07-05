@@ -39,8 +39,12 @@ void TrySkipPatch();
 extern AsmPatch<777> gDisablePlayerDownwardClipFix;
 extern AsmPatch<8> gDisableNPCDownwardClipFix;
 extern AsmPatch<6> gDisableNPCDownwardClipFixSlope;
+extern AsmPatch<21> gNPCCeilingBugFix;
 extern Patchable& gNPCSectionFix;
-extern Patchable& gFenceFixes;
+extern bool gMovingFenceFixIsEnabled;
+extern Patchable& gInvisibleFenceFix;
+extern bool gMovingVineFixIsEnabled;
+extern Patchable& gDroppedItemFix;
 extern Patchable& gLinkFairyClowncarFixes;
 extern bool gSlideJumpFixIsEnabled;
 
@@ -380,7 +384,7 @@ void __stdcall runtimeHookPOW();
 void __stdcall runtimeHookCollectNPC(short* playerIdx, short* npcIdx);
 
 void __stdcall runtimeHookNPCTransformRandomVeggie(void);
-void __stdcall runtimeHookNPCTransformSprout(void);
+void __stdcall runtimeHookNPCTransformSprout(short* pNpcIdx);
 void __stdcall runtimeHookNPCTransformRandomBonus(void);
 void __stdcall runtimeHookNPCTransformMushToHeart(void);
 void __stdcall runtimeHookNPCTransformCoinToRupee(void);
@@ -586,6 +590,9 @@ void __stdcall runtimeHookNPCWalkFixClearTemp();
 void __stdcall runtimeHookNPCWalkFixTempHitConditional();
 void __stdcall runtimeHookNPCWalkFixSlope();
 
+void __stdcall runtimeHookNPCDespawnTimerFix();
+void __stdcall runtimeHookNPCRespawnBugFix();
+
 void __stdcall runtimeHookNPCSectionFix(short* npcIndex);
 void __stdcall runtimeHookNPCSectionWrap(void);
 
@@ -638,6 +645,10 @@ bool __stdcall saveFileExists();
 void __stdcall runtimeHookSetPlayerFenceSpeed(PlayerMOB *player);
 bool __stdcall runtimeHookIncreaseFenceFrameCondition(PlayerMOB *player);
 void __stdcall runtimeHookUpdateBGOMomentum(int bgoId, int layerId);
+void __stdcall runtimeHookUpdateLayersOnFreeze();
+void __stdcall runtimeHookUpdateLayersDuringEffect();
+void __stdcall runtimeHookOnLayerStop(int currentLayerId);
+bool __stdcall runtimeHookGetOffVineCondition();
 
 void __stdcall runtimeHookPlayerKillLava(short* playerIdxPtr);
 void __stdcall runtimeHookPlayerKillLavaSolidExit(short* playerIdxPtr);

@@ -1266,6 +1266,8 @@ static unsigned int __stdcall LatePatch(void)
 AsmPatch<777> gDisablePlayerDownwardClipFix = PATCH(0x9A3FD3).JMP(runtimeHookCompareWalkBlockForPlayerWrapper).NOP_PAD_TO_SIZE<777>();
 AsmPatch<8> gDisableNPCDownwardClipFix = PATCH(0xA16B82).JMP(runtimeHookCompareNPCWalkBlock).NOP_PAD_TO_SIZE<8>();
 
+AsmPatch<21> gNPCCeilingBugFix = PATCH(0xA17155).NOP_PAD_TO_SIZE<21>();
+
 // NOTE: This patch replaces a section 167 bytes long from 0xA13188 to 0xA1322E, but we don't NOP out the whole thing
 //       since that would conflict with NpcIdExtender, and this patch may be turned on/off at runtime.
 AsmPatch<6> gDisableNPCDownwardClipFixSlope = PATCH(0xA13188).JMP(runtimeHookNPCWalkFixSlope).NOP_PAD_TO_SIZE<6>();
@@ -1285,37 +1287,37 @@ static auto linkFairyClowncarFixesImpl = PatchCollection(
 );
 Patchable& gLinkFairyClowncarFixes = linkFairyClowncarFixesImpl;
 
-static auto fenceFixesImpl = PatchCollection(
-    PATCH(0x99933C)
-    .PUSH_EBX()
-    .PUSH_IMM32(0x99A850)
-    .JMP(runtimeHookSetPlayerFenceSpeed),
+bool gMovingFenceFixIsEnabled;
 
-    PATCH(0x9A78A8)
-    .bytes(0xDF, 0x85, 0xE0, 0xFE, 0xFF, 0xFF) // fild dword ptr [ebp - 0x120]
-    .bytes(0xD9, 0xE0) // fchs
-    .bytes(0xDD, 0x5B, 0x2C) // fstp qword ptr [ebx + 0x2c]
-    .bytes(0x0F, 0x1F, 0x00), // nop
+/*
+ * Check whether the current BGO is invisible or not between lines 2735 and 2736 of modPlayer.bas and skip the current iteration if it is
+ * The patched code is a redundant out of bounds check for the BGO idx
+ */
+static auto invisibleFenceFixImpl = PATCH(0x9A74CB)
+   .bytes(0x66, 0x39, 0x74, 0xCA, 0x04) // cmp word ptr [edx + ecx * 8 + 0x4], si ; compare isHidden to the si register, which is equal to COMBOOL(true)
+   .JE(0x9A78B6) // skip the current iteration if the layer is invisible
+   .bytes(0x0F, 0x1F, 0x00); // nop
+Patchable& gInvisibleFenceFix = invisibleFenceFixImpl;
 
-    PATCH(0x9B8A4C)
-    .PUSH_ESI()
-    .CALL(runtimeHookIncreaseFenceFrameCondition)
-    .bytes(0x84, 0xC0) // test al, al
-    .JZ(0x9B8B5D)
-    .JMP(0x9B8AF0),
+bool gMovingVineFixIsEnabled;
 
-    PATCH(0xAA6E78)
-    .PUSH_EBP()
-    .PUSH_ESI()
-    .CALL(runtimeHookUpdateBGOMomentum)
-    .bytes(0x0F, 0x1F, 0x00), // nop
-
-    PATCH(0x9A74CB)
-    .bytes(0x66, 0x39, 0x74, 0xCA, 0x04) // cmp word ptr [edx + ecx * 8 + 0x4], si ; compare isHidden to the si register, which is equal to COMBOOL(true)
-    .JE(0x9A78B6) // skip the current iteration if the layer is invisible
-    .bytes(0x0F, 0x1F, 0x00) // nop
-);
-Patchable& gFenceFixes = fenceFixesImpl;
+/*
+ * Fix dropped item height
+ * NB: This patch overwrites addresses from 0xA244F8 to 0xA24523 (included). A lot of the code here is redundant.
+ * For example, eax, which contains the address of the NPC array, and edx, which contains the NPC idx multiplied by 43,
+ * already contain the correct values, therefore the code between 0xA244F8 and 0xA2450B is useless and can be removed,
+ * same for the instruction at 0xA24513, which just stores the address of the NPC array to ecx.
+ */
+static auto droppedItemFixImpl = PATCH(0xA244F8)
+    .bytes(0x8B, 0x0D, 0xC4, 0x5B, 0xB2, 0x00)              // mov ecx, dword ptr [npc_height]              ; Load the address of the npc height array
+    .bytes(0x0F, 0xBF, 0x9C, 0xD0, 0xE2, 0x00, 0x00, 0x00)  // movsx ebx, word ptr [eax + edx * 8 + 0xE2]   ; Store the id of the current NPC to ebx. We know ebx contains zero so we don't need to save its value.
+    .bytes(0xDF, 0x04, 0x59)                                // fild word ptr [ecx + ebx * 2]                ; Retrieve the correct npc weight and convert it to a long double
+    .bytes(0xDD, 0x9C, 0xD0, 0x88, 0x00, 0x00, 0x00)        // fstp qword ptr [eax + edx * 8 + 0x88]        ; Update the height of the NPC
+    .bytes(0x31, 0xDB)                                      // xor ebx, ebx                                 ; restore the value of ebx
+    .bytes(0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00)  // nop
+    .bytes(0x0F, 0x1F, 0x80, 0x00, 0x00, 0x00, 0x00)        // nop
+    .bytes(0x0F, 0x1F, 0x00);                               // nop
+Patchable& gDroppedItemFix = droppedItemFixImpl;
 
 void TrySkipPatch()
 {
@@ -1832,18 +1834,18 @@ void TrySkipPatch()
 
     // Hooks for onNPCTransform support
     PATCH(0xA0ACBC).JMP(&runtimeHookNPCTransformRandomVeggie).NOP().NOP().Apply(); // When the randomized veggie spawns
-    PATCH(0x9CCB40).JMP(&runtimeHookNPCTransformSprout).NOP_PAD_TO_SIZE<6>().Apply(); // When pulling a sprout from the ground
-    PATCH(0xA45556).JMP(&runtimeHookNPCTransformRandomBonus).NOP_PAD_TO_SIZE<9>().Apply(); // Random powerup NPC
+    PATCH(0x9CCB41).CALL(&runtimeHookNPCTransformSprout).Apply(); // When pulling a sprout from the ground
+    PATCH(0xA45556).CALL(&runtimeHookNPCTransformRandomBonus).bytes(0x0F, 0x1F, 0x40, 0x00 /* nop */).Apply(); // Random powerup NPC
     PATCH(0xA6133A).JMP(&runtimeHookNPCTransformMushToHeart).NOP_PAD_TO_SIZE<10>().Apply(); // Link mushrooms to hearts
     PATCH(0xA6101C).JMP(&runtimeHookNPCTransformCoinToRupee).NOP_PAD_TO_SIZE<10>().Apply(); // Link coins to rupees
     PATCH(0xA0B719).JMP(&runtimeHookNPCTransformSnifitBulletToSMB2Coin).NOP_PAD_TO_SIZE<6>().Apply(); // Snifit bulllet to coin when held
     PATCH(0xA0B38D).CALL(&runtimeHookNPCTransformHeldYoshiToEgg).NOP_PAD_TO_SIZE<34>().Apply(); // Yoshis to eggs when held
     PATCH(0xA45E0A).CALL(&runtimeHookNPCTransformBubblePopped).NOP_PAD_TO_SIZE<24>().Apply(); // Bubble popped, transformed to contents
     PATCH(0xA45954).CALL(&runtimeHookNPCTransformSMWSpinyEgg).NOP_PAD_TO_SIZE<28>().Apply(); // SMW spiny egg landed
-    PATCH(0xA483C3).JMP(&runtimeHookNPCTransformLudwigShell).NOP_PAD_TO_SIZE<5>().Apply(); // Ludwig enter shell
-    PATCH(0xA5217F).JMP(&runtimeHookNPCTransformKoopalingUnshell).NOP_PAD_TO_SIZE<5>().Apply(); // Koopaling leave shell
+    PATCH(0xA483C3).JMP(&runtimeHookNPCTransformLudwigShell).NOP_PAD_TO_SIZE<5>().Apply(); // Ludwig enter shell (modNpc.bas line 9465)
+    PATCH(0xA5205C).JMP(&runtimeHookNPCTransformKoopalingUnshell).NOP_PAD_TO_SIZE<6>().Apply(); // Koopaling leave shell (modNpc.bas line 9253)
     PATCH(0xA55500).CALL(&runtimeHookNPCTransformPotionToDoor).NOP_PAD_TO_SIZE<16>().Apply(); // Potion transform to door
-    PATCH(0xA5B77E).JMP(&runtimeHookNPCTransformGaloombaUnflip).NOP_PAD_TO_SIZE<11>().Apply(); // Galoomba unflipped
+    PATCH(0xA5B77E).JMP(&runtimeHookNPCTransformGaloombaUnflip).NOP_PAD_TO_SIZE<17>().Apply(); // Galoomba unflipped
     PATCH(0x9E3632).CALL(&runtimeHookNPCTransformPSwitchResetRupeeCoins).NOP_PAD_TO_SIZE<8>().Apply(); // When pressing a p switch, rupees transformed by link are turned back into coins
     PATCH(0xA19B1E).CALL(&runtimeHookNPCTransformSMWKoopaEnterShell).NOP_PAD_TO_SIZE<8>().Apply(); // SMW koopa entering shell, overwrites a bounds check
     PATCH(0x9BE698).CALL(&runtimeHookNPCTransformYoshiEatRandomVeggie).NOP_PAD_TO_SIZE<7>().Apply(); // Incredibly niche code path for Yoshi eating a randomized veggie
@@ -2080,8 +2082,17 @@ void TrySkipPatch()
     // PATCH(0xA13188).JMP(runtimeHookNPCWalkFixSlope).NOP_PAD_TO_SIZE<167>()
     gDisableNPCDownwardClipFixSlope.Apply();
 
+    // Fixes for NPC spawning bugs
+    PATCH(0xA0A0BB).JMP(runtimeHookNPCDespawnTimerFix).NOP_PAD_TO_SIZE<7>().Apply();
+    PATCH(0xA3B91E).JMP(runtimeHookNPCRespawnBugFix).NOP_PAD_TO_SIZE<9>().Apply();
+
+    PATCH(0xA3B9AA).NOP_PAD_TO_SIZE<14>().Apply();
+
     // Hook to fix an NPC's section property when it spawn out of bounds
     gNPCSectionFix.Apply();
+
+    // Hook to fix erroneous Y speed after an NPC hits a ceiling
+    gNPCCeilingBugFix.Apply(); 
 
     // Patch to handle block reorder after p-switch handling
     PATCH(0x9E441A).JMP(runtimeHookAfterPSwitchBlocksReorderedWrapper).NOP_PAD_TO_SIZE<242>().Apply();
@@ -2150,8 +2161,83 @@ void TrySkipPatch()
     // Apply character ID patches (used to be applied/unapplied when registering characters and clearing this, but at this point safer to always have applied)
     runtimeHookCharacterIdApplyPatch();
 
-    //Fence bug fixes
-    gFenceFixes.Apply();
+    // Fence bug fixes
+    gMovingFenceFixIsEnabled = true;
+    gInvisibleFenceFix.Apply();
+    gMovingVineFixIsEnabled = true;
+
+    // Patch modPlayer.bas lines 754 and 755 to take into account the fact that a player can climb a BGO when updating its speed while climbing
+    PATCH(0x99933C)
+        .PUSH_EBX()
+        .PUSH_IMM32(0x99A850)
+        .JMP(runtimeHookSetPlayerFenceSpeed)
+        .Apply();
+
+    // Patch modPlayer.bas line 2767 to store -bgo.idx instead of -1 to player mem offset 0x2C if the player is climbing a BGO
+    PATCH(0x9A78A8)
+        .bytes(0xDF, 0x85, 0xE0, 0xFE, 0xFF, 0xFF) // fild dword ptr [ebp - 0x120] ; one-based BGO idx
+        .bytes(0xD9, 0xE0) // fchs
+        .bytes(0xDD, 0x5B, 0x2C) // fstp qword ptr [ebx + 0x2c]
+        .bytes(0x0F, 0x1F, 0x00) // nop
+        .Apply();
+
+    // Patch the boolean condition at modPlayer.bas line 4398 to handle player animation when they're climbing a BGO
+    PATCH(0x9B8A4C)
+        .PUSH_ESI()
+        .CALL(runtimeHookIncreaseFenceFrameCondition)
+        .bytes(0x84, 0xC0) // test al, al
+        .JZ(0x9B8B5D)
+        .JMP(0x9B8AF0)
+        .Apply();
+
+    /*
+     * Update the BGO speed to that of its layer between lines 476 and 477 of modLayers.bas
+     * The patched code is a redundant out of bounds check for the BGO idx
+     */ 
+    PATCH(0xAA6E78)
+        .PUSH_EBP() // layer idx
+        .PUSH_ESI() // zero-based BGO idx
+        .CALL(runtimeHookUpdateBGOMomentum)
+        .bytes(0x0F, 0x1F, 0x00) // nop
+        .Apply();
+
+    /*
+     * Set the speed of all BGOs to 0 when the time is frozen between lines 448 and 449 of modLayers.bas
+     * The patched code is a mov instruction which is restored in runtimeHookUpdateLayersOnFreeze
+     */
+    PATCH(0xAA6A53)
+        .CALL(runtimeHookUpdateLayersOnFreeze)
+        .bytes(0x66, 0x90) // nop
+        .Apply();
+
+    /*
+     * Set the speed of all BGOs to 0 when a player is in a screen-freezing forced state (ex: player taking damage)
+     * between lines 442 and 443 of modLayers.bas
+     * The patched code is a mov instruction which is restored in runtimeHookUpdateLayersDuringEffect
+     */
+    PATCH(0xAA68A8)
+        .CALL(runtimeHookUpdateLayersDuringEffect)
+        .NOP()
+        .Apply();
+    
+    /*
+     * Set the speed of all BGOs whose layer was stopped to 0 at line 303 of modLayers.bas
+     * The patched code is `Layer(B).EffectStop = False`, which is restored in runtimeHookOnLayerStop
+     */
+    PATCH(0xAA57C4)
+        .PUSH_ESI()
+        .CALL(runtimeHookOnLayerStop)
+        .Apply();
+    
+    // Modify the condition at line 3191 of modPlayer.bas to take into account the falloffvineonstomp npc config field
+    PATCH(0x9AD193)
+        .CALL(runtimeHookGetOffVineCondition)
+        .bytes(0x74, 0x0f) // jz 0x9AD1A9 ; don't get off vine if runtimeHookGetOffVineCondition returns false
+        .Apply();
+    
+
+    // Fix dropped items having an incorrect height
+    gDroppedItemFix.Apply();
 
     // Replace PlayerEffects function
     PATCH(SMBX13::modPlayer_Private::_PlayerEffects_ptr).JMP(&SMBX13::Ports::PlayerEffects).NOP_PAD_TO_SIZE<6>().Apply();

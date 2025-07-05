@@ -408,6 +408,18 @@ extern "C" {
         return (int)SDL_JOYSTICK_POWER_UNKNOWN;
     }
 
+    struct StickPos
+    {
+        int x;
+        int y;
+    };
+    FFI_EXPORT(StickPos) LunaLuaGetSelectedControllerStickPosition(int playerNum)
+    {
+        const auto stickPos = gLunaGameControllerManager.getSelectedControllerStickPosition(playerNum);
+
+        return {std::get<0>(stickPos), std::get<1>(stickPos)};
+    }
+
     FFI_EXPORT(const char*) LunaLuaGetSelectedControllerName(int playerNum)
     {
         static std::string name;
@@ -534,6 +546,18 @@ typedef struct ExtendedPlayerFields_\
         }
     }
 
+    FFI_EXPORT(void) LunaLuaSetNPCCeilingBugFix(bool enable)
+    {
+        if (enable)
+        {
+            gNPCCeilingBugFix.Apply();
+        }
+        else
+        {
+            gNPCCeilingBugFix.Unapply();
+        }
+    }
+
     FFI_EXPORT(void) LunaLuaSetNPCSectionFix(bool enable)
     {
         if (enable)
@@ -563,11 +587,40 @@ typedef struct ExtendedPlayerFields_\
         gSlideJumpFixIsEnabled = enable;
     }
 
-    FFI_EXPORT(void) LunaLuaSetFenceBugFix(bool enable) {
+    FFI_EXPORT(void) LunaLuaSetNPCRespawnBugFix(bool enable)
+    {
+        gDisableNPCRespawnBugFix = !enable;
+    }
+
+    FFI_EXPORT(void) LunaLuaSetMovingFenceBugFix(bool enable) {
         if (enable) {
-            gFenceFixes.Apply();
+            gMovingFenceFixIsEnabled = true;
         } else {
-            gFenceFixes.Unapply();
+            gMovingFenceFixIsEnabled = false;
+        }
+    }
+
+    FFI_EXPORT(void) LunaLuaSetInvisibleFenceBugFix(bool enable) {
+        if (enable) {
+            gInvisibleFenceFix.Apply();
+        } else {
+            gInvisibleFenceFix.Unapply();
+        }
+    }
+
+    FFI_EXPORT(void) LunaLuaSetMovingVineBugFix(bool enable) {
+        if (enable) {
+            gMovingVineFixIsEnabled = true;
+        } else {
+            gMovingVineFixIsEnabled = false;
+        }
+    }
+
+    FFI_EXPORT(void) LunaLuaSetDroppedItemFix(bool enable) {
+        if (enable) {
+            gDroppedItemFix.Apply();
+        } else {
+            gDroppedItemFix.Unapply();
         }
     }
 
