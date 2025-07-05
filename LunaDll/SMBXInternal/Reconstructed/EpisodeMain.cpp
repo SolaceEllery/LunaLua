@@ -595,7 +595,7 @@ int EpisodeMain::FindSaves(std::string worldPathS, int saveSlot)
     //--END MAIN RECODE--
 }
 
-int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData, bool isNewEpisode)
+int EpisodeMain::WriteLegacyEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB6, VB6StrPtr worldFileVB6, WorldData wldData, bool isNewEpisode)
 {
     using namespace SMBX13;
 
@@ -654,6 +654,97 @@ int EpisodeMain::WriteEpisodeEntry(VB6StrPtr worldNameVB6, VB6StrPtr worldPathVB
     }
 
     return newIdx;
+}
+
+void EpisodeMain::PopulateEpisodeList()
+{
+    static const std::vector<std::string> wldExtensions({".wld", ".wldx"});
+    std::wstring worldsPath = gAppPathWCHAR + "L\\worlds";
+    DirMan worldDir(WStr2Str(worldsPath));
+
+    // Reset episode count
+    EpisodeCount = 0;
+
+    // Get list of (potential) episode folders
+    std::vector<std::string> episodeDirs;
+    if (!worldDir.getListOfFolders(episodeDirs))
+    {
+        // Couldn't read dir
+        return;
+    }
+
+    // Walk all (potential) episode folders
+    for (const std::string& epDirName : episodeDirs)
+    {
+        std::string epPath = worldsPath + "\\" + epDirName;
+        DirMan epDir(epPath);
+        std::vector<std::string> wldFiles;
+        if (!epDir.getListOfFiles(wldFiles, wldExtensions))
+        {
+            // Couldn't read dir
+            continue;
+        }
+
+        // Walk all *.wld files in episode folder
+        for (const std::string& wldName : wldFiles)
+        {
+            std::string wldPath = epPath + "\\" + wldName;
+            WorldData wldData;
+            
+            if(wldPath.length() > 0)
+            {
+                if (!FileFormats::OpenWorldFileHeader(wldPath, wldData) || !wldData.meta.ReadFileValid)
+                {
+                    // Couldn't read file
+                    continue;
+                }
+
+                // Make sure the .wld path is something we can handle
+                std::wstring nonAnsiCharsFullPath = GetNonANSICharsFromWStr(Str2WStr(wldPath));
+                if (!nonAnsiCharsFullPath.empty())
+                {
+                    // The .wld path contains characters we can't currently deal with
+                    continue;
+                }
+
+                // Make new episode list entry
+                int newIdx = EpisodeCount;
+                EpisodeCount++;
+                g_episodeList[newIdx].episodeName = Str2WStr(wldData.EpisodeTitle);
+                g_episodeList[newIdx].episodePath = Str2WStr(epPath + "\\");
+                g_episodeList[newIdx].episodeWorldFile = Str2WStr(wldName);
+                for (size_t i = 0; i < 5; i++)
+                {
+                    if (i < wldData.nocharacter.size())
+                    {
+                        g_episodeList[newIdx].blockedCharacters[i] = COMBOOL(wldData.nocharacter[i]);
+                    }
+                    else
+                    {
+                        g_episodeList[newIdx].blockedCharacters[i] = 0;
+                    }
+                }
+
+                // We're done after we get our first success per episode folder
+                break;
+            }
+            else
+            {
+                // The episode has blank information, don't add it
+                continue;
+            }
+        }
+    }
+}
+
+int EpisodeMain::GetEpisodeCount()
+{
+    return EpisodeCount;
+}
+
+int EpisodeMain::GetEpisodeIdx()
+{
+    return EpisodeIdx;
 }
 
 bool EpisodeMain::CheckCollision(SMBX13::Types::Location_t momentumA, SMBX13::Types::Location_t momentumB)
