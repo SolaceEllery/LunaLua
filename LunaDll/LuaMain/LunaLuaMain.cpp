@@ -746,7 +746,10 @@ void CLunaLua::bindAll()
                 def("__getPerfTrackerData", &LuaProxy::Misc::__getPerfTrackerData),
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
-                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem)
+                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
+                def("getEpisodeList", &LuaProxy::Misc::getEpisodeList),
+                def("getEpisodeCount", (int(*)()) &LuaProxy::Misc::getEpisodeCount),
+                def("getEpisodeIdx", (int(*)()) &LuaProxy::Misc::getEpisodeIdx)
             ],
 
             namespace_("FileFormats")[

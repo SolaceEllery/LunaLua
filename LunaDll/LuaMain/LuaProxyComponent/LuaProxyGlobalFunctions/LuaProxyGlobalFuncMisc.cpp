@@ -408,3 +408,44 @@ luabind::object LuaProxy::Misc::__getPerfTrackerData(lua_State* L)
     }
     return retTable;
 }
+
+// Static function to get all episodes
+static luabind::object getAllEpisodes(lua_State *L)
+{
+    luabind::object outData = luabind::newtable(L);
+    {
+        size_t counter = 0;
+
+        for (int i = 0; i <= EpisodeCount; i++)
+        {
+            luabind::object e = luabind::newtable(L);
+            // Episode name
+            e["episodeName"] = WStr2Str(g_episodeList[i].episodeName);
+            // Episode path
+            e["episodePath"] = WStr2Str(g_episodeList[i].episodePath);
+            // Episode world file
+            e["episodeWorldFile"] = WStr2Str(g_episodeList[i].episodeWorldFile);
+            outData[++counter] = e;
+        }
+    }
+    
+    return outData;
+}
+
+// Gets the list of episodes
+luabind::object LuaProxy::Misc::getEpisodeList(lua_State *L)
+{
+    return getAllEpisodes(L);
+}
+
+// Total count of episodes
+int LuaProxy::Misc::getEpisodeCount()
+{
+    return gEpisodeMain.GetEpisodeCount();
+}
+
+// Episode idx
+int LuaProxy::Misc::getEpisodeIdx()
+{
+    return gEpisodeMain.GetEpisodeIdx();
+}
