@@ -178,6 +178,17 @@ namespace LunaMsgBox
     bool IsActive();
 }
 
+
+
+
+
+
+
+
+
+
+// **SEE Mod functions**
+
 // World finding value functions
 int findEpisodeIDFromWorldFileAndPath(std::string worldName);
 std::string findEpisodeWorldPathFromName(std::string name);
@@ -200,15 +211,11 @@ bool createSFXStartLuaEvent(int id, const char* path);
 void makeMessageBoxS(std::string message, std::string textTitle);
 void makeMessageBoxWS(std::wstring message, std::wstring textTitle);
 
-
-
-// **SEE Mod functions**
-
 //Language detection
 double GetOSLanguage();
 
 //Download a file
-void DownloadFile(std::string url, std::string path, std::string file, std::string extension);
+void DownloadFile(std::string url, std::string filepath);
 
 //Check file size
 double GetFileSize(std::string file);

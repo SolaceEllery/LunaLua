@@ -1097,22 +1097,6 @@ void HandleEventsWhileLoading()
     }
 }
 
-bool createSFXStartLuaEvent(int id, const char* path)
-{
-    bool isCancelled = false;
-
-    if (gLunaLua.isValid())
-    {
-        std::shared_ptr<Event> SFXStartEvent = std::make_shared<Event>("onSFXStart", true);
-        SFXStartEvent->setDirectEventName("onSFXStart");
-        SFXStartEvent->setLoopable(false);
-        gLunaLua.callEvent(SFXStartEvent, id, path);
-        isCancelled = SFXStartEvent->native_cancelled();
-    }
-
-    return isCancelled;
-}
-
 void HandleEventsWhileLoadscreenOnly()
 {
     if (LunaLoadScreenIsActive() && !LunaLoadScreenIsCurrentThread())
@@ -1156,6 +1140,14 @@ namespace LunaMsgBox
 
 
 
+
+
+
+
+
+
+
+// **SEE Mod functions**
 
 int findEpisodeIDFromWorldFileAndPath(std::string worldName)
 {
@@ -1236,8 +1228,11 @@ void checkBlockedCharacterFromWorldAndReplaceCharacterIfSo(int playerID)
 
 
 
+// Game-Related Functions
+
 bool CheckCollision(Momentum momentumA, Momentum momentumB)
 {
+    // Checks collision of one thing to another, SMBX-styled
     return  ((momentumA.y + momentumA.height >= momentumB.y) &&
             (momentumA.y <= momentumB.y + momentumB.height) &&
             (momentumA.x <= momentumB.x + momentumB.width) &&
@@ -1246,59 +1241,46 @@ bool CheckCollision(Momentum momentumA, Momentum momentumB)
 
 int RndValue()
 {
+    // This is replicated from SMBX, but it's better to use the VB6 RNG functions instead
     return (rand() % 2 + 1) - 1;
 }
 
 void makeMessageBoxS(std::string message, std::string textTitle)
 {
-    MessageBoxA(NULL, message.c_str(), textTitle.c_str(), NULL);
+    // Creates a message box, more simpler than using the entire function (String version)
+    LunaMsgBox::ShowA(NULL, message.c_str(), textTitle.c_str(), NULL);
 }
 
 void makeMessageBoxWS(std::wstring message, std::wstring textTitle)
 {
-    MessageBoxA(NULL, WStr2Str(message).c_str(), WStr2Str(textTitle).c_str(), NULL);
+    // Creates a message box, more simpler than using the entire function (WString version)
+    LunaMsgBox::ShowA(NULL, WStr2Str(message).c_str(), WStr2Str(textTitle).c_str(), NULL);
 }
 
 
 
+// SMBX2 functions
 
-// **SEE Mod functions**
-
-double GetOSLanguage()
+bool createSFXStartLuaEvent(int id, const char* path)
 {
-    LANGID language = GetUserDefaultUILanguage();
-    return language;
-}
+    // Sound effect LunaLua event function
+    bool isCancelled = false;
 
-void DownloadFile(std::string url, std::string path, std::string file, std::string extension)
-{
-    std::wstring tempFile = Str2WStr(path + file + extension);
-    std::wstring tempFile2 = Str2WStr(url);
-    std::wstring tempFile3 = Str2WStr(path);
-    LPCWSTR LfinalFile = tempFile.c_str();
-    LPCWSTR LFinalURL = tempFile2.c_str();
-    LPCWSTR LFinalPath = tempFile3.c_str();
-    
-    CreateDirectory(LFinalPath, NULL);
-    URLDownloadToFile(NULL, LFinalURL, LfinalFile, 0, NULL);
-}
+    if (gLunaLua.isValid())
+    {
+        std::shared_ptr<Event> SFXStartEvent = std::make_shared<Event>("onSFXStart", true);
+        SFXStartEvent->setDirectEventName("onSFXStart");
+        SFXStartEvent->setLoopable(false);
+        gLunaLua.callEvent(SFXStartEvent, id, path);
+        isCancelled = SFXStartEvent->native_cancelled();
+    }
 
-double GetFileSize(std::string file)
-{
-    std::wstring path = Str2WStr(file);
-    std::wifstream theFile(path, std::ios::binary| std::ios::ate);
-    return theFile.tellg();
-}
-
-void CreateADirectory(std::string directory)
-{
-    std::wstring tempFile = Str2WStr(directory);
-    LPCWSTR LFinalPath = tempFile.c_str();
-    CreateDirectory(LFinalPath, NULL);
+    return isCancelled;
 }
 
 bool inFullscreen()
 {
+    // Checks if SMBX2 is in fullscreen
     if (gMainWindowHwnd != NULL)
     {
         WINDOWPLACEMENT wndpl;
@@ -1311,13 +1293,62 @@ bool inFullscreen()
     return false;
 }
 
+
+
+// OS-related functions
+
+double GetOSLanguage()
+{
+    // Retrieves the Windows language that is set in the OS
+    LANGID language = GetUserDefaultUILanguage();
+    return language;
+}
+
+
+
+// File-related functions
+
+double GetFileSize(std::string file)
+{
+    // Retrieves the size of a file
+    std::wstring path = Str2WStr(file);
+    std::wifstream theFile(path, std::ios::binary| std::ios::ate);
+    return theFile.tellg();
+}
+
+void CreateADirectory(std::string directory)
+{
+    // Creates a directory
+    std::wstring tempFile = Str2WStr(directory);
+    LPCWSTR LFinalPath = tempFile.c_str();
+    CreateDirectory(LFinalPath, NULL);
+}
+
+void DownloadFile(std::string url, std::string filepath)
+{
+    // Downloads a file.
+
+    // Make a variable for the download file function
+    LPCWSTR LFinalFilepath = Str2WStr(filepath).c_str();
+
+    CreateADirectory(LFinalPath);
+    URLDownloadToFile(NULL, LFinalURL, LFinalFilepath, 0, NULL);
+}
+
+
+
+// GitHub-related functions
+
 void doGitClone(std::string urlTemp, std::string pathTemp)
 {
+    // Utilizes libgit2 to clone a repo.
     git_repository *repo = NULL;
     const char *url = urlTemp.c_str();
     const char *path = pathTemp.c_str();
     int error = git_clone(&repo, url, path, NULL);
 }
+
+// Code below is old, and will need to be rewritten some other time to really function
 
 /*git_oid branchOidToMerge;
 

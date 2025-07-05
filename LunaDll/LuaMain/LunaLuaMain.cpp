@@ -772,57 +772,7 @@ void CLunaLua::bindAll()
                 def("__getPerfTrackerData", &LuaProxy::Misc::__getPerfTrackerData),
                 def("__getNPCPropertyTableAddress", &NPC::GetPropertyTableAddress),
                 def("__getBlockPropertyTableAddress", &Blocks::GetPropertyTableAddress),
-                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem),
-
-                //**SEE Mod**
-                
-                // Misc.getOSLanguage() - Gets the operating system language from the system.
-                def("getOSLanguage", &GetOSLanguage),
-                // Misc.getFileSize(file) - Gets the filesize of any file specified.
-                def("getFileSize", (double(*)(std::string))&GetFileSize),
-                def("setNewWorldMapSystemEnabled", &WorldMap::SetWorldMapOverrideEnabled),
-                def("getNewWorldMapSystemEnabled", &WorldMap::GetWorldMapOverrideEnabled),
-                def("sendBeep", (void(*)(int, int))&LuaProxy::Misc::sendBeep),
-                def("sendBeep", (void(*)(int))&LuaProxy::Misc::sendBeep)
-            ],
-            
-            namespace_("Keyboard")[
-                // Keyboard.count() - Returns the number of keyboards connected.
-                def("count", (int(*)())&HID_GetKeyboardCount),
-                // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return an invalid table.
-                def("get", (luabind::object(*)(int, lua_State*))&HID_GetKeyboardInfoFromIdx)
-            ],
-            
-            namespace_("Mouse")[
-                // Mouse.count() - Returns the number of mouses connected.
-                def("count", (int(*)())&HID_GetMouseCount),
-                // Mouse.get(index) - Returns mouse information that's on the idx specified. Note that invalid mouses and anything higher than 10 will return an invalid table.
-                def("get", (luabind::object(*)(int, lua_State*))&HID_GetMouseInfoFromIdx)
-            ],
-            
-            namespace_("Monitor")[
-                // Monitor.get(monitorID) - Returns monitor information that's on the idx specified. Note that invalid monitors and anything higher than 10 will return an invalid table.
-                def("get", (luabind::object(*)(int, lua_State*))&MonitorSystem::GetMonitorInfo),
-                // Monitor.centerWindow(monitorID) - Centers the window to the middle of the screen. monitorID can be specified to center to a specific screen, rather than the main one.
-                def("centerWindow", (void(*)(int))&MonitorSystem::CenterWindow),
-                // Monitor.x() - Gets the current X window position.
-                def("x", (int(*)())&MonitorSystem::GetScreenXPosition),
-                // Monitor.y() - Gets the current Y window position.
-                def("y", (int(*)())&MonitorSystem::GetScreenYPosition),
-                // Monitor.centerX(monitorID) - Gets the X window position where the window would be at if it was centered.
-                def("centerX", (int(*)(int))&MonitorSystem::GetScreenCenterXPosition),
-                // Monitor.centerY(monitorID) - Gets the Y window position where the window would be at if it was centered.
-                def("centerY", (int(*)(int))&MonitorSystem::GetScreenCenterYPosition),
-                // Monitor.screenX(monitorID) - Gets the specific monitor's X position.
-                def("screenX", (int(*)(int))&MonitorSystem::GetScreenX),
-                // Monitor.screenY(monitorID) - Gets the specific monitor's Y position.
-                def("screenY", (int(*)(int))&MonitorSystem::GetScreenY),
-                // Monitor.screenWidth() - Gets the specific monitor's width.
-                def("screenWidth", (int(*)(int))&MonitorSystem::GetScreenResolutionWidth),
-                // Monitor.screenHeight() - Gets the specific monitor's height.
-                def("screenHeight", (int(*)(int))&MonitorSystem::GetScreenResolutionHeight),
-                // Monitor.setWindowPosition(x, y) - Sets the window position of the game.
-                def("setWindowPosition", (void(*)(int, int))&MonitorSystem::SetWindowPosition)
+                def("getEditorPlacedItem",(std::string(*)())&GetEditorPlacedItem)
             ],
 
             namespace_("FileFormats")[
@@ -944,15 +894,6 @@ void CLunaLua::bindAll()
                 def("openNpcConfig", &LuaProxy::Formats::openNpcConfig)
             ],
             /*************************FileFormats*end*************************/
-            
-            namespace_("Internet")[
-                def("DownloadFile", (void(*)(std::string, std::string, std::string, std::string))&DownloadFile),
-                def("GitStart", (int(*)(void))&git_libgit2_init),
-                def("GitEnd", (int(*)(void))&git_libgit2_shutdown),
-                //def("GitInit", (void(*)())&doGitInit),
-                def("GitClone", (void(*)(std::string, std::string))&doGitClone)
-                //def("GitPull", (void(*)(std::string))&doGitPull)
-            ],
 
             namespace_("Audio")[
                 //SDL_Mixer's Mix_Chunk structure
@@ -1075,14 +1016,7 @@ void CLunaLua::bindAll()
                 def("__setOverrideForAlias", LuaProxy::Audio::__setOverrideForAlias),
                 def("__getChunkForAlias", LuaProxy::Audio::__getChunkForAlias),
                 def("__setMuteForAlias", LuaProxy::Audio::__setMuteForAlias),
-                def("__getMuteForAlias", LuaProxy::Audio::__getMuteForAlias),
-                
-                // SEE Mod-related SFX functions
-                def("SfxClearFromCache", (void(*)(Mix_Chunk*))&LuaProxy::Audio::SfxClearChunk),
-                def("SfxClearFromCache", (void(*)(std::string))&LuaProxy::Audio::SfxClear),
-                def("SfxIsInCache", (bool(*)(Mix_Chunk*))&LuaProxy::Audio::SfxIsInCacheChunk),
-                def("SfxIsInCache", (bool(*)(std::string))&LuaProxy::Audio::SfxIsInCache),
-                def("SfxGetFilenameFromChunk", (std::string(*)(Mix_Chunk*))&LuaProxy::Audio::SfxGetFilenameFromChunk)
+                def("__getMuteForAlias", LuaProxy::Audio::__getMuteForAlias)
             ],
             /*************************Audio*end*************************/
 
@@ -1202,6 +1136,78 @@ void CLunaLua::bindAll()
             .def("print", &LuaProxy::Console::print)
             .def("println", &LuaProxy::Console::println)
             .def("clear", &LuaProxy::Console::clear)
+
+            namespace_("SEEMod")[
+                namespace_("Misc")[
+                    // SEEMod.Misc.getOSLanguage() - Gets the operating system language from the system.
+                    def("getOSLanguage", &GetOSLanguage),
+                    // SEEMod.Misc.getFileSize(file) - Gets the filesize of any file specified.
+                    def("getFileSize", (double(*)(std::string))&GetFileSize),
+                    // SEEMod.Misc.beep(freqHertz, seconds) - Utilizes the windows.h Beep function to send a beep tone to the computer's current audio output device.
+                    def("beep", (void(*)(int, int))&LuaProxy::Misc::sendBeep),
+                    def("beep", (void(*)(int))&LuaProxy::Misc::sendBeep)
+                ],
+                namespace_("Audio")[
+                    // SEEMod.Audio.SfxClearFromCache(filepathOrChunk) - Clears this specific song/chunk from memory.
+                    def("SfxClearFromCache", (void(*)(Mix_Chunk*))&LuaProxy::Audio::SfxClearChunk),
+                    def("SfxClearFromCache", (void(*)(std::string))&LuaProxy::Audio::SfxClear),
+                    // SEEMod.Audio.SfxIsInCache(filepathOrChunk) - Returns "true" if the specified song is in memory.
+                    def("SfxIsInCache", (bool(*)(Mix_Chunk*))&LuaProxy::Audio::SfxIsInCacheChunk),
+                    def("SfxIsInCache", (bool(*)(std::string))&LuaProxy::Audio::SfxIsInCache),
+                    // SEEMod.Audio.SfxGetFilenameFromChunk(chunk) - Retrieves the filepath saved when opening music.
+                    def("SfxGetFilenameFromChunk", (std::string(*)(Mix_Chunk*))&LuaProxy::Audio::SfxGetFilenameFromChunk)
+                ],
+                def("setNewWorldMapSystemEnabled", &WorldMap::SetWorldMapOverrideEnabled),
+                def("getNewWorldMapSystemEnabled", &WorldMap::GetWorldMapOverrideEnabled)
+            ],
+
+            namespace_("Keyboard")[
+                // Keyboard.count() - Returns the number of keyboards connected.
+                def("count", (int(*)())&HID_GetKeyboardCount),
+                // Keyboard.get(index) - Returns keyboard information that's on the idx specified. Note that invalid keyboards and anything higher than 10 will return an invalid table.
+                def("get", (luabind::object(*)(int, lua_State*))&HID_GetKeyboardInfoFromIdx)
+            ],
+            
+            namespace_("Mouse")[
+                // Mouse.count() - Returns the number of mouses connected.
+                def("count", (int(*)())&HID_GetMouseCount),
+                // Mouse.get(index) - Returns mouse information that's on the idx specified. Note that invalid mouses and anything higher than 10 will return an invalid table.
+                def("get", (luabind::object(*)(int, lua_State*))&HID_GetMouseInfoFromIdx)
+            ],
+            
+            namespace_("Monitor")[
+                // Monitor.get(monitorID) - Returns monitor information that's on the idx specified. Note that invalid monitors and anything higher than 10 will return an invalid table.
+                def("get", (luabind::object(*)(int, lua_State*))&MonitorSystem::GetMonitorInfo),
+                // Monitor.centerWindow(monitorID) - Centers the window to the middle of the screen. monitorID can be specified to center to a specific screen, rather than the main one.
+                def("centerWindow", (void(*)(int))&MonitorSystem::CenterWindow),
+                // Monitor.x() - Gets the current X window position.
+                def("x", (int(*)())&MonitorSystem::GetScreenXPosition),
+                // Monitor.y() - Gets the current Y window position.
+                def("y", (int(*)())&MonitorSystem::GetScreenYPosition),
+                // Monitor.centerX(monitorID) - Gets the X window position where the window would be at if it was centered.
+                def("centerX", (int(*)(int))&MonitorSystem::GetScreenCenterXPosition),
+                // Monitor.centerY(monitorID) - Gets the Y window position where the window would be at if it was centered.
+                def("centerY", (int(*)(int))&MonitorSystem::GetScreenCenterYPosition),
+                // Monitor.screenX(monitorID) - Gets the specific monitor's X position.
+                def("screenX", (int(*)(int))&MonitorSystem::GetScreenX),
+                // Monitor.screenY(monitorID) - Gets the specific monitor's Y position.
+                def("screenY", (int(*)(int))&MonitorSystem::GetScreenY),
+                // Monitor.screenWidth() - Gets the specific monitor's width.
+                def("screenWidth", (int(*)(int))&MonitorSystem::GetScreenResolutionWidth),
+                // Monitor.screenHeight() - Gets the specific monitor's height.
+                def("screenHeight", (int(*)(int))&MonitorSystem::GetScreenResolutionHeight),
+                // Monitor.setWindowPosition(x, y) - Sets the window position of the game.
+                def("setWindowPosition", (void(*)(int, int))&MonitorSystem::SetWindowPosition)
+            ],
+
+            namespace_("Internet")[
+                def("DownloadFile", (void(*)(std::string, std::string))&DownloadFile),
+                def("GitStart", (int(*)(void))&git_libgit2_init),
+                def("GitEnd", (int(*)(void))&git_libgit2_shutdown),
+                //def("GitInit", (void(*)())&doGitInit),
+                def("GitClone", (void(*)(std::string, std::string))&doGitClone)
+                //def("GitPull", (void(*)(std::string))&doGitPull)
+            ],
         ];
     if(m_type == LUNALUA_WORLD){
         module(L)
